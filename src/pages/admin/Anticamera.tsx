@@ -31,7 +31,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
         .order("created_at", { ascending: false });
 
       if (mediaFilter !== "all") {
-        query = query.eq("media_type", mediaFilter);
+        query = query.eq("media_type", mediaFilter as any);
       }
 
       const { data, error } = await query;
