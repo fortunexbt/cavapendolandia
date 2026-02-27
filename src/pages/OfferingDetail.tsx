@@ -6,6 +6,7 @@ import MinimalFooter from "@/components/MinimalFooter";
 import OfferingCard from "@/components/OfferingCard";
 import { motion } from "framer-motion";
 import { withSignedFileUrl } from "@/lib/offeringMedia";
+import CavapendoliPresence from "@/components/CavapendoliPresence";
 
 const OfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,10 +43,11 @@ const OfferingDetail = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+      <CavapendoliPresence variant="dettaglio" />
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         {isLoading ? (
           <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
         ) : !offering ? (

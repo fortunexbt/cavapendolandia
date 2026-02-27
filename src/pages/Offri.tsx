@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import { toast } from "sonner";
+import CavapendoliPresence from "@/components/CavapendoliPresence";
 import {
   MAX_AUTHOR_LENGTH,
   MAX_FILE_BYTES,
@@ -203,9 +204,10 @@ const Offri = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+        <CavapendoliPresence variant="offri" />
         <MinimalHeader />
-        <main className="flex-1 flex flex-col items-center justify-center px-6">
+        <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -241,10 +243,11 @@ const Offri = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+      <CavapendoliPresence variant="offri" />
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         <div className="w-full max-w-xl">
           <motion.div
             initial={{ opacity: 0 }}

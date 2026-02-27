@@ -74,6 +74,15 @@ Per popolare una base curatoriale (8-15 offerte testuali/link), usa:
 
 - `supabase/seeds/seed_offerings.sql`
 
+## Background Cavapendoli (faint mode)
+
+Per attivare i due layer di presenza sfocati, copia i file in:
+
+- `public/cavapendoli/models-a.png`
+- `public/cavapendoli/models-b.png`
+
+Dettagli: `public/cavapendoli/README.txt`
+
 ## Documentazione operativa
 
 - Playbook moderazione: `docs/MODERATION_PLAYBOOK_IT.md`

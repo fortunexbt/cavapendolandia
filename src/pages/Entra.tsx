@@ -7,6 +7,7 @@ import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import OfferingCard from "@/components/OfferingCard";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
+import CavapendoliPresence from "@/components/CavapendoliPresence";
 
 type Mode = "vaga" | "nuovi" | "silenzio";
 
@@ -59,10 +60,11 @@ const Entra = () => {
       : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+      <CavapendoliPresence variant={mode === "silenzio" ? "silenzio" : "vagare"} />
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         {/* Mode selector */}
         <nav className="mb-12 flex flex-wrap items-center justify-center gap-3">
           {(["vaga", "nuovi", "silenzio"] as Mode[]).map((m) => (
