@@ -1,0 +1,113 @@
+import { useParams, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import MinimalHeader from "@/components/MinimalHeader";
+import MinimalFooter from "@/components/MinimalFooter";
+import OfferingCard from "@/components/OfferingCard";
+import { motion } from "framer-motion";
+
+const OfferingDetail = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const { data: offering, isLoading } = useQuery({
+    queryKey: ["offering", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("offerings")
+        .select("*")
+        .eq("id", id!)
+        .eq("status", "approved")
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  // Fetch a random offering for "un altro"
+  const { data: randomOffering, refetch: refetchRandom } = useQuery({
+    queryKey: ["random-offering", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("offerings")
+        .select("id")
+        .eq("status", "approved")
+        .neq("id", id!)
+        .limit(50);
+      if (error || !data?.length) return null;
+      return data[Math.floor(Math.random() * data.length)];
+    },
+    enabled: !!id,
+  });
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <MinimalHeader />
+
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+        {isLoading ? (
+          <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
+        ) : !offering ? (
+          <div className="text-center">
+            <p className="text-lg italic text-muted-foreground/60 mb-4">Offerta non trovata.</p>
+            <Link
+              to="/entra"
+              className="font-mono-light text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+            >
+              torna all'Archivio
+            </Link>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="w-full max-w-2xl"
+          >
+            <OfferingCard
+              id={offering.id}
+              mediaType={offering.media_type}
+              fileUrl={offering.file_url}
+              textContent={offering.text_content}
+              linkUrl={offering.link_url}
+              title={offering.title}
+              note={offering.note}
+              authorType={offering.author_type}
+              authorName={offering.author_name}
+              createdAt={offering.created_at}
+              curatorialNote={offering.curatorial_note}
+              full
+            />
+
+            <div className="mt-12 flex items-center justify-center gap-8">
+              {randomOffering && (
+                <Link
+                  to={`/o/${randomOffering.id}`}
+                  className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+                >
+                  un altro
+                </Link>
+              )}
+              <Link
+                to="/entra"
+                className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors"
+              >
+                torna all'Archivio
+              </Link>
+              <Link
+                to="/offri"
+                className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors"
+              >
+                lascia un'offerta
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </main>
+
+      <MinimalFooter />
+    </div>
+  );
+};
+
+export default OfferingDetail;
