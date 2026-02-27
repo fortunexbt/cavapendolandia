@@ -144,46 +144,81 @@
   }
 }
 
-.cava-presence {
+.cava-presence-root {
   position: absolute;
-  inset: -6%;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cava-sprite {
+  position: absolute;
+  top: var(--cava-top);
+  left: var(--cava-left);
+  width: var(--cava-size);
+  aspect-ratio: 1 / 1;
   background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  opacity: var(--cava-opacity, 0.05);
-  filter: blur(var(--cava-blur, 24px)) grayscale(8%) contrast(88%);
-  transform: scale(var(--cava-scale, 1.1));
+  background-size: 300% 300%;
+  background-position: var(--cava-position);
+  opacity: var(--cava-opacity, 0.06);
+  filter: blur(var(--cava-blur, 12px))
+    saturate(var(--cava-saturation, 70%))
+    brightness(var(--cava-brightness, 94%))
+    contrast(95%);
+  transform: translate3d(0, 0, 0) rotate(var(--cava-rotate, 0deg));
   mix-blend-mode: multiply;
+  transform-origin: center center;
   mask-image: radial-gradient(
     circle at center,
-    rgba(0, 0, 0, 0.82) 12%,
-    rgba(0, 0, 0, 0.35) 62%,
+    rgba(0, 0, 0, 0.9) 28%,
+    rgba(0, 0, 0, 0.36) 68%,
     rgba(0, 0, 0, 0) 100%
   );
 }
 
-.cava-presence-a {
-  animation: cava-presence-drift-a 28s ease-in-out infinite alternate;
+.cava-sprite-a {
+  animation: cava-sprite-drift-a 34s ease-in-out infinite alternate;
 }
 
-.cava-presence-b {
-  animation: cava-presence-drift-b 34s ease-in-out infinite alternate;
+.cava-sprite-b {
+  animation: cava-sprite-drift-b 29s ease-in-out infinite alternate;
 }
 
-@keyframes cava-presence-drift-a {
+.cava-sprite-c {
+  animation: cava-sprite-drift-c 37s ease-in-out infinite alternate;
+}
+
+.cava-presence-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, transparent 36%, hsl(var(--background) / 0.16) 78%, hsl(var(--background) / 0.45) 100%);
+}
+
+@keyframes cava-sprite-drift-a {
   0% {
-    transform: translate3d(-1.5%, -0.8%, 0) scale(var(--cava-scale, 1.1));
+    transform: translate3d(-1.2%, -0.9%, 0) rotate(var(--cava-rotate, 0deg));
   }
   100% {
-    transform: translate3d(1.4%, 0.6%, 0) scale(var(--cava-scale, 1.1));
+    transform: translate3d(1.1%, 0.7%, 0) rotate(calc(var(--cava-rotate, 0deg) + 1.5deg));
   }
 }
 
-@keyframes cava-presence-drift-b {
+@keyframes cava-sprite-drift-b {
   0% {
-    transform: translate3d(1.2%, 0.4%, 0) scale(var(--cava-scale, 1.1));
+    transform: translate3d(0.8%, 0.6%, 0) rotate(var(--cava-rotate, 0deg));
   }
   100% {
-    transform: translate3d(-1.3%, -0.6%, 0) scale(var(--cava-scale, 1.1));
+    transform: translate3d(-1.1%, -0.8%, 0) rotate(calc(var(--cava-rotate, 0deg) - 1.2deg));
+  }
+}
+
+@keyframes cava-sprite-drift-c {
+  0% {
+    transform: translate3d(-0.6%, 0.9%, 0) rotate(var(--cava-rotate, 0deg));
+  }
+  100% {
+    transform: translate3d(0.9%, -0.7%, 0) rotate(calc(var(--cava-rotate, 0deg) + 1deg));
   }
 }

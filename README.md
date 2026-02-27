@@ -81,6 +81,9 @@ Per attivare i due layer di presenza sfocati, copia i file in:
 - `public/cavapendoli/models-a.png`
 - `public/cavapendoli/models-b.png`
 
+Suggerimento: usa i collage colorati in formato 3x3 (8-9 modelli).  
+Il frontend li separa visivamente in sprite fantasma distribuiti nello sfondo.
+
 Dettagli: `public/cavapendoli/README.txt`
 
 ## Documentazione operativa
