@@ -61,7 +61,11 @@ const Entra = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      <CavapendoliPresence variant={mode === "silenzio" ? "silenzio" : "vagare"} />
+      <CavapendoliPresence
+        variant={
+          mode === "silenzio" ? "silenzio" : mode === "nuovi" ? "nuovi" : "vagare"
+        }
+      />
       <MinimalHeader />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">

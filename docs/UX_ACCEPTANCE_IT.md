@@ -50,6 +50,15 @@ Data verifica: 2026-02-27
 - Contenitori max-width allineati e padding aumentato.
 - Hover e passaggi ammorbiditi; transizioni pagina 220ms.
 
+## Presenza Cavapendoli (3 sheet)
+- Integrati 3 sheet canonici: `bw-sheet`, `color-sheet-a`, `color-sheet-b`.
+- Rendering a sprite periferiche con slicing 3x3 automatico (nessun ritaglio manuale).
+- Mix per modalita:
+  - `Soglia`: prevalenza B/N.
+  - `Vaga`: mix B/N + colore controllato.
+  - `Silenzio`: quasi solo B/N.
+  - `Offri`, `Dettaglio`, pagine info: presenza molto tenue.
+
 ## Antonio path (5 minuti)
 
 Percorso verificato:

@@ -164,6 +164,7 @@
   opacity: var(--cava-opacity, 0.06);
   filter: blur(var(--cava-blur, 12px))
     saturate(var(--cava-saturation, 70%))
+    grayscale(var(--cava-grayscale, 36%))
     brightness(var(--cava-brightness, 94%))
     contrast(95%);
   transform: translate3d(0, 0, 0) rotate(var(--cava-rotate, 0deg));
@@ -178,22 +179,29 @@
 }
 
 .cava-sprite-a {
-  animation: cava-sprite-drift-a 34s ease-in-out infinite alternate;
+  animation: cava-sprite-drift-a 43s ease-in-out infinite alternate;
 }
 
 .cava-sprite-b {
-  animation: cava-sprite-drift-b 29s ease-in-out infinite alternate;
+  animation: cava-sprite-drift-b 39s ease-in-out infinite alternate;
 }
 
 .cava-sprite-c {
-  animation: cava-sprite-drift-c 37s ease-in-out infinite alternate;
+  animation: cava-sprite-drift-c 47s ease-in-out infinite alternate;
+}
+
+.cava-presence-center-clear {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, hsl(var(--background) / 0.88) 0%, hsl(var(--background) / 0.7) 26%, transparent 60%);
 }
 
 .cava-presence-vignette {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at center, transparent 36%, hsl(var(--background) / 0.16) 78%, hsl(var(--background) / 0.45) 100%);
+    radial-gradient(circle at center, transparent 42%, hsl(var(--background) / 0.24) 82%, hsl(var(--background) / 0.5) 100%);
 }
 
 @keyframes cava-sprite-drift-a {

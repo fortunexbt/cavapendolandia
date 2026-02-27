@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
+import CavapendoliPresence from "@/components/CavapendoliPresence";
 
 const Rimozione = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+      <CavapendoliPresence variant="info" />
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -1,24 +1,33 @@
-Place the two Cavapendoli collage images in this folder with these exact names:
+Canonical source sheets live in:
 
-- models-a.png
-- models-b.png
+- /public/cavapendoli/source/bw-sheet.png
+- /public/cavapendoli/source/color-sheet-a.png
+- /public/cavapendoli/source/color-sheet-b.png
 
-Recommended:
-- use your colorful sets as `models-a.png` and `models-b.png`
-- each image should contain a 3x3 grid of models (8-9 figures)
+Accepted input aliases (kept for convenience):
+
+- /public/cavapendoli/models-bw.png
+- /public/cavapendoli/models-a.png
+- /public/cavapendoli/models-b.png
+
+Expected format:
+
+- each image is 1536x1024
+- each image is a 3x3 collage (8-9 models)
+- slicing is automatic via CSS background-position (no manual cuts)
 
 Rendering behavior:
-- each sheet is sliced into 9 ghost sprites via CSS background-position
-- sprites are scattered and drift slowly in the background
-- opacity stays very low to protect readability
 
-They are rendered as faint blurred background presence layers on:
-- /
-- /entra
-- /o/:id
-- /offri
+- models are rendered as faint, blurred, drifting peripheral sprites
+- center stays clean for text and actions
+- opacity and color are tuned by page mode:
+  - soglia: mostly B/W, almost no color
+  - entra/vaga: balanced B/W + color
+  - entra/silenzio: mostly B/W, color strongly reduced
+  - offri/dettaglio/info pages: very low presence
 
-Design intent:
-- keep opacity very low
-- preserve content readability
-- add atmosphere without turning the experience into a gallery background
+Design guardrails:
+
+- mission first: content remains primary
+- no social-feed look
+- no central hero illustration effect
