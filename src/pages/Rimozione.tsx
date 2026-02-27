@@ -12,15 +12,15 @@ const Rimozione = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5 }}
-          className="max-w-md text-center space-y-6"
-        >
+          className="max-w-md text-center space-y-6">
+
           <h1 className="text-3xl font-light mb-8">Rimozione</h1>
 
           <p className="text-base leading-relaxed text-foreground/80">
             Se hai caricato qualcosa e desideri rimuoverlo, scrivi a:
           </p>
-          <p className="font-mono-light text-foreground/70">
-            cavapendolandia@gmail.com
+          <p className="font-mono-light text-foreground/70">cavapendoli@gmail.com
+
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Indica data, titolo (se presente) e un dettaglio per riconoscerlo.
@@ -29,8 +29,8 @@ const Rimozione = () => {
       </main>
 
       <MinimalFooter />
-    </div>
-  );
+    </div>);
+
 };
 
 export default Rimozione;
