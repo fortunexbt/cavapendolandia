@@ -23,7 +23,7 @@ vi.mock("@/integrations/supabase/client", () => {
     supabase: {
       from: () => builder,
       auth: {
-        signInWithOtp: vi.fn(),
+        signInWithPassword: vi.fn(),
       },
       storage: {
         from: () => ({
@@ -68,6 +68,7 @@ describe("route smoke", () => {
   it("renderizza la login admin", () => {
     renderWithRouter(<AdminLogin />);
     expect(screen.getByRole("heading", { name: /Admin/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Invia link magico/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Accedi/i })).toBeInTheDocument();
   });
 });

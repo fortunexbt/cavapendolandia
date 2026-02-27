@@ -5,27 +5,31 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
+const DEFAULT_ADMIN_EMAIL = "cavapendoli@gmail.com";
+const DEFAULT_ADMIN_PASSWORD = "barbantini";
+
 const AdminLogin = () => {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const navigate = useNavigate();
+  const [email, setEmail] = useState(DEFAULT_ADMIN_EMAIL);
+  const [password, setPassword] = useState(DEFAULT_ADMIN_PASSWORD);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || !password) return;
+
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
-        options: {
-          emailRedirectTo: `${window.location.origin}/admin/anticamera`,
-        },
+        password,
       });
       if (error) throw error;
-      setSent(true);
+
+      navigate("/admin/anticamera", { replace: true });
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Errore durante l'invio.";
+        err instanceof Error ? err.message : "Errore durante il login.";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -42,34 +46,31 @@ const AdminLogin = () => {
       >
         <h1 className="text-2xl font-light mb-8 tracking-[0.1em]">Admin</h1>
 
-        {sent ? (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Link magico inviato a <strong>{email}</strong>
-            </p>
-            <p className="font-mono-light text-muted-foreground/60 text-xs">
-              Controlla la tua email.
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={handleLogin} className="space-y-6">
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email admin"
-              className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-center"
-              required
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-3 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30"
-            >
-              {loading ? "..." : "Invia link magico"}
-            </button>
-          </form>
-        )}
+        <form onSubmit={handleLogin} className="space-y-6">
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email admin"
+            className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-center"
+            required
+          />
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-center"
+            required
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-3 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30"
+          >
+            {loading ? "..." : "Accedi"}
+          </button>
+        </form>
       </motion.div>
     </div>
   );
