@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import AbstractShadow from "@/components/AbstractShadow";
+import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import EntraComingSoon from "@/components/EntraComingSoon";
 
@@ -20,6 +21,7 @@ const Index = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
+      <MinimalHeader />
       <AbstractShadow className="pointer-events-none absolute right-0 top-1/4 h-[22rem] w-28 opacity-45 md:right-6 md:h-[30rem] md:w-40" />
       <AbstractShadow className="pointer-events-none absolute left-0 bottom-8 h-48 w-20 -scale-x-100 opacity-20 md:h-72 md:w-28" />
 
