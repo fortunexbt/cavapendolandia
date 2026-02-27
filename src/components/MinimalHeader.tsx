@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import EntraComingSoon from "@/components/EntraComingSoon";
 
 const MinimalHeader = () => {
   return (
@@ -11,12 +12,7 @@ const MinimalHeader = () => {
           CAVAPENDOLANDIA
         </Link>
         <nav className="flex items-center gap-4">
-          <Link
-            to="/entra"
-            className="font-mono-light text-muted-foreground/72 hover:text-foreground"
-          >
-            Entra
-          </Link>
+          <EntraComingSoon className="font-mono-light text-muted-foreground/45" />
           <Link
             to="/offri"
             className="font-mono-light text-muted-foreground/78 hover:text-foreground"

@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import { toast } from "sonner";
-import CavapendoliPresence from "@/components/CavapendoliPresence";
+import EntraComingSoon from "@/components/EntraComingSoon";
 import {
   MAX_AUTHOR_LENGTH,
   MAX_FILE_BYTES,
@@ -205,7 +205,6 @@ const Offri = () => {
   if (submitted) {
     return (
       <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-        <CavapendoliPresence variant="offri" />
         <MinimalHeader />
         <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
           <motion.div
@@ -222,12 +221,7 @@ const Offri = () => {
               Ora è in attesa di entrare.
             </p>
             <div className="flex items-center justify-center gap-8">
-              <Link
-                to="/entra"
-                className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
-              >
-                Entra
-              </Link>
+              <EntraComingSoon className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground/45 underline underline-offset-4" />
               <button
                 onClick={resetForm}
                 className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
@@ -244,7 +238,6 @@ const Offri = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      <CavapendoliPresence variant="offri" />
       <MinimalHeader />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import AbstractShadow from "@/components/AbstractShadow";
 import MinimalFooter from "@/components/MinimalFooter";
-import CavapendoliPresence from "@/components/CavapendoliPresence";
+import EntraComingSoon from "@/components/EntraComingSoon";
 
 const Index = () => {
   const stagger = {
@@ -20,7 +20,6 @@ const Index = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
-      <CavapendoliPresence variant="soglia" />
       <AbstractShadow className="pointer-events-none absolute right-0 top-1/4 h-[22rem] w-28 opacity-45 md:right-6 md:h-[30rem] md:w-40" />
       <AbstractShadow className="pointer-events-none absolute left-0 bottom-8 h-48 w-20 -scale-x-100 opacity-20 md:h-72 md:w-28" />
 
@@ -55,12 +54,10 @@ const Index = () => {
           variants={stagger}
           className="flex flex-col sm:flex-row items-center gap-4 md:gap-6"
         >
-          <Link
-            to="/entra"
-            className="min-w-[14rem] border border-foreground/25 bg-background/60 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground hover:-translate-y-0.5"
-          >
-            Entra
-          </Link>
+          <EntraComingSoon
+            className="inline-flex min-w-[14rem] items-center justify-center border border-foreground/12 bg-background/50 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light text-muted-foreground/45"
+            hint="In arrivo: Entra si apre appena termina la revisione delle offerte."
+          />
           <Link
             to="/offri"
             className="min-w-[14rem] border border-foreground/25 bg-background/60 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground hover:-translate-y-0.5"

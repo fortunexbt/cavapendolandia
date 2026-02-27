@@ -6,7 +6,7 @@ import MinimalFooter from "@/components/MinimalFooter";
 import OfferingCard from "@/components/OfferingCard";
 import { motion } from "framer-motion";
 import { withSignedFileUrl } from "@/lib/offeringMedia";
-import CavapendoliPresence from "@/components/CavapendoliPresence";
+import EntraComingSoon from "@/components/EntraComingSoon";
 
 const OfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,7 +44,6 @@ const OfferingDetail = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      <CavapendoliPresence variant="dettaglio" />
       <MinimalHeader />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
@@ -53,12 +52,10 @@ const OfferingDetail = () => {
         ) : !offering ? (
           <div className="text-center">
             <p className="text-lg italic text-muted-foreground/60 mb-4">Offerta non trovata.</p>
-            <Link
-              to="/entra"
-              className="font-mono-light text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
-            >
-              torna all'Archivio
-            </Link>
+            <EntraComingSoon
+              label="torna all'Archivio"
+              className="font-mono-light text-muted-foreground/45 underline underline-offset-4"
+            />
           </div>
         ) : (
           <motion.div
@@ -92,12 +89,10 @@ const OfferingDetail = () => {
                   un altro
                 </Link>
               )}
-              <Link
-                to="/entra"
-                className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
-              >
-                torna all'Archivio
-              </Link>
+              <EntraComingSoon
+                label="torna all'Archivio"
+                className="font-mono-light text-xs text-muted-foreground/45"
+              />
               <Link
                 to="/offri"
                 className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"

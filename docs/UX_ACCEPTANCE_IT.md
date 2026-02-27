@@ -5,8 +5,8 @@ Data verifica: 2026-02-27
 ## Checklist richiesta
 
 - [x] Soglia feels like entering a place (not a landing page).
-- [x] Entra default is "Vaga" and is effortless.
-- [x] Silenzio feels like attention, not emptiness.
+- [x] Entra e temporaneamente in revisione, con stato chiaro e non ambiguo.
+- [x] Transizione iniziale/pagina comunica il tono senza appesantire la lettura.
 - [x] Offri is understandable without tech literacy.
 - [x] Copy is consistent, poetic, minimal.
 - [x] No original drawings or recognizable derivations.
@@ -22,10 +22,9 @@ Data verifica: 2026-02-27
 - Fade-in lento e sfalsato su titolo, domanda, micro-copy e scelte.
 
 ## Entra (`/entra`)
-- Modalita presenti: `Vaga` (default), `Nuovi arrivi`, `Silenzio`.
-- Vaga: un contenuto alla volta, indicatore di deriva con punti pulsanti.
-- Silenzio: riduzione distrazioni, microlinea "resta finche vuoi.", CTA minime.
-- Empty state umanizzato: "Qui non c'e ancora nulla."
+- Stato "Archivio in revisione" esplicitato.
+- Accesso da CTA `Entra` disabilitato con hint hover contestuale.
+- Invito principale mantenuto su `Lascia un'offerta`.
 
 ## Dettaglio offerta (`/o/:id`)
 - Margini aumentati, chrome ridotto.
@@ -50,20 +49,18 @@ Data verifica: 2026-02-27
 - Contenitori max-width allineati e padding aumentato.
 - Hover e passaggi ammorbiditi; transizioni pagina 220ms.
 
-## Presenza Cavapendoli (3 sheet)
-- Integrati 3 sheet canonici: `bw-sheet`, `color-sheet-a`, `color-sheet-b`.
-- Rendering a sprite periferiche con slicing 3x3 automatico (nessun ritaglio manuale).
-- Mix per modalita:
-  - `Soglia`: prevalenza B/N.
-  - `Vaga`: mix B/N + colore controllato.
-  - `Silenzio`: quasi solo B/N.
-  - `Offri`, `Dettaglio`, pagine info: presenza molto tenue.
+## Presenza Cavapendoli (sequenza poetica)
+- Rimossa la presenza statica di sfondo.
+- Sequenza app-level su first load e cambi pagina:
+  - `models-bw` appare e sfuma lentamente.
+  - `models-b` emerge in transizione morbida.
+- Effetto lieve, non bloccante, con centro leggibile.
 
 ## Antonio path (5 minuti)
 
 Percorso verificato:
 1. `/` - percezione soglia + scelte immediate.
-2. `/entra` - prova `Vaga`, poi `Silenzio`.
+2. `/entra` - stato in revisione comprensibile + ritorno naturale a `offri`.
 3. `/o/:id` - lettura "oggetto trovato", azione `un altro`.
 4. `/offri` - completamento guidato fino a `Consenso`.
 5. `/che-cose` + `/regole` - coerenza tono e patto del luogo.

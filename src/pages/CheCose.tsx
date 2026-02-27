@@ -2,12 +2,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
-import CavapendoliPresence from "@/components/CavapendoliPresence";
+import EntraComingSoon from "@/components/EntraComingSoon";
 
 const CheCose = () => {
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      <CavapendoliPresence variant="info" />
       <MinimalHeader />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
@@ -41,12 +40,7 @@ const CheCose = () => {
           </p>
 
           <div className="pt-8 flex items-center justify-center gap-8">
-            <Link
-              to="/entra"
-              className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
-            >
-              Entra
-            </Link>
+            <EntraComingSoon className="font-mono-light text-xs text-muted-foreground/45 underline underline-offset-4" />
             <Link
               to="/offri"
               className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"

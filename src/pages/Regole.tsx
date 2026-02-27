@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
-import CavapendoliPresence from "@/components/CavapendoliPresence";
 
 const rules = [
   "Cavapendolandia è un luogo delicato.",
@@ -17,7 +16,6 @@ const rules = [
 const Regole = () => {
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      <CavapendoliPresence variant="info" />
       <MinimalHeader />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
