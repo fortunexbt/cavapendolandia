@@ -43,6 +43,14 @@ const ACCEPT_MAP: Record<string, string> = {
   pdf: "application/pdf",
 };
 
+const STEP_LABELS: Record<number, string> = {
+  1: "Scelta",
+  2: "Deposito",
+  3: "Nome",
+  4: "Firma",
+  5: "Consenso",
+};
+
 const Offri = () => {
   const [step, setStep] = useState(1);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
@@ -124,7 +132,7 @@ const Offri = () => {
     if (!mediaType || submitting) return;
     if (honeypot.trim()) return;
     if (mediaType === "link" && !isValidHttpUrl(linkUrl)) {
-      toast.error("Il link deve iniziare con http:// o https://");
+      toast.error("Inserisci un link completo.");
       return;
     }
     if (mediaType === "text" && textContent.trim().length > MAX_TEXT_LENGTH) {
@@ -132,7 +140,7 @@ const Offri = () => {
       return;
     }
     if (authorType === "instagram" && !isValidInstagramHandle(authorName)) {
-      toast.error("Handle Instagram non valido.");
+      toast.error("Firma Instagram non valida.");
       return;
     }
 
@@ -237,45 +245,40 @@ const Offri = () => {
       <MinimalHeader />
 
       <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-xl">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="text-center mb-12"
+            className="text-center mb-14"
           >
-            <h1 className="text-3xl md:text-4xl font-light mb-3">
+            <h1 className="text-3xl md:text-5xl font-light mb-4">
               Lascia un'offerta
             </h1>
-            <p className="text-sm italic text-muted-foreground">
+            <p className="text-base italic text-muted-foreground">
               Qualcosa che possa stare qui.
             </p>
           </motion.div>
 
-          {/* Progress */}
-          <div className="flex items-center justify-center gap-2 mb-10">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <div
-                key={s}
-                className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${
-                  s <= step ? "bg-foreground/40" : "bg-border"
-                }`}
-              />
-            ))}
+          <div className="mb-12 text-center">
+            <p className="ritual-step">
+              {step} - {STEP_LABELS[step]}
+            </p>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.4 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="min-h-[20rem]"
             >
               {/* Step 1: Media type */}
               {step === 1 && (
                 <div className="space-y-4">
-                  <p className="font-mono-light text-muted-foreground text-center mb-6">
+                  <p className="font-mono-light text-muted-foreground text-center mb-8 uppercase tracking-[0.13em] text-xs">
                     Cosa lasci?
                   </p>
                   <div className="grid grid-cols-3 gap-3">
@@ -305,12 +308,9 @@ const Offri = () => {
                         value={textContent}
                         onChange={(e) => setTextContent(e.target.value)}
                         placeholder="Scrivi qui..."
-                        className="min-h-[160px] bg-transparent border-border/50 focus:border-foreground/30 font-serif text-base resize-none"
+                        className="min-h-[180px] bg-transparent border-border/50 focus:border-foreground/30 font-serif text-base resize-none"
                         maxLength={MAX_TEXT_LENGTH}
                       />
-                      <p className="font-mono-light text-muted-foreground/40 text-center">
-                        Piccolo va bene.
-                      </p>
                     </>
                   ) : mediaType === "link" ? (
                     <>
@@ -322,9 +322,6 @@ const Offri = () => {
                         className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light"
                         maxLength={2048}
                       />
-                      <p className="font-mono-light text-muted-foreground/40 text-center">
-                        Inserisci solo link http/https.
-                      </p>
                     </>
                   ) : (
                     <>
@@ -352,6 +349,14 @@ const Offri = () => {
                       </p>
                     </>
                   )}
+                  <div className="pt-3 space-y-1">
+                    <p className="font-mono-light text-muted-foreground/55 text-center text-xs">
+                      Piccolo va bene.
+                    </p>
+                    <p className="font-mono-light text-muted-foreground/45 text-center text-xs">
+                      Non deve spiegare tutto.
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -382,7 +387,7 @@ const Offri = () => {
               {/* Step 4: Author */}
               {step === 4 && (
                 <div className="space-y-6">
-                  <p className="font-mono-light text-muted-foreground text-center mb-4">
+                  <p className="font-mono-light text-muted-foreground text-center mb-4 uppercase tracking-[0.13em] text-xs">
                     Come vuoi apparire?
                   </p>
                   <RadioGroup
@@ -428,7 +433,7 @@ const Offri = () => {
 
               {/* Step 5: Consent */}
               {step === 5 && (
-                <div className="space-y-5">
+                <div className="space-y-6">
                   <div className="flex items-start gap-3">
                     <Checkbox
                       id="rights"
@@ -436,7 +441,7 @@ const Offri = () => {
                       onCheckedChange={(c) => setConsentRights(!!c)}
                     />
                     <Label htmlFor="rights" className="font-mono-light text-xs leading-relaxed cursor-pointer">
-                      Ho i diritti per condividere questo contenuto.
+                      Questo contenuto e mio, oppure posso condividerlo.
                     </Label>
                   </div>
                   <div className="flex items-start gap-3">
@@ -446,8 +451,7 @@ const Offri = () => {
                       onCheckedChange={(c) => setConsentArchive(!!c)}
                     />
                     <Label htmlFor="archive" className="font-mono-light text-xs leading-relaxed cursor-pointer">
-                      Accetto che l'offerta sia mostrata in Archivio (dopo
-                      approvazione).
+                      Va bene se entra in Archivio, dopo l'Anticamera.
                     </Label>
                   </div>
                   <div className="flex items-start gap-3">
@@ -457,7 +461,7 @@ const Offri = () => {
                       onCheckedChange={(c) => setConsentReshare(!!c)}
                     />
                     <Label htmlFor="reshare" className="font-mono-light text-xs leading-relaxed cursor-pointer text-muted-foreground">
-                      Consento la ricondivisione sui canali del progetto.
+                      Se necessario, puo essere ricondivisa nei canali del progetto.
                     </Label>
                   </div>
                 </div>
@@ -472,7 +476,7 @@ const Offri = () => {
                 onClick={() => setStep((s) => s - 1)}
                 className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                ← indietro
+                ← torna indietro
               </button>
             ) : (
               <div />

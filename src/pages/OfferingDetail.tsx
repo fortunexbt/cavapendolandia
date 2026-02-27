@@ -45,7 +45,7 @@ const OfferingDetail = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         {isLoading ? (
           <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
         ) : !offering ? (
@@ -62,16 +62,17 @@ const OfferingDetail = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="w-full max-w-2xl"
+            transition={{ duration: 0.35 }}
+            className="ritual-container max-w-3xl"
           >
+            <p className="ritual-label text-center mb-8">Offerta trovata</p>
             <OfferingCard
               id={offering.id}
               mediaType={offering.media_type}
               fileUrl={offering.file_url}
               textContent={offering.text_content}
               linkUrl={offering.link_url}
-              title={offering.title}
+              title={offering.title || "Offerta"}
               note={offering.note}
               authorType={offering.author_type}
               authorName={offering.author_name}
@@ -80,24 +81,24 @@ const OfferingDetail = () => {
               full
             />
 
-            <div className="mt-12 flex items-center justify-center gap-8">
+            <div className="mt-14 flex flex-wrap items-center justify-center gap-6">
               {randomOffering && (
                 <Link
                   to={`/o/${randomOffering.id}`}
-                  className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+                  className="rounded-full border border-foreground/25 px-7 py-2 font-mono-light text-xs uppercase tracking-[0.13em] text-foreground/85 hover:bg-foreground hover:text-primary-foreground"
                 >
                   un altro
                 </Link>
               )}
               <Link
                 to="/entra"
-                className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors"
+                className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
               >
                 torna all'Archivio
               </Link>
               <Link
                 to="/offri"
-                className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors"
+                className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
               >
                 lascia un'offerta
               </Link>

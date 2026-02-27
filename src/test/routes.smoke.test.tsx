@@ -62,7 +62,7 @@ describe("route smoke", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText(/L'archivio è ancora vuoto\./i)).toBeInTheDocument();
+    expect(await screen.findByText(/Qui non c'è ancora nulla\./i)).toBeInTheDocument();
   });
 
   it("renderizza la login admin", () => {

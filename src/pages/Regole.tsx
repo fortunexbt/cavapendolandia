@@ -18,20 +18,20 @@ const Regole = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-          className="max-w-md text-center"
+          transition={{ duration: 0.35 }}
+          className="max-w-2xl text-center"
         >
-          <h1 className="text-3xl font-light mb-10">Regole del luogo</h1>
+          <h1 className="text-4xl md:text-5xl font-light mb-12">Regole del luogo</h1>
 
-          <ul className="space-y-4 text-left">
+          <ul className="space-y-5 text-left">
             {rules.map((rule, i) => (
               <li
                 key={i}
-                className="text-base leading-relaxed text-foreground/80 pl-4 border-l border-border/50"
+                className="text-lg leading-relaxed text-foreground/82 pl-5 border-l border-border/55"
               >
                 {rule}
               </li>

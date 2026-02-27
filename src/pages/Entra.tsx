@@ -51,6 +51,8 @@ const Entra = () => {
       ? shuffledIndices[currentOffset] ?? currentOffset
       : currentOffset;
 
+  const wanderPulse = currentOffset % 3;
+
   const currentOffering =
     offerings.length > 0
       ? offerings[currentDisplayIndex]
@@ -60,9 +62,9 @@ const Entra = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         {/* Mode selector */}
-        <nav className="mb-12 flex items-center gap-6">
+        <nav className="mb-12 flex flex-wrap items-center justify-center gap-3">
           {(["vaga", "nuovi", "silenzio"] as Mode[]).map((m) => (
             <button
               key={m}
@@ -70,10 +72,10 @@ const Entra = () => {
                 setMode(m);
                 setCurrentIndex(0);
               }}
-              className={`font-mono-light text-xs uppercase tracking-[0.15em] transition-colors duration-500 ${
+              className={`rounded-full border px-4 py-2 font-mono-light text-[0.68rem] uppercase tracking-[0.15em] transition-all ${
                 mode === m
-                  ? "text-foreground"
-                  : "text-muted-foreground/50 hover:text-muted-foreground"
+                  ? "text-foreground border-foreground/30 bg-background/80"
+                  : "text-muted-foreground/60 border-border/60 hover:text-foreground hover:border-foreground/30"
               }`}
             >
               {m === "vaga" ? "Vaga" : m === "nuovi" ? "Nuovi arrivi" : "Silenzio"}
@@ -86,13 +88,13 @@ const Entra = () => {
             ...
           </p>
         ) : offerings.length === 0 ? (
-          <div className="text-center">
-            <p className="text-lg italic text-muted-foreground/60 mb-8">
-              L'archivio è ancora vuoto.
+          <div className="text-center ritual-container">
+            <p className="text-2xl italic text-foreground/70 mb-8">
+              Qui non c'è ancora nulla.
             </p>
             <Link
               to="/offri"
-              className="font-mono-light text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+              className="inline-flex rounded-full border border-foreground/25 px-6 py-2 font-mono-light text-xs uppercase tracking-[0.13em] text-muted-foreground hover:text-foreground hover:border-foreground/40"
             >
               Lascia la prima offerta
             </Link>
@@ -101,11 +103,11 @@ const Entra = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={`${mode}-${currentIndex}`}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className={`w-full ${mode === "silenzio" ? "max-w-2xl" : "max-w-xl"}`}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className={`w-full ${mode === "silenzio" ? "max-w-3xl min-h-[58vh] flex items-center" : "max-w-xl"}`}
             >
               {currentOffering && (
                 <OfferingCard
@@ -127,30 +129,46 @@ const Entra = () => {
         )}
 
         {offerings.length > 0 && (
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-center">
+          <div className="mt-12 flex flex-col items-center gap-5 text-center">
+            {mode !== "silenzio" && (
+              <div className="flex items-center justify-center gap-1.5" aria-hidden>
+                {[0, 1, 2].map((index) => (
+                  <span
+                    key={index}
+                    className={`h-1.5 w-1.5 rounded-full transition-all ${
+                      wanderPulse === index ? "bg-foreground/65 scale-110" : "bg-foreground/20"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
             <button
               onClick={next}
-              className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors duration-500 underline underline-offset-4"
+              className="rounded-full border border-foreground/25 px-7 py-2 font-mono-light text-xs uppercase tracking-[0.13em] text-foreground/85 hover:bg-foreground hover:text-primary-foreground"
             >
               un altro
             </button>
             {mode === "silenzio" && (
-              <p className="font-mono-light text-xs text-muted-foreground/50">
-                non devi capire. puoi solo restare.
+              <p className="font-mono-light text-xs text-muted-foreground/60">
+                resta finché vuoi.
               </p>
             )}
-            <Link
-              to="/offri"
-              className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors duration-500"
-            >
-              lascia un'offerta
-            </Link>
-            <Link
-              to="/"
-              className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors duration-500"
-            >
-              torna alla soglia
-            </Link>
+            <div className="flex items-center justify-center gap-8">
+              <Link
+                to="/offri"
+                className="font-mono-light text-xs text-muted-foreground/70 hover:text-foreground transition-colors duration-500"
+              >
+                lascia un'offerta
+              </Link>
+              {mode !== "silenzio" && (
+                <Link
+                  to="/"
+                  className="font-mono-light text-xs text-muted-foreground/60 hover:text-foreground transition-colors duration-500"
+                >
+                  torna alla soglia
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </main>

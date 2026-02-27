@@ -8,32 +8,32 @@ const CheCose = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <MinimalHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-          className="max-w-md text-center space-y-6"
+          transition={{ duration: 0.35 }}
+          className="max-w-2xl text-center space-y-7"
         >
-          <h1 className="text-3xl font-light mb-8">Che cos'è</h1>
+          <h1 className="text-4xl md:text-5xl font-light mb-10">Che cos'è</h1>
 
-          <p className="text-base leading-relaxed text-foreground/80">
+          <p className="text-lg leading-relaxed text-foreground/80">
             Cavapendolandia è un luogo semplice.
           </p>
-          <p className="text-base leading-relaxed text-foreground/80">
+          <p className="text-lg leading-relaxed text-foreground/80">
             Qui le persone lasciano un'offerta: un'immagine, un suono, un testo,
             un frammento.
           </p>
-          <p className="text-base leading-relaxed text-foreground/80 italic">
+          <p className="text-xl leading-relaxed text-foreground/80 italic">
             La domanda è una sola: che cosa significa Cavapendoli per te?
           </p>
-          <p className="text-base leading-relaxed text-foreground/80">
+          <p className="text-lg leading-relaxed text-foreground/80">
             Non troverai risposte giuste. Troverai tracce.
           </p>
-          <p className="text-base leading-relaxed text-foreground/80">
+          <p className="text-lg leading-relaxed text-foreground/80">
             Entra, vaga, torna quando vuoi.
           </p>
-          <p className="text-sm leading-relaxed text-muted-foreground mt-4">
+          <p className="text-sm leading-relaxed text-muted-foreground mt-5 font-mono-light">
             Cavapendoli è un nome nato dal lavoro di un artista e psicoanalista.
             Qui diventa eco condivisa.
           </p>

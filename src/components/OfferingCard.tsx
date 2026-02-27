@@ -118,23 +118,25 @@ const OfferingCard = ({
 
   const content = (
     <div className={`text-center ${full ? "" : "cursor-pointer group"}`}>
-      <div className="mb-6">{renderMedia()}</div>
+      <div className={full ? "mb-10" : "mb-6"}>{renderMedia()}</div>
 
       {title && (
-        <h2 className="text-xl md:text-2xl font-light mb-2">{title}</h2>
+        <h2 className={`${full ? "text-2xl md:text-3xl mb-3" : "text-xl md:text-2xl mb-2"} font-light leading-tight`}>
+          {title}
+        </h2>
       )}
       {note && (
-        <p className="text-sm text-muted-foreground max-w-md mx-auto mb-3 italic">
+        <p className={`${full ? "text-base md:text-lg max-w-2xl" : "text-sm max-w-md"} text-muted-foreground mx-auto mb-3 italic leading-relaxed`}>
           {note}
         </p>
       )}
       {curatorialNote && (
-        <p className="font-mono-light text-ritual italic mb-3">
+        <p className="font-mono-light text-ritual italic mb-4 text-xs md:text-sm">
           "{curatorialNote}"
         </p>
       )}
 
-      <div className="flex items-center justify-center gap-3 font-mono-light text-muted-foreground/60">
+      <div className="flex items-center justify-center gap-3 font-mono-light text-muted-foreground/55 text-[0.68rem] uppercase tracking-[0.12em]">
         <span>{authorDisplay}</span>
         <span>·</span>
         <time>{format(new Date(createdAt), "d MMM yyyy", { locale: it })}</time>

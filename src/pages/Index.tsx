@@ -4,48 +4,68 @@ import AbstractShadow from "@/components/AbstractShadow";
 import MinimalFooter from "@/components/MinimalFooter";
 
 const Index = () => {
+  const stagger = {
+    hidden: { opacity: 0, y: 14 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: "easeOut",
+        staggerChildren: 0.16,
+      },
+    },
+  };
+
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
-      {/* Abstract shadow at the edge */}
-      <AbstractShadow className="absolute right-4 top-1/4 w-24 h-72 opacity-30 md:right-16 md:w-32 md:h-96" />
-      
+      <AbstractShadow className="pointer-events-none absolute right-0 top-1/4 h-[22rem] w-28 opacity-45 md:right-6 md:h-[30rem] md:w-40" />
+      <AbstractShadow className="pointer-events-none absolute left-0 bottom-8 h-48 w-20 -scale-x-100 opacity-20 md:h-72 md:w-28" />
+
       <motion.main
-        className="relative z-10 flex flex-col items-center justify-center px-6 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
+        className="ritual-container relative z-10 flex flex-col items-center justify-center py-20 text-center"
+        variants={stagger}
+        initial="hidden"
+        animate="show"
       >
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-[0.15em] uppercase mb-12">
+        <motion.h1
+          variants={stagger}
+          className="text-sm md:text-base font-mono-light tracking-[0.24em] uppercase text-muted-foreground/70 mb-10"
+        >
           CAVAPENDOLANDIA
-        </h1>
+        </motion.h1>
 
-        <p className="text-xl md:text-2xl font-light italic text-foreground/70 max-w-lg mb-16 leading-relaxed">
+        <motion.p
+          variants={stagger}
+          className="max-w-3xl text-4xl md:text-6xl font-light italic text-foreground/82 leading-[1.2] mb-12"
+        >
           Che cosa significa Cavapendoli per te?
-        </p>
+        </motion.p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-6 mb-16">
+        <motion.p
+          variants={stagger}
+          className="font-mono-light text-xs md:text-sm text-muted-foreground/70 mb-12"
+        >
+          Un luogo delicato. Lascia qualcosa che possa stare qui.
+        </motion.p>
+
+        <motion.div
+          variants={stagger}
+          className="flex flex-col sm:flex-row items-center gap-4 md:gap-6"
+        >
           <Link
             to="/entra"
-            className="px-8 py-3 border border-foreground/20 text-sm uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground transition-all duration-700"
+            className="min-w-[14rem] border border-foreground/25 bg-background/60 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground hover:-translate-y-0.5"
           >
             Entra
           </Link>
           <Link
             to="/offri"
-            className="px-8 py-3 border border-foreground/20 text-sm uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground transition-all duration-700"
+            className="min-w-[14rem] border border-foreground/25 bg-background/60 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground hover:-translate-y-0.5"
           >
             Lascia un'offerta
           </Link>
-        </div>
-
-        <motion.p
-          className="font-mono-light text-muted-foreground/40 text-xs"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 2 }}
-        >
-          Qui si lascia qualcosa. E si vaga.
-        </motion.p>
+        </motion.div>
       </motion.main>
 
       <div className="absolute bottom-0 left-0 right-0">
