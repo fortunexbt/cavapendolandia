@@ -4,7 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
+import WorldRouteVeil from "@/components/WorldRouteVeil";
 import Index from "./pages/Index";
 import Entra from "./pages/Entra";
 import OfferingDetail from "./pages/OfferingDetail";
@@ -16,23 +18,41 @@ import AdminLogin from "./pages/AdminLogin";
 import Anticamera from "./pages/admin/Anticamera";
 import AdminOfferingDetail from "./pages/admin/AdminOfferingDetail";
 import NotFound from "./pages/NotFound";
+import { getRouteWorldProfile, isAdminPath } from "@/lib/worldJourney";
 
 const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const showPrelude = !location.pathname.startsWith("/admin");
+  const showPrelude = !isAdminPath(location.pathname);
+  const profile = useMemo(() => getRouteWorldProfile(location.pathname), [location.pathname]);
+  const previousAnchorRef = useRef(profile.anchor);
+  const [routeMotion, setRouteMotion] = useState({ offsetX: 0, offsetY: 12, duration: 0.24 });
+
+  useEffect(() => {
+    const previousAnchor = previousAnchorRef.current;
+    const delta = profile.anchor - previousAnchor;
+    previousAnchorRef.current = profile.anchor;
+    const movement = Math.abs(delta);
+
+    setRouteMotion({
+      offsetX: delta === 0 ? 0 : delta > 0 ? 22 : -22,
+      offsetY: 12 + movement * 24,
+      duration: 0.24 + movement * 0.24,
+    });
+  }, [profile.anchor, location.pathname]);
 
   return (
     <>
       {showPrelude && <CavapendoliPrelude triggerKey={location.pathname} />}
+      {showPrelude && <WorldRouteVeil pathname={location.pathname} />}
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.22, ease: "easeOut" }}
+          initial={{ opacity: 0, x: routeMotion.offsetX, y: routeMotion.offsetY }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          exit={{ opacity: 0, x: routeMotion.offsetX * -0.55, y: routeMotion.offsetY * 0.4 }}
+          transition={{ duration: routeMotion.duration, ease: "easeOut" }}
         >
           <Routes location={location}>
             <Route path="/" element={<Index />} />

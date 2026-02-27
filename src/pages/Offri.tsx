@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,9 @@ import {
   normalizeInstagramHandle,
   registerClientSubmission,
 } from "@/lib/offeringValidation";
+import { resolveJourneyForPage } from "@/lib/worldJourney";
+
+const CavapendoliWorldCanvas = lazy(() => import("@/components/CavapendoliWorldCanvas"));
 
 type MediaType = "image" | "video" | "audio" | "text" | "pdf" | "link";
 type AuthorType = "anonymous" | "name" | "instagram";
@@ -53,6 +56,7 @@ const STEP_LABELS: Record<number, string> = {
 };
 
 const Offri = () => {
+  const pageJourney = resolveJourneyForPage(0.84, 0.5);
   const [step, setStep] = useState(1);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -204,8 +208,12 @@ const Offri = () => {
 
   if (submitted) {
     return (
-      <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-        <MinimalHeader />
+      <div className="relative min-h-screen flex flex-col overflow-hidden bg-background/90">
+        <Suspense fallback={null}>
+          <CavapendoliWorldCanvas mode="silenzio" journey={pageJourney} className="opacity-55" />
+        </Suspense>
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(244,240,233,0.86),rgba(244,240,233,0.93))]" />
+        <MinimalHeader immersive />
         <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
           <motion.div
             initial={{ opacity: 0 }}
@@ -237,8 +245,12 @@ const Offri = () => {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
-      <MinimalHeader />
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background/90">
+      <Suspense fallback={null}>
+        <CavapendoliWorldCanvas mode="silenzio" journey={pageJourney} className="opacity-55" />
+      </Suspense>
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(244,240,233,0.86),rgba(244,240,233,0.93))]" />
+      <MinimalHeader immersive />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         <div className="w-full max-w-xl">
