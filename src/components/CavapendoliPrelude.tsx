@@ -1,24 +1,48 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
+const MOBILE_QUERY = "(max-width: 767px)";
+
 const CavapendoliPrelude = ({ triggerKey }: { triggerKey: string }) => {
   const reduceMotion = useReducedMotion();
-  const isFirstSequence = useRef(true);
+  const hasPlayedDesktopRef = useRef(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia(MOBILE_QUERY).matches
+      : false,
+  );
   const [sequenceKey, setSequenceKey] = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const totalDurationMs = reduceMotion
-      ? 420
-      : isFirstSequence.current
-        ? 2400
-        : 1350;
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia(MOBILE_QUERY);
+    const onChange = () => setIsMobile(media.matches);
+    onChange();
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion || isMobile) {
+      setVisible(false);
+      return;
+    }
+
+    const totalDurationMs = hasPlayedDesktopRef.current ? 950 : 1650;
+
     setSequenceKey((prev) => prev + 1);
     setVisible(true);
     const timeoutId = window.setTimeout(() => setVisible(false), totalDurationMs);
-    isFirstSequence.current = false;
+    hasPlayedDesktopRef.current = true;
     return () => window.clearTimeout(timeoutId);
-  }, [triggerKey, reduceMotion]);
+  }, [triggerKey, reduceMotion, isMobile]);
+
+  if (isMobile) return null;
+
+  const frameClass =
+    "relative h-[min(68vh,40rem)] w-[min(90vw,70rem)] overflow-hidden rounded-[1.6rem]";
+  const imageClass = "absolute inset-0 h-full w-full object-cover";
 
   return (
     <AnimatePresence>
@@ -28,15 +52,15 @@ const CavapendoliPrelude = ({ triggerKey }: { triggerKey: string }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: reduceMotion ? 0.15 : 0.4, ease: "easeOut" }}
-          className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-background/90"
+          transition={{ duration: 0.34, ease: "easeOut" }}
+          className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-background/88"
           aria-hidden
         >
-          <div className="relative h-[min(68vh,40rem)] w-[min(90vw,70rem)] overflow-hidden rounded-[1.6rem]">
+          <div className={frameClass}>
             <motion.img
               src="/cavapendoli/models-bw.png"
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              className={imageClass}
               initial={{
                 opacity: 0.96,
                 scale: 1.01,
@@ -48,27 +72,27 @@ const CavapendoliPrelude = ({ triggerKey }: { triggerKey: string }) => {
                 filter: "grayscale(100%) blur(11px) saturate(45%)",
               }}
               transition={{
-                duration: reduceMotion ? 0.22 : 1.45,
+                duration: 1.25,
                 ease: [0.22, 1, 0.36, 1],
               }}
             />
             <motion.img
               src="/cavapendoli/models-b.png"
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              className={imageClass}
               initial={{
                 opacity: 0,
                 scale: 0.99,
                 filter: "saturate(50%) blur(12px)",
               }}
               animate={{
-                opacity: reduceMotion ? 0.3 : 0.62,
+                opacity: 0.62,
                 scale: 1.03,
                 filter: "saturate(92%) blur(6px)",
               }}
               transition={{
-                delay: reduceMotion ? 0.08 : 0.34,
-                duration: reduceMotion ? 0.22 : 1.5,
+                delay: 0.24,
+                duration: 1.28,
                 ease: [0.22, 1, 0.36, 1],
               }}
             />
@@ -76,7 +100,7 @@ const CavapendoliPrelude = ({ triggerKey }: { triggerKey: string }) => {
               className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,hsl(var(--background)/0.62)_100%)]"
               initial={{ opacity: 0.35 }}
               animate={{ opacity: 0.78 }}
-              transition={{ duration: reduceMotion ? 0.2 : 1.1 }}
+              transition={{ duration: 1.1 }}
             />
           </div>
         </motion.div>
