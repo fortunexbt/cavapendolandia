@@ -1,73 +1,88 @@
-# Welcome to your Lovable project
+# Cavapendolandia
 
-## Project info
+Piattaforma artistica minimale dove chiunque puo lasciare un'offerta su cosa significa "Cavapendoli", con moderazione manuale in Anticamera.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- Vite + React + TypeScript
+- Tailwind + shadcn/ui
+- Supabase (DB, Auth, Storage, RLS)
 
-There are several ways of editing your application.
+## Setup locale
 
-**Use Lovable**
+1. Installa dipendenze:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+```bash
+npm install
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+2. Crea file env:
 
-**Use your preferred IDE**
+```bash
+cp .env.example .env.local
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. Compila le variabili:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
 
-Follow these steps:
+4. Avvia:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Script utili
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run lint
+npm run test
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Supabase: migrazioni richieste
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Le migrazioni sono in `supabase/migrations` e includono:
 
-## What technologies are used for this project?
+- schema offerte + ruoli admin
+- policy RLS per pubblico e moderazione
+- bucket storage privato con lettura pubblica solo per offerte approvate
+- validazioni contenuto (lunghezze, shape media, consenso)
+- hardening anti-abuso MVP
 
-This project is built with:
+Applica le migrazioni dal tuo progetto Supabase (CLI o SQL editor).
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Bootstrap primo admin
 
-## How can I deploy this project?
+1. L'utente deve prima autenticarsi almeno una volta da `/admin` (magic link).
+2. Poi esegui in SQL editor Supabase:
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```sql
+insert into public.user_roles (user_id, role)
+select id, 'admin'
+from auth.users
+where email = 'INSERISCI_EMAIL_ADMIN'
+on conflict (user_id, role) do nothing;
+```
 
-## Can I connect a custom domain to my Lovable project?
+3. Effettua logout/login su `/admin`.
 
-Yes, you can!
+## Seed iniziale archivio
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Per popolare una base curatoriale (8-15 offerte testuali/link), usa:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- `supabase/seeds/seed_offerings.sql`
+
+## Documentazione operativa
+
+- Playbook moderazione: `docs/MODERATION_PLAYBOOK_IT.md`
+- Checklist go/no-go: `docs/GO_NO_GO_CHECKLIST_IT.md`
+- Kit review Antonio: `docs/REVIEW_KIT_ANTONIO_IT.md`
+
+## Note di progetto
+
+- Lingua unica: italiano.
+- Moderazione sempre manuale.
+- Nessuna dinamica social (like/commenti/profili).
+- Nessuna opera originale o derivazione riconoscibile nel visual design.

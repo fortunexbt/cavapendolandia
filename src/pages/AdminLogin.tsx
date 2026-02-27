@@ -23,8 +23,10 @@ const AdminLogin = () => {
       });
       if (error) throw error;
       setSent(true);
-    } catch (err: any) {
-      toast.error(err.message || "Errore durante l'invio.");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Errore durante l'invio.";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

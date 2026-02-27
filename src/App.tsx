@@ -34,6 +34,7 @@ const App = () => (
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/anticamera" element={<Anticamera statusFilter="pending" />} />
           <Route path="/admin/archivio" element={<Anticamera statusFilter="approved" />} />
+          <Route path="/admin/nascosti" element={<Anticamera statusFilter="hidden" />} />
           <Route path="/admin/rifiutati" element={<Anticamera statusFilter="rejected" />} />
           <Route path="/admin/o/:id" element={<AdminOfferingDetail />} />
           <Route path="*" element={<NotFound />} />

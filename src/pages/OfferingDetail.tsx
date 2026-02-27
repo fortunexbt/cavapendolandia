@@ -5,6 +5,7 @@ import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import OfferingCard from "@/components/OfferingCard";
 import { motion } from "framer-motion";
+import { withSignedFileUrl } from "@/lib/offeringMedia";
 
 const OfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,13 +20,13 @@ const OfferingDetail = () => {
         .eq("status", "approved")
         .single();
       if (error) throw error;
-      return data;
+      return withSignedFileUrl(data);
     },
     enabled: !!id,
   });
 
   // Fetch a random offering for "un altro"
-  const { data: randomOffering, refetch: refetchRandom } = useQuery({
+  const { data: randomOffering } = useQuery({
     queryKey: ["random-offering", id],
     queryFn: async () => {
       const { data, error } = await supabase

@@ -7,14 +7,22 @@ const MinimalHeader = () => {
         to="/"
         className="font-mono-light uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-colors duration-700"
       >
-        Cavapendolandia
+        CAVAPENDOLANDIA
       </Link>
-      <Link
-        to="/offri"
-        className="font-mono-light text-muted-foreground hover:text-foreground transition-colors duration-700"
-      >
-        Lascia un'offerta
-      </Link>
+      <nav className="flex items-center gap-4">
+        <Link
+          to="/entra"
+          className="font-mono-light text-muted-foreground/70 hover:text-foreground transition-colors duration-700"
+        >
+          Entra
+        </Link>
+        <Link
+          to="/offri"
+          className="font-mono-light text-muted-foreground hover:text-foreground transition-colors duration-700"
+        >
+          Lascia un'offerta
+        </Link>
+      </nav>
     </header>
   );
 };

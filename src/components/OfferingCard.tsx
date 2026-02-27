@@ -31,6 +31,17 @@ const OfferingCard = ({
   curatorialNote,
   full = false,
 }: OfferingCardProps) => {
+  const linkHost = (() => {
+    if (!linkUrl) return "";
+    try {
+      return new URL(linkUrl).hostname.replace(/^www\./, "");
+    } catch {
+      return "";
+    }
+  })();
+
+  const safeAuthorName = (authorName || "").replace(/^@+/, "");
+
   const renderMedia = () => {
     switch (mediaType) {
       case "image":
@@ -79,14 +90,17 @@ const OfferingCard = ({
         ) : null;
       case "link":
         return (
-          <div className="py-8">
+          <div className="py-8 border border-border/40 px-4 max-w-lg mx-auto">
             <a
               href={linkUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono-light text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors break-all"
+              className="block font-mono-light text-muted-foreground hover:text-foreground transition-colors break-all"
             >
-              {linkUrl} ↗
+              <span className="text-sm">{title || linkHost || "Apri link"}</span>
+              <span className="block text-xs text-muted-foreground/50 mt-2">
+                {linkHost || linkUrl} ↗
+              </span>
             </a>
           </div>
         );
@@ -99,7 +113,7 @@ const OfferingCard = ({
     authorType === "anonymous"
       ? "Anonimo"
       : authorType === "instagram"
-        ? `@${authorName}`
+        ? `@${safeAuthorName || "anonimo"}`
         : authorName || "Anonimo";
 
   const content = (

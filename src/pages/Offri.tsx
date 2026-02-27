@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,6 +10,19 @@ import { Label } from "@/components/ui/label";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import { toast } from "sonner";
+import {
+  MAX_AUTHOR_LENGTH,
+  MAX_FILE_BYTES,
+  MAX_NOTE_LENGTH,
+  MAX_TEXT_LENGTH,
+  MAX_TITLE_LENGTH,
+  canSubmitFromClientRateLimit,
+  getOrCreateSubmissionFingerprint,
+  isValidHttpUrl,
+  isValidInstagramHandle,
+  normalizeInstagramHandle,
+  registerClientSubmission,
+} from "@/lib/offeringValidation";
 
 type MediaType = "image" | "video" | "audio" | "text" | "pdf" | "link";
 type AuthorType = "anonymous" | "name" | "instagram";
@@ -31,7 +44,6 @@ const ACCEPT_MAP: Record<string, string> = {
 };
 
 const Offri = () => {
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -44,8 +56,31 @@ const Offri = () => {
   const [consentRights, setConsentRights] = useState(false);
   const [consentArchive, setConsentArchive] = useState(false);
   const [consentReshare, setConsentReshare] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const normalizedAuthorName = useMemo(() => {
+    if (authorType !== "instagram") return authorName.trim();
+    return normalizeInstagramHandle(authorName);
+  }, [authorName, authorType]);
+
+  const resetForm = () => {
+    setSubmitted(false);
+    setStep(1);
+    setMediaType(null);
+    setFile(null);
+    setTextContent("");
+    setLinkUrl("");
+    setTitle("");
+    setNote("");
+    setAuthorType("anonymous");
+    setAuthorName("");
+    setConsentRights(false);
+    setConsentArchive(false);
+    setConsentReshare(false);
+    setHoneypot("");
+  };
 
   const canProceed = () => {
     switch (step) {
@@ -53,13 +88,31 @@ const Offri = () => {
         return !!mediaType;
       case 2:
         if (!mediaType) return false;
-        if (mediaType === "text") return textContent.trim().length > 0;
-        if (mediaType === "link") return linkUrl.trim().length > 0;
-        return !!file;
+        if (mediaType === "text")
+          return (
+            textContent.trim().length > 0 &&
+            textContent.trim().length <= MAX_TEXT_LENGTH
+          );
+        if (mediaType === "link")
+          return (
+            linkUrl.trim().length > 0 &&
+            linkUrl.length <= 2048 &&
+            isValidHttpUrl(linkUrl)
+          );
+        return !!file && file.size <= MAX_FILE_BYTES;
       case 3:
-        return true; // optional fields
+        return (
+          title.trim().length <= MAX_TITLE_LENGTH &&
+          note.trim().length <= MAX_NOTE_LENGTH
+        );
       case 4:
-        return true;
+        if (authorType === "anonymous") return true;
+        if (!normalizedAuthorName || normalizedAuthorName.length === 0)
+          return false;
+        if (normalizedAuthorName.length > MAX_AUTHOR_LENGTH) return false;
+        return authorType === "instagram"
+          ? isValidInstagramHandle(authorName)
+          : true;
       case 5:
         return consentRights && consentArchive;
       default:
@@ -69,45 +122,70 @@ const Offri = () => {
 
   const handleSubmit = async () => {
     if (!mediaType || submitting) return;
+    if (honeypot.trim()) return;
+    if (mediaType === "link" && !isValidHttpUrl(linkUrl)) {
+      toast.error("Il link deve iniziare con http:// o https://");
+      return;
+    }
+    if (mediaType === "text" && textContent.trim().length > MAX_TEXT_LENGTH) {
+      toast.error("Il testo supera la lunghezza massima consentita.");
+      return;
+    }
+    if (authorType === "instagram" && !isValidInstagramHandle(authorName)) {
+      toast.error("Handle Instagram non valido.");
+      return;
+    }
+
+    if (!canSubmitFromClientRateLimit()) {
+      toast.error("Hai inviato molte offerte. Riprova tra qualche minuto.");
+      return;
+    }
     setSubmitting(true);
 
     try {
-      let fileUrl: string | null = null;
+      let filePath: string | null = null;
+      let fileSize: number | null = null;
 
       // Upload file if needed
       if (file && mediaType !== "text" && mediaType !== "link") {
+        if (file.size > MAX_FILE_BYTES) {
+          toast.error("Il file supera il limite di 100 MB.");
+          setSubmitting(false);
+          return;
+        }
+
         const ext = file.name.split(".").pop();
-        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("offerings")
           .upload(path, file);
         if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from("offerings")
-          .getPublicUrl(path);
-        fileUrl = urlData.publicUrl;
+        filePath = path;
+        fileSize = file.size;
       }
 
       const { error } = await supabase.from("offerings").insert({
         media_type: mediaType,
-        file_url: fileUrl,
-        text_content: mediaType === "text" ? textContent : null,
-        link_url: mediaType === "link" ? linkUrl : null,
+        file_path: filePath,
+        file_size: fileSize,
+        text_content: mediaType === "text" ? textContent.trim() : null,
+        link_url: mediaType === "link" ? linkUrl.trim() : null,
         title: title.trim() || null,
         note: note.trim() || null,
         author_type: authorType,
         author_name:
-          authorType === "anonymous" ? null : authorName.trim() || null,
+          authorType === "anonymous" ? null : normalizedAuthorName || null,
         consent_rights: consentRights,
         consent_archive: consentArchive,
         consent_reshare: consentReshare,
         status: "pending",
+        submission_fingerprint: getOrCreateSubmissionFingerprint(),
       });
 
       if (error) throw error;
+      registerClientSubmission();
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       toast.error("Qualcosa è andato storto. Riprova.");
     } finally {
@@ -141,21 +219,7 @@ const Offri = () => {
                 Entra
               </Link>
               <button
-                onClick={() => {
-                  setSubmitted(false);
-                  setStep(1);
-                  setMediaType(null);
-                  setFile(null);
-                  setTextContent("");
-                  setLinkUrl("");
-                  setTitle("");
-                  setNote("");
-                  setAuthorType("anonymous");
-                  setAuthorName("");
-                  setConsentRights(false);
-                  setConsentArchive(false);
-                  setConsentReshare(false);
-                }}
+                onClick={resetForm}
                 className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
               >
                 Lascia un'altra offerta
@@ -242,7 +306,7 @@ const Offri = () => {
                         onChange={(e) => setTextContent(e.target.value)}
                         placeholder="Scrivi qui..."
                         className="min-h-[160px] bg-transparent border-border/50 focus:border-foreground/30 font-serif text-base resize-none"
-                        maxLength={5000}
+                        maxLength={MAX_TEXT_LENGTH}
                       />
                       <p className="font-mono-light text-muted-foreground/40 text-center">
                         Piccolo va bene.
@@ -256,9 +320,10 @@ const Offri = () => {
                         onChange={(e) => setLinkUrl(e.target.value)}
                         placeholder="https://..."
                         className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light"
+                        maxLength={2048}
                       />
                       <p className="font-mono-light text-muted-foreground/40 text-center">
-                        Non deve spiegare tutto.
+                        Inserisci solo link http/https.
                       </p>
                     </>
                   ) : (
@@ -283,7 +348,7 @@ const Offri = () => {
                         )}
                       </label>
                       <p className="font-mono-light text-muted-foreground/40 text-center">
-                        Piccolo va bene.
+                        Max 100 MB.
                       </p>
                     </>
                   )}
@@ -299,7 +364,7 @@ const Offri = () => {
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Titolo (opzionale)"
                       className="bg-transparent border-border/50 focus:border-foreground/30 font-serif"
-                      maxLength={200}
+                      maxLength={MAX_TITLE_LENGTH}
                     />
                   </div>
                   <div>
@@ -308,7 +373,7 @@ const Offri = () => {
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="Due righe, se vuoi."
                       className="min-h-[80px] bg-transparent border-border/50 focus:border-foreground/30 font-serif resize-none"
-                      maxLength={500}
+                      maxLength={MAX_NOTE_LENGTH}
                     />
                   </div>
                 </div>
@@ -355,7 +420,7 @@ const Offri = () => {
                           : "come vuoi essere chiamato/a"
                       }
                       className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light"
-                      maxLength={100}
+                      maxLength={MAX_AUTHOR_LENGTH + 1}
                     />
                   )}
                 </div>
@@ -430,6 +495,15 @@ const Offri = () => {
                 {submitting ? "..." : "Invia all'Anticamera"}
               </button>
             )}
+          </div>
+
+          <div className="sr-only" aria-hidden>
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
           </div>
         </div>
       </main>

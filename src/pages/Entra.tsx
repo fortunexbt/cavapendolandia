@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,8 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import OfferingCard from "@/components/OfferingCard";
+import { withSignedFileUrls } from "@/lib/offeringMedia";
 
-type Mode = "vaga" | "silenzio";
+type Mode = "vaga" | "nuovi" | "silenzio";
 
 const fetchApproved = async () => {
   const { data, error } = await supabase
@@ -16,60 +17,44 @@ const fetchApproved = async () => {
     .eq("status", "approved")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return data || [];
+  return withSignedFileUrls(data || []);
 };
 
 const Entra = () => {
   const [mode, setMode] = useState<Mode>("vaga");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [shuffled, setShuffled] = useState<number[]>([]);
 
   const { data: offerings = [], isLoading } = useQuery({
     queryKey: ["offerings-approved"],
     queryFn: fetchApproved,
   });
 
-  // Build shuffled order on first render or when offerings change
-  const getShuffledIndex = useCallback(() => {
-    if (offerings.length === 0) return 0;
-    if (shuffled.length !== offerings.length) {
-      const indices = Array.from({ length: offerings.length }, (_, i) => i);
-      for (let i = indices.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [indices[i], indices[j]] = [indices[j], indices[i]];
-      }
-      setShuffled(indices);
-      return indices[0];
-    }
-    return shuffled[currentIndex % shuffled.length];
-  }, [offerings.length, shuffled, currentIndex]);
-
-  const next = () => {
-    if (offerings.length === 0) return;
-    if (shuffled.length === 0) {
-      getShuffledIndex();
-    }
-    setCurrentIndex((prev) => (prev + 1) % offerings.length);
-  };
-
-  const currentOffering =
-    offerings.length > 0
-      ? offerings[
-          mode === "vaga"
-            ? (shuffled[currentIndex % shuffled.length] ?? currentIndex % offerings.length)
-            : currentIndex % offerings.length
-        ]
-      : null;
-
-  // Initialize shuffle
-  if (offerings.length > 0 && shuffled.length === 0) {
+  const shuffledIndices = useMemo(() => {
     const indices = Array.from({ length: offerings.length }, (_, i) => i);
     for (let i = indices.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
     }
-    setShuffled(indices);
-  }
+    return indices;
+  }, [offerings.length]);
+
+  const next = () => {
+    if (offerings.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % offerings.length);
+  };
+
+  const currentOffset =
+    offerings.length > 0 ? currentIndex % offerings.length : 0;
+
+  const currentDisplayIndex =
+    mode === "vaga"
+      ? shuffledIndices[currentOffset] ?? currentOffset
+      : currentOffset;
+
+  const currentOffering =
+    offerings.length > 0
+      ? offerings[currentDisplayIndex]
+      : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -78,7 +63,7 @@ const Entra = () => {
       <main className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
         {/* Mode selector */}
         <nav className="mb-12 flex items-center gap-6">
-          {(["vaga", "silenzio"] as Mode[]).map((m) => (
+          {(["vaga", "nuovi", "silenzio"] as Mode[]).map((m) => (
             <button
               key={m}
               onClick={() => {
@@ -91,7 +76,7 @@ const Entra = () => {
                   : "text-muted-foreground/50 hover:text-muted-foreground"
               }`}
             >
-              {m === "vaga" ? "Vaga" : "Silenzio"}
+              {m === "vaga" ? "Vaga" : m === "nuovi" ? "Nuovi arrivi" : "Silenzio"}
             </button>
           ))}
         </nav>
@@ -142,18 +127,29 @@ const Entra = () => {
         )}
 
         {offerings.length > 0 && (
-          <div className="mt-12 flex items-center gap-8">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-center">
             <button
               onClick={next}
               className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors duration-500 underline underline-offset-4"
             >
               un altro
             </button>
+            {mode === "silenzio" && (
+              <p className="font-mono-light text-xs text-muted-foreground/50">
+                non devi capire. puoi solo restare.
+              </p>
+            )}
             <Link
               to="/offri"
               className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors duration-500"
             >
               lascia un'offerta
+            </Link>
+            <Link
+              to="/"
+              className="font-mono-light text-xs text-muted-foreground/50 hover:text-foreground transition-colors duration-500"
+            >
+              torna alla soglia
             </Link>
           </div>
         )}

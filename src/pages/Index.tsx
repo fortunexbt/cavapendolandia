@@ -16,7 +16,7 @@ const Index = () => {
         transition={{ duration: 1.5, ease: "easeOut" }}
       >
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-[0.15em] uppercase mb-12">
-          Cavapendolandia
+          CAVAPENDOLANDIA
         </h1>
 
         <p className="text-xl md:text-2xl font-light italic text-foreground/70 max-w-lg mb-16 leading-relaxed">

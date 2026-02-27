@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,13 +6,16 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { toast } from "sonner";
+import { withSignedFileUrls } from "@/lib/offeringMedia";
+import { Input } from "@/components/ui/input";
 
-type StatusFilter = "pending" | "approved" | "rejected";
-type MediaFilter = string | "all";
+type StatusFilter = "pending" | "approved" | "rejected" | "hidden";
+type MediaFilter = "all" | "image" | "video" | "audio" | "text" | "pdf" | "link";
 
 const STATUS_TABS: { value: StatusFilter; label: string; path: string }[] = [
   { value: "pending", label: "Anticamera", path: "/admin/anticamera" },
   { value: "approved", label: "Archivio", path: "/admin/archivio" },
+  { value: "hidden", label: "Nascosti", path: "/admin/nascosti" },
   { value: "rejected", label: "Rifiutati", path: "/admin/rifiutati" },
 ];
 
@@ -20,6 +23,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   const { user, isAdmin, loading, signOut } = useAdmin();
   const queryClient = useQueryClient();
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: offerings = [], isLoading } = useQuery({
     queryKey: ["admin-offerings", statusFilter, mediaFilter],
@@ -31,37 +35,38 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
         .order("created_at", { ascending: false });
 
       if (mediaFilter !== "all") {
-        query = query.eq("media_type", mediaFilter as any);
+        query = query.eq("media_type", mediaFilter);
       }
 
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return withSignedFileUrls(data || []);
     },
     enabled: isAdmin,
   });
 
-  const updateStatus = useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: string;
-    }) => {
-      const updates: Record<string, any> = { status };
-      if (status === "approved") updates.approved_at = new Date().toISOString();
-      if (status === "rejected") updates.rejected_at = new Date().toISOString();
-      if (status === "hidden") updates.hidden_at = new Date().toISOString();
+  const filteredOfferings = useMemo(() => {
+    if (!searchTerm.trim()) return offerings;
 
+    const term = searchTerm.trim().toLowerCase();
+    return offerings.filter((offering) =>
+      [offering.title, offering.note, offering.author_name]
+        .filter(Boolean)
+        .some((value) => value?.toLowerCase().includes(term)),
+    );
+  }, [offerings, searchTerm]);
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: StatusFilter }) => {
       const { error } = await supabase
         .from("offerings")
-        .update(updates)
+        .update({ status })
         .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-offerings"] });
+      queryClient.invalidateQueries({ queryKey: ["offerings-approved"] });
       toast.success("Aggiornato");
     },
     onError: () => toast.error("Errore"),
@@ -108,11 +113,11 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
       </header>
 
       {/* Filters */}
-      <div className="px-6 py-3 border-b border-border/30 flex items-center gap-4">
+      <div className="px-6 py-3 border-b border-border/30 flex flex-wrap items-center gap-4">
         {["all", "image", "video", "audio", "text", "pdf", "link"].map((f) => (
           <button
             key={f}
-            onClick={() => setMediaFilter(f)}
+            onClick={() => setMediaFilter(f as MediaFilter)}
             className={`font-mono-light text-xs transition-colors ${
               mediaFilter === f
                 ? "text-foreground"
@@ -122,17 +127,23 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
             {f === "all" ? "Tutti" : f}
           </button>
         ))}
+        <Input
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          placeholder="Cerca titolo, nota o firma"
+          className="max-w-xs bg-transparent border-border/40 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono-light text-xs"
+        />
       </div>
 
       {/* List */}
       <div className="px-6 py-6">
         {isLoading ? (
           <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
-        ) : offerings.length === 0 ? (
+        ) : filteredOfferings.length === 0 ? (
           <p className="font-mono-light text-muted-foreground/40">Nessuna offerta.</p>
         ) : (
           <div className="space-y-3">
-            {offerings.map((o) => (
+            {filteredOfferings.map((o) => (
               <div
                 key={o.id}
                 className="flex items-center justify-between border border-border/30 px-4 py-3 hover:border-border/60 transition-colors"
@@ -172,6 +183,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
                         onClick={() =>
                           updateStatus.mutate({ id: o.id, status: "approved" })
                         }
+                        disabled={updateStatus.isPending}
                         className="font-mono-light text-xs px-3 py-1 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all"
                       >
                         Approva
@@ -180,6 +192,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
                         onClick={() =>
                           updateStatus.mutate({ id: o.id, status: "rejected" })
                         }
+                        disabled={updateStatus.isPending}
                         className="font-mono-light text-xs px-3 py-1 border border-destructive/30 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all"
                       >
                         Rifiuta
@@ -191,9 +204,21 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
                       onClick={() =>
                         updateStatus.mutate({ id: o.id, status: "hidden" })
                       }
+                      disabled={updateStatus.isPending}
                       className="font-mono-light text-xs px-3 py-1 border border-border/30 text-muted-foreground hover:border-foreground/30 transition-all"
                     >
                       Oscura
+                    </button>
+                  )}
+                  {statusFilter === "hidden" && (
+                    <button
+                      onClick={() =>
+                        updateStatus.mutate({ id: o.id, status: "approved" })
+                      }
+                      disabled={updateStatus.isPending}
+                      className="font-mono-light text-xs px-3 py-1 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all"
+                    >
+                      Ripristina
                     </button>
                   )}
                   <Link

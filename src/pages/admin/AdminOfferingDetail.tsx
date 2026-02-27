@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link, Navigate, useNavigate } from "react-router-dom";
+import { useParams, Navigate, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -8,6 +8,9 @@ import OfferingCard from "@/components/OfferingCard";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { toast } from "sonner";
+import { withSignedFileUrl } from "@/lib/offeringMedia";
+
+type OfferingStatus = "pending" | "approved" | "rejected" | "hidden";
 
 const AdminOfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,27 +29,23 @@ const AdminOfferingDetail = () => {
         .single();
       if (error) throw error;
       setCuratorialNote(data.curatorial_note || "");
-      return data;
+      return withSignedFileUrl(data);
     },
     enabled: !!id && isAdmin,
   });
 
   const updateStatus = useMutation({
-    mutationFn: async (status: string) => {
-      const updates: Record<string, any> = { status };
-      if (status === "approved") updates.approved_at = new Date().toISOString();
-      if (status === "rejected") updates.rejected_at = new Date().toISOString();
-      if (status === "hidden") updates.hidden_at = new Date().toISOString();
-
+    mutationFn: async (status: OfferingStatus) => {
       const { error } = await supabase
         .from("offerings")
-        .update(updates)
+        .update({ status })
         .eq("id", id!);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-offerings"] });
       queryClient.invalidateQueries({ queryKey: ["admin-offering", id] });
+      queryClient.invalidateQueries({ queryKey: ["offerings-approved"] });
       toast.success("Stato aggiornato");
     },
   });
@@ -115,8 +114,11 @@ const AdminOfferingDetail = () => {
               <p>Stato: <span className="text-foreground/70">{offering.status}</span></p>
               <p>Tipo: <span className="text-foreground/70">{offering.media_type}</span></p>
               <p>Autore: <span className="text-foreground/70">
-                {offering.author_type === "anonymous" ? "Anonimo" : offering.author_name || "—"}
-                {offering.author_type === "instagram" && ` (@${offering.author_name})`}
+                {offering.author_type === "anonymous"
+                  ? "Anonimo"
+                  : offering.author_type === "instagram"
+                    ? `@${(offering.author_name || "").replace(/^@+/, "")}`
+                    : offering.author_name || "—"}
               </span></p>
               <p>Diritti: {offering.consent_rights ? "✓" : "✗"} · Archivio: {offering.consent_archive ? "✓" : "✗"} · Ricondivisione: {offering.consent_reshare ? "✓" : "✗"}</p>
               <p>Creato: {format(new Date(offering.created_at), "d MMMM yyyy, HH:mm", { locale: it })}</p>
@@ -151,12 +153,14 @@ const AdminOfferingDetail = () => {
                 <>
                   <button
                     onClick={() => updateStatus.mutate("approved")}
+                    disabled={updateStatus.isPending}
                     className="font-mono-light text-xs px-4 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all"
                   >
                     Approva
                   </button>
                   <button
                     onClick={() => updateStatus.mutate("rejected")}
+                    disabled={updateStatus.isPending}
                     className="font-mono-light text-xs px-4 py-2 border border-destructive/30 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all"
                   >
                     Rifiuta
@@ -166,6 +170,7 @@ const AdminOfferingDetail = () => {
               {offering.status === "approved" && (
                 <button
                   onClick={() => updateStatus.mutate("hidden")}
+                  disabled={updateStatus.isPending}
                   className="font-mono-light text-xs px-4 py-2 border border-border/30 hover:border-foreground/30 transition-colors"
                 >
                   Oscura
@@ -174,6 +179,7 @@ const AdminOfferingDetail = () => {
               {(offering.status === "rejected" || offering.status === "hidden") && (
                 <button
                   onClick={() => updateStatus.mutate("approved")}
+                  disabled={updateStatus.isPending}
                   className="font-mono-light text-xs px-4 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all"
                 >
                   Approva
