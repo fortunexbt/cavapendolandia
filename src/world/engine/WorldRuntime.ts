@@ -64,10 +64,6 @@ export class WorldRuntime {
 
   private hoveredHotspotId: string | null = null;
 
-  private signatureRoots: THREE.Group[] = [];
-
-  private artReliefRoots: THREE.Group[] = [];
-
   private seahorseRoots: THREE.Group[] = [];
 
   private colorA = new THREE.Color("#2b3f52");
@@ -94,12 +90,6 @@ export class WorldRuntime {
     this.raycaster = new InteractionRaycaster(this.composed.camera);
 
     this.roomHotspots = Object.values(this.composed.rooms).flatMap((room) => room.hotspots);
-    this.signatureRoots = Object.values(this.composed.rooms)
-      .map((room) => room.group.children.find((child) => !!child.userData.signatureBody) as THREE.Group | undefined)
-      .filter((item): item is THREE.Group => !!item);
-    this.artReliefRoots = Object.values(this.composed.rooms)
-      .map((room) => room.group.userData.artRelief as THREE.Group | undefined)
-      .filter((item): item is THREE.Group => !!item);
     this.seahorseRoots = Object.values(this.composed.rooms)
       .map((room) => room.group.children.find((child) => !!child.userData.seahorseRoot) as THREE.Group | undefined)
       .filter((item): item is THREE.Group => !!item);
@@ -114,7 +104,9 @@ export class WorldRuntime {
         this.setHoveredHotspot(picked?.id ?? null);
       },
       onPointerTap: (pointerNdc) => {
-        void this.audio.resume();
+        void this.audio.resume().then(() => {
+          this.audio.setRoomFocus(this.activeRoom, 1);
+        });
         const picked = this.raycaster?.pick(pointerNdc);
         if (!picked) return;
         this.options.onHotspotAction(picked);
@@ -125,7 +117,6 @@ export class WorldRuntime {
     });
 
     this.audio.setEnabled(options.audioEnabled);
-    this.audio.init();
     this.audio.setRoomFocus(options.initialRoom, 1);
     this.applyRoomAmbience(options.initialRoom, 1);
 
@@ -177,26 +168,26 @@ export class WorldRuntime {
     anchorGroup.position.set(0, 0.3, -0.8);
     archivioRoom.group.add(anchorGroup);
 
-    const slots = 12;
+    const slots = 8;
     for (let i = 0; i < slots; i += 1) {
       const angle = (i / slots) * Math.PI * 2;
-      const radius = 2.4 + (i % 3) * 0.38;
+      const radius = 2.1 + (i % 2) * 0.28;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius * 0.55;
 
       const shell = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.28, 0),
+        new THREE.SphereGeometry(0.22, 10, 10),
         new THREE.MeshStandardMaterial({
-          color: "#4bbfcb",
-          roughness: 0.35,
-          metalness: 0.26,
-          emissive: new THREE.Color("#123141"),
-          emissiveIntensity: 0.18,
+          color: "#88b8c2",
+          roughness: 0.42,
+          metalness: 0.14,
+          emissive: new THREE.Color("#253e4d"),
+          emissiveIntensity: 0.1,
           transparent: true,
-          opacity: 0.74,
+          opacity: 0.82,
         }),
       );
-      shell.position.set(x, 0.9 + Math.sin(i * 1.1) * 0.2, z);
+      shell.position.set(x, 0.86 + Math.sin(i * 1.1) * 0.1, z);
       anchorGroup.add(shell);
 
       const hit = new THREE.Mesh(
@@ -400,14 +391,14 @@ export class WorldRuntime {
       this.setRoomVisibility(cameraState.transition.from, cameraState.transition.to);
       this.lockInteractiveHotspots();
     } else {
-      this.setRoomVisibility(cameraState.currentRoom, null);
+        this.setRoomVisibility(cameraState.currentRoom, null);
       if (this.interactiveRoom !== cameraState.currentRoom || this.interactionsLocked) {
         this.setInteractiveHotspotsForRoom(cameraState.currentRoom);
       }
     }
 
     const ambienceRoom = cameraState.transition?.to ?? this.activeRoom;
-    this.applyRoomAmbience(ambienceRoom, this.cameraDirector.isTransitioning() ? 0.05 : 0.09);
+    this.applyRoomAmbience(ambienceRoom, this.cameraDirector.isTransitioning() ? 0.03 : 0.05);
     if (!this.cameraDirector.isTransitioning() && cameraState.currentRoom !== this.settledRoom) {
       this.settledRoom = cameraState.currentRoom;
       this.options.onRoomSettled(this.settledRoom);
@@ -420,104 +411,30 @@ export class WorldRuntime {
       const portalMesh = (hotspot.mesh as THREE.Mesh).userData.portalMesh as THREE.Mesh | undefined;
       const portalCore = (hotspot.mesh as THREE.Mesh).userData.portalCore as THREE.Mesh | undefined;
       const portalLabel = (hotspot.mesh as THREE.Mesh).userData.portalLabel as THREE.Sprite | undefined;
-      const portalBeam = (hotspot.mesh as THREE.Mesh).userData.portalBeam as THREE.Mesh | undefined;
-      const portalGlyph = (hotspot.mesh as THREE.Mesh).userData.portalGlyph as THREE.Group | undefined;
       const hovered = hotspot.id === this.hoveredHotspotId;
       if (shell) {
-        shell.rotation.x += 0.0045 + (index % 3) * 0.0011;
-        shell.rotation.y += 0.006 + (index % 4) * 0.001;
-        shell.scale.setScalar(hovered ? 1.14 : 1);
+        shell.rotation.x += 0.0014 + (index % 3) * 0.0003;
+        shell.rotation.y += 0.0018 + (index % 4) * 0.0003;
+        shell.scale.setScalar(hovered ? 1.07 : 1);
       }
       if (portalMesh) {
-        portalMesh.rotation.z += 0.009 + (index % 5) * 0.001;
-        portalMesh.scale.setScalar(hovered ? 1.18 : 1);
+        portalMesh.rotation.z += 0.002 + (index % 5) * 0.0002;
+        portalMesh.scale.setScalar(hovered ? 1.08 : 1);
         const material = portalMesh.material as THREE.MeshStandardMaterial;
-        material.emissiveIntensity = hovered ? 0.64 : 0.22;
+        material.emissiveIntensity = hovered ? 0.22 : 0.08;
       }
       if (portalCore) {
-        const pulse = 1 + Math.sin(elapsed * 2.6 + index * 0.8) * 0.08;
-        portalCore.scale.setScalar(hovered ? pulse * 1.36 : pulse);
+        const pulse = 1 + Math.sin(elapsed * 1.2 + index * 0.5) * 0.04;
+        portalCore.scale.setScalar(hovered ? pulse * 1.12 : pulse);
         const material = portalCore.material as THREE.MeshStandardMaterial;
-        material.emissiveIntensity = hovered ? 1.0 : 0.45;
-      }
-      if (portalBeam) {
-        const beamPulse = 0.6 + Math.sin(elapsed * 1.7 + index * 0.7) * 0.22;
-        portalBeam.scale.set(hovered ? 1.2 : 1, hovered ? 1.18 : 1, hovered ? 1.2 : 1);
-        portalBeam.position.y = (hotspot.mesh.position.y ?? 0) + 0.74 + beamPulse * 0.1;
-        const material = portalBeam.material as THREE.MeshBasicMaterial;
-        material.opacity = hovered ? 0.3 : 0.14 + beamPulse * 0.04;
-      }
-      if (portalGlyph) {
-        portalGlyph.rotation.y += hovered ? 0.04 : 0.016;
-        portalGlyph.rotation.x = Math.sin(elapsed * 0.45 + index) * 0.08;
-        portalGlyph.children.forEach((child, glyphIndex) => {
-          const phase = Number(child.userData.phase || 0);
-          const offsetY = Number(child.userData.offsetY || 0.05);
-          child.position.y = offsetY + Math.sin(elapsed * 2.5 + phase + glyphIndex * 0.3) * 0.04;
-        });
+        material.emissiveIntensity = hovered ? 0.35 : 0.14;
       }
       if (portalLabel && this.composed) {
         portalLabel.getWorldPosition(this.tmpVec);
         const distance = this.composed.camera.position.distanceTo(this.tmpVec);
         const material = portalLabel.material as THREE.SpriteMaterial;
-        material.opacity = THREE.MathUtils.clamp((distance - 1.4) / 2.4, 0, 0.92);
-      }
-    });
-
-    this.signatureRoots.forEach((root, index) => {
-      const body = root.userData.signatureBody as THREE.Group | undefined;
-      const seed = Number(root.userData.seed || 1);
-      const floorRing = root.userData.floorRing as THREE.Mesh | undefined;
-      const overheadHalo = root.userData.overheadHalo as THREE.Mesh | undefined;
-      root.rotation.y += 0.0026 + (index % 4) * 0.0005;
-      root.position.y = -0.2 + Math.sin(elapsed * (0.9 + index * 0.04) + seed) * 0.08;
-      if (floorRing) {
-        floorRing.rotation.z += 0.0028 + (index % 3) * 0.0005;
-        const mat = floorRing.material as THREE.MeshStandardMaterial;
-        mat.emissiveIntensity = 0.22 + Math.sin(elapsed * 1.4 + seed) * 0.08;
-      }
-      if (overheadHalo) {
-        overheadHalo.rotation.z -= 0.0017 + (index % 2) * 0.0004;
-        const mat = overheadHalo.material as THREE.MeshStandardMaterial;
-        mat.emissiveIntensity = 0.24 + Math.sin(elapsed * 1.15 + seed * 0.6) * 0.06;
-      }
-      if (!body) return;
-      const orbs = body.userData.orbs as THREE.Group | undefined;
-      body.rotation.z = Math.sin(elapsed * 0.6 + seed) * 0.06;
-      body.rotation.x = Math.sin(elapsed * 0.5 + seed * 0.4) * 0.04;
-      if (orbs) {
-        orbs.rotation.y += 0.01 + (index % 4) * 0.0008;
-        orbs.children.forEach((child, orbIndex) => {
-          child.position.y += Math.sin(elapsed * 1.6 + orbIndex * 0.5) * 0.0014;
-        });
-      }
-    });
-
-    this.artReliefRoots.forEach((relief, index) => {
-      if (!relief.visible) return;
-      const seed = Number(relief.userData.seed ?? index + 1);
-      const basePosition = relief.userData.basePosition as THREE.Vector3 | undefined;
-      const baseRotation = relief.userData.baseRotation as THREE.Euler | undefined;
-      const baseScale = Number(relief.userData.baseScale ?? 1);
-      const y = basePosition?.y ?? relief.position.y;
-      const rotX = baseRotation?.x ?? relief.rotation.x;
-      const rotY = baseRotation?.y ?? relief.rotation.y;
-      relief.position.y = y + Math.sin(elapsed * 0.62 + seed) * 0.06;
-      relief.rotation.x = rotX + Math.sin(elapsed * 0.37 + seed * 0.6) * 0.035;
-      relief.rotation.y = rotY + Math.sin(elapsed * 0.28 + seed * 0.4) * 0.08;
-      const scalar = baseScale + Math.sin(elapsed * 0.95 + seed) * 0.015;
-      relief.scale.setScalar(scalar);
-
-      const halo = relief.userData.halo as THREE.Mesh | undefined;
-      if (halo) {
-        const material = halo.material as THREE.MeshBasicMaterial;
-        material.opacity = 0.08 + Math.sin(elapsed * 1.2 + seed * 0.7) * 0.035;
-      }
-
-      const instanced = relief.userData.instanced as THREE.InstancedMesh | undefined;
-      if (instanced) {
-        const material = instanced.material as THREE.MeshStandardMaterial;
-        material.emissiveIntensity = 0.12 + Math.sin(elapsed * 1.05 + seed * 0.55) * 0.05;
+        const scaled = THREE.MathUtils.clamp((distance - 1.6) / 2.4, 0, 1);
+        material.opacity = 0.26 + scaled * 0.56;
       }
     });
 
@@ -527,16 +444,16 @@ export class WorldRuntime {
       const baseY = basePosition?.y ?? seahorse.position.y;
       const baseRotationY = Number(seahorse.userData.baseRotationY ?? seahorse.rotation.y);
       const seed = Number(seahorse.userData.seed ?? index + 1);
-      seahorse.position.y = baseY + Math.sin(elapsed * 0.9 + seed) * 0.12;
-      seahorse.rotation.y = baseRotationY + Math.sin(elapsed * 0.45 + seed) * 0.16;
-      seahorse.rotation.z = Math.sin(elapsed * 0.7 + seed * 0.6) * 0.05;
+      seahorse.position.y = baseY + Math.sin(elapsed * 0.42 + seed) * 0.05;
+      seahorse.rotation.y = baseRotationY + Math.sin(elapsed * 0.22 + seed) * 0.08;
+      seahorse.rotation.z = Math.sin(elapsed * 0.34 + seed * 0.6) * 0.025;
 
       const orbs = seahorse.userData.orbs as THREE.Group | undefined;
       if (!orbs) return;
-      orbs.rotation.y += 0.012;
+      orbs.rotation.y += 0.0034;
       orbs.children.forEach((orb, orbIndex) => {
         const phase = Number(orb.userData.phase || 0);
-        orb.position.y = 0.42 + Math.sin(elapsed * 1.9 + phase + orbIndex * 0.3) * 0.34;
+        orb.position.y = 0.38 + Math.sin(elapsed * 0.9 + phase + orbIndex * 0.2) * 0.1;
       });
     });
 
@@ -545,7 +462,7 @@ export class WorldRuntime {
         if (!room.group.visible) return;
         const particles = room.group.userData.ambienceParticles as THREE.Group | undefined;
         if (!particles) return;
-        particles.rotation.y += 0.0008 + (roomIndex % 3) * 0.00025;
+        particles.rotation.y += 0.00025 + (roomIndex % 3) * 0.00008;
         particles.children.forEach((particle, particleIndex) => {
           const amp = Number(particle.userData.amp || 0.05);
           const phase = Number(particle.userData.phase || 0);
@@ -554,8 +471,8 @@ export class WorldRuntime {
           const by = Number(particle.userData.baseY || 0);
           const bz = Number(particle.userData.baseZ || 0);
           particle.position.x = bx + Math.sin(elapsed * speed + phase) * amp;
-          particle.position.y = by + Math.cos(elapsed * (speed * 0.7) + phase) * amp * 0.9;
-          particle.position.z = bz + Math.sin(elapsed * (speed * 0.55) + phase + particleIndex * 0.2) * amp * 0.8;
+          particle.position.y = by + Math.cos(elapsed * (speed * 0.5) + phase) * amp * 0.5;
+          particle.position.z = bz + Math.sin(elapsed * (speed * 0.4) + phase + particleIndex * 0.2) * amp * 0.4;
         });
       });
     }

@@ -190,21 +190,21 @@ export const OffriOverlay = ({ open, state, onStateChange, onClose, onSubmitted 
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 18, scale: 0.98 }}
           transition={{ duration: 0.24, ease: "easeOut" }}
-          className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 mx-auto w-[min(95vw,48rem)] rounded-t-3xl border border-white/25 bg-[#05080dcc]/95 p-5 shadow-[0_-18px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl md:p-8"
+          className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 mx-auto w-[min(95vw,48rem)] max-h-[min(88vh,46rem)] overflow-y-auto rounded-t-3xl border border-white/25 bg-[#05080dcc]/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-18px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl md:p-8"
         >
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.18em] text-[#bdd3ea]">
                 Deposito nel luogo
               </p>
-              <h2 className="mt-2 text-3xl italic text-[#fbf2df]">Lascia un'offerta</h2>
+              <h2 className="mt-2 text-[1.95rem] italic text-[#fbf2df] md:text-3xl">Lascia un'offerta</h2>
               <p className="mt-1 font-mono-light text-[0.66rem] uppercase tracking-[0.15em] text-[#9fb5c8]">
                 Step {step}/5 - {STEP_LABELS[step]}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="rounded-full border border-white/25 px-3 py-1 font-mono-light text-xs uppercase tracking-[0.14em] text-[#d7e7f3] hover:bg-white/10"
+              className="min-h-10 rounded-full border border-white/25 px-3 py-1.5 font-mono-light text-xs uppercase tracking-[0.14em] text-[#d7e7f3] hover:bg-white/10"
             >
               Chiudi
             </button>
@@ -240,7 +240,7 @@ export const OffriOverlay = ({ open, state, onStateChange, onClose, onSubmitted 
                     {Object.entries(MEDIA_LABELS).map(([value, label]) => (
                       <label
                         key={value}
-                        className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/18 bg-black/25 p-3 hover:border-white/35"
+                        className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/18 bg-black/25 p-3 hover:border-white/35"
                       >
                         <RadioGroupItem value={value} id={`media-${value}`} />
                         <span className="font-mono-light text-xs uppercase tracking-[0.13em] text-[#dfebf6]">
@@ -319,7 +319,7 @@ export const OffriOverlay = ({ open, state, onStateChange, onClose, onSubmitted 
                       ].map(([value, label]) => (
                         <label
                           key={value}
-                          className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/18 bg-black/25 p-3 hover:border-white/35"
+                          className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/18 bg-black/25 p-3 hover:border-white/35"
                         >
                           <RadioGroupItem value={value} id={`author-${value}`} />
                           <span className="font-mono-light text-xs uppercase tracking-[0.13em] text-[#dfebf6]">
@@ -369,7 +369,7 @@ export const OffriOverlay = ({ open, state, onStateChange, onClose, onSubmitted 
                 <button
                   onClick={() => setStep((Math.max(1, step - 1) as 1 | 2 | 3 | 4 | 5))}
                   disabled={step === 1 || state.submitting}
-                  className="rounded-full border border-white/24 px-4 py-2 font-mono-light text-xs uppercase tracking-[0.14em] text-[#d4e3f0] disabled:opacity-40"
+                  className="min-h-11 rounded-full border border-white/24 px-4 py-2 font-mono-light text-xs uppercase tracking-[0.14em] text-[#d4e3f0] disabled:opacity-40"
                 >
                   Indietro
                 </button>
@@ -377,7 +377,7 @@ export const OffriOverlay = ({ open, state, onStateChange, onClose, onSubmitted 
                   <button
                     onClick={() => setStep((Math.min(5, step + 1) as 1 | 2 | 3 | 4 | 5))}
                     disabled={!canProceed() || state.submitting}
-                    className="rounded-full border border-[#f0c56f] px-5 py-2 font-mono-light text-xs uppercase tracking-[0.14em] text-[#ffefce] disabled:opacity-40"
+                    className="min-h-11 rounded-full border border-[#f0c56f] px-5 py-2 font-mono-light text-xs uppercase tracking-[0.14em] text-[#ffefce] disabled:opacity-40"
                   >
                     Avanti
                   </button>
@@ -385,7 +385,7 @@ export const OffriOverlay = ({ open, state, onStateChange, onClose, onSubmitted 
                   <button
                     onClick={handleSubmit}
                     disabled={!canProceed() || state.submitting}
-                    className="rounded-full border border-[#53c0ca] px-5 py-2 font-mono-light text-xs uppercase tracking-[0.14em] text-[#d4fbff] disabled:opacity-40"
+                    className="min-h-11 rounded-full border border-[#53c0ca] px-5 py-2 font-mono-light text-xs uppercase tracking-[0.14em] text-[#d4fbff] disabled:opacity-40"
                   >
                     {state.submitting ? "Invio..." : "Invia"}
                   </button>

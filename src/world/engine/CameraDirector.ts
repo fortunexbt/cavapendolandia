@@ -38,8 +38,8 @@ export class CameraDirector {
   }
 
   setLookOffset(x: number, y: number) {
-    this.lookOffset.x = THREE.MathUtils.clamp(x, -0.5, 0.5);
-    this.lookOffset.y = THREE.MathUtils.clamp(y, -0.35, 0.35);
+    this.lookOffset.x = THREE.MathUtils.clamp(x, -0.34, 0.34);
+    this.lookOffset.y = THREE.MathUtils.clamp(y, -0.24, 0.24);
   }
 
   travelTo(nextRoom: RoomId, durationMs?: number) {
@@ -60,21 +60,21 @@ export class CameraDirector {
     const controlA = from
       .clone()
       .add(dir.clone().multiplyScalar(distance * rail.fromBias))
-      .add(side.clone().multiplyScalar(rail.sideA))
-      .add(new THREE.Vector3(0, rail.liftA, 0));
+      .add(side.clone().multiplyScalar(rail.sideA * 0.62))
+      .add(new THREE.Vector3(0, rail.liftA * 0.72, 0));
 
     const controlB = to
       .clone()
       .add(dir.clone().multiplyScalar(-distance * rail.toBias))
-      .add(side.clone().multiplyScalar(rail.sideB))
-      .add(new THREE.Vector3(0, rail.liftB, 0));
+      .add(side.clone().multiplyScalar(rail.sideB * 0.62))
+      .add(new THREE.Vector3(0, rail.liftB * 0.72, 0));
 
     const resolvedDuration =
       durationMs ??
       THREE.MathUtils.clamp(
-        Math.round((620 + distance * 44) * rail.durationScale),
-        760,
-        1520,
+        Math.round((860 + distance * 58) * rail.durationScale),
+        980,
+        1900,
       );
 
     this.transition = {
@@ -116,10 +116,10 @@ export class CameraDirector {
       const eased = easeInOutCubic(progress);
       const pos = this.transition.curve.getPoint(eased);
       const look = this.transition.lookFrom.clone().lerp(this.transition.lookTo, eased);
-      const bank = Math.sin(progress * Math.PI) * this.transition.bank;
+      const bank = Math.sin(progress * Math.PI) * this.transition.bank * 0.55;
       this.camera.up.set(Math.sin(bank), Math.cos(bank), 0).normalize();
-      look.x += this.lookOffset.x * 0.45;
-      look.y += this.lookOffset.y * 0.3;
+      look.x += this.lookOffset.x * 0.3;
+      look.y += this.lookOffset.y * 0.2;
       this.camera.position.copy(pos);
       this.camera.lookAt(look);
       if (progress >= 1) {
@@ -131,11 +131,11 @@ export class CameraDirector {
 
     const anchor = ROOM_GRAPH[this.currentRoom].anchor;
     const targetPos = new THREE.Vector3(...anchor.camera);
-    this.camera.position.lerp(targetPos, 0.04);
-    this.camera.up.lerp(new THREE.Vector3(0, 1, 0), 0.08);
+    this.camera.position.lerp(targetPos, 0.025);
+    this.camera.up.lerp(new THREE.Vector3(0, 1, 0), 0.05);
     this.camera.lookAt(
-      anchor.lookAt[0] + this.lookOffset.x * 0.55,
-      anchor.lookAt[1] + this.lookOffset.y * 0.35,
+      anchor.lookAt[0] + this.lookOffset.x * 0.35,
+      anchor.lookAt[1] + this.lookOffset.y * 0.22,
       anchor.lookAt[2],
     );
   }

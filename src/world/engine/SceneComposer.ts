@@ -8,7 +8,6 @@ import { buildOfferingDetailRoom } from "@/world/rooms/offeringDetailRoom";
 import { buildOffriRoom } from "@/world/rooms/offriRoom";
 import { buildRegoleRoom } from "@/world/rooms/regoleRoom";
 import { buildRimozioneRoom } from "@/world/rooms/rimozioneRoom";
-import { ART_SOURCES } from "@/world/rooms/artSources";
 import type { RoomId, WorldRoomRuntime } from "@/world/types";
 
 export type SceneComposerOutput = {
@@ -35,47 +34,78 @@ const createRenderer = (container: HTMLElement) => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.34;
-  renderer.setClearColor(0x08101a, 1);
+  renderer.toneMappingExposure = 1.42;
+  renderer.setClearColor(0x0d1520, 1);
   renderer.domElement.className = "h-full w-full";
   container.appendChild(renderer.domElement);
   return renderer;
 };
 
 const createRoomTextures = () => {
-  const loader = new THREE.TextureLoader();
-  const map: Record<string, THREE.Texture | null> = {
-    a: null,
-    b: null,
-    bw: null,
-  };
-  const loaded: THREE.Texture[] = [];
+  const createProceduralMuralTexture = (mode: "a" | "b" | "bw") => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 768;
+    canvas.height = 384;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
 
-  const assignTexture = (key: keyof typeof map, url: string) => {
-    loader.load(
-      url,
-      (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.generateMipmaps = false;
-        texture.needsUpdate = true;
-        map[key] = texture;
-        loaded.push(texture);
-      },
-      undefined,
-      () => {
-        map[key] = null;
-      },
-    );
+    const palettes: Record<"a" | "b" | "bw", string[]> = {
+      a: ["#66c7d0", "#e79063", "#efc267", "#84aedd", "#f3f0e5"],
+      b: ["#65c3cc", "#ef8b61", "#f4d078", "#7ca9dd", "#dff1f3"],
+      bw: ["#6f7b85", "#89949d", "#aeb6bc", "#d3d8dc", "#f0f2f4"],
+    };
+
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, "rgba(240,244,246,0.08)");
+    gradient.addColorStop(1, "rgba(8,12,18,0.08)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const colors = palettes[mode];
+    for (let i = 0; i < 14; i += 1) {
+      const color = colors[i % colors.length];
+      const x = 36 + ((i * 59) % (canvas.width - 72));
+      const y = 32 + ((i * 41) % (canvas.height - 64));
+      const w = 34 + (i % 4) * 28;
+      const h = 18 + (i % 3) * 22;
+      ctx.fillStyle = `${color}88`;
+      ctx.beginPath();
+      ctx.ellipse(x, y, w, h, (i % 5) * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = `${color}d4`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(x - w * 0.8, y - h * 0.4);
+      ctx.bezierCurveTo(x - w * 0.3, y - h * 1.2, x + w * 0.2, y + h * 1.1, x + w * 0.9, y + h * 0.35);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = "rgba(240,245,248,0.55)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(14, 14, canvas.width - 28, canvas.height - 28);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    texture.needsUpdate = true;
+    return texture;
   };
 
-  assignTexture("a", ART_SOURCES.colorA);
-  assignTexture("b", ART_SOURCES.colorB);
-  assignTexture("bw", ART_SOURCES.bw);
+  const textureA = createProceduralMuralTexture("a");
+  const textureB = createProceduralMuralTexture("b");
+  const textureBw = createProceduralMuralTexture("bw");
+
+  const loaded = [textureA, textureB, textureBw].filter((item): item is THREE.Texture => !!item);
 
   return {
-    map,
+    map: {
+      a: textureA,
+      b: textureB,
+      bw: textureBw,
+    },
     loaded,
   };
 };
@@ -90,33 +120,29 @@ export const composeScene = (container: HTMLElement): SceneComposerOutput => {
     160,
   );
 
-  const fog = new THREE.FogExp2("#141d28", 0.03);
+  const fog = new THREE.FogExp2("#1d2a39", 0.017);
   scene.fog = fog;
 
   const worldRoot = new THREE.Group();
   scene.add(worldRoot);
 
-  const ambient = new THREE.AmbientLight("#a7cee8", 0.84);
+  const ambient = new THREE.AmbientLight("#c2d2de", 0.78);
   worldRoot.add(ambient);
 
-  const hemi = new THREE.HemisphereLight("#a4cce4", "#1f2833", 1.36);
+  const hemi = new THREE.HemisphereLight("#bed6e4", "#26313c", 1.1);
   worldRoot.add(hemi);
 
-  const key = new THREE.DirectionalLight("#f0cb7d", 1.62);
+  const key = new THREE.DirectionalLight("#ecd2a4", 1.22);
   key.position.set(6, 8, 4);
   worldRoot.add(key);
 
-  const fill = new THREE.PointLight("#4fc2cf", 1.24, 60, 1.5);
-  fill.position.set(-8, 4, 6);
+  const fill = new THREE.PointLight("#8bc7cf", 0.64, 42, 1.5);
+  fill.position.set(-7, 3.2, 6);
   worldRoot.add(fill);
 
-  const rim = new THREE.PointLight("#ee7b5b", 0.92, 55, 1.6);
-  rim.position.set(8, 4, -9);
-  worldRoot.add(rim);
-
   const gradientUniforms = {
-    uColorA: { value: new THREE.Color("#2c4056") },
-    uColorB: { value: new THREE.Color("#e0b064") },
+    uColorA: { value: new THREE.Color("#30485f") },
+    uColorB: { value: new THREE.Color("#d9b98e") },
     uTime: { value: 0 },
   };
 
@@ -133,77 +159,52 @@ export const composeScene = (container: HTMLElement): SceneComposerOutput => {
   worldRoot.add(gradientDome);
 
   const corridor = new THREE.Mesh(
-    new THREE.PlaneGeometry(64, 30),
+    new THREE.PlaneGeometry(62, 24),
     new THREE.MeshStandardMaterial({
-      color: "#112435",
-      roughness: 0.84,
-      metalness: 0.15,
+      color: "#1a2532",
+      roughness: 0.9,
+      metalness: 0.06,
       transparent: true,
-      opacity: 0.96,
+      opacity: 0.95,
     }),
   );
   corridor.rotation.x = -Math.PI / 2;
   corridor.position.set(3.5, -1.02, -6.3);
   worldRoot.add(corridor);
 
-  const worldLinks = new THREE.Group();
-  worldRoot.add(worldLinks);
-  const linkMaterial = new THREE.MeshStandardMaterial({
-    color: "#75d8df",
-    roughness: 0.22,
-    metalness: 0.2,
-    emissive: new THREE.Color("#1c7180"),
-    emissiveIntensity: 0.45,
-    transparent: true,
-    opacity: 0.62,
-  });
-  const made = new Set<string>();
+  const silentMarkers = new THREE.Group();
+  worldRoot.add(silentMarkers);
   Object.values(ROOM_GRAPH).forEach((room) => {
-    const from = new THREE.Vector3(...room.anchor.roomCenter).setY(-0.82);
-    room.portals.forEach((portal) => {
-      const keyId = [room.id, portal.to].sort().join("::");
-      if (made.has(keyId)) return;
-      made.add(keyId);
-      const target = ROOM_GRAPH[portal.to];
-      const to = new THREE.Vector3(...target.anchor.roomCenter).setY(-0.82);
-      const dist = from.distanceTo(to);
-      const edge = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, dist, 12), linkMaterial);
-      edge.position.copy(from.clone().add(to).multiplyScalar(0.5));
-      edge.lookAt(to);
-      edge.rotateX(Math.PI / 2);
-      worldLinks.add(edge);
-
-      const node = new THREE.Mesh(
-        new THREE.SphereGeometry(0.17, 14, 14),
-        new THREE.MeshStandardMaterial({
-          color: "#f0cf78",
-          roughness: 0.3,
-          metalness: 0.23,
-          emissive: new THREE.Color("#5d4318"),
-          emissiveIntensity: 0.32,
-        }),
-      );
-      node.position.copy(from);
-      worldLinks.add(node);
-    });
+    const marker = new THREE.Mesh(
+      new THREE.SphereGeometry(0.085, 10, 10),
+      new THREE.MeshStandardMaterial({
+        color: "#d1bb91",
+        roughness: 0.44,
+        metalness: 0.1,
+        emissive: new THREE.Color("#3a3224"),
+        emissiveIntensity: 0.16,
+      }),
+    );
+    marker.position.set(room.anchor.roomCenter[0], -0.86, room.anchor.roomCenter[2]);
+    silentMarkers.add(marker);
   });
 
-  const starfield = new THREE.Group();
-  worldRoot.add(starfield);
-  const starMaterial = new THREE.MeshBasicMaterial({
-    color: "#a0d7ea",
+  const distantDust = new THREE.Group();
+  worldRoot.add(distantDust);
+  const dustMaterial = new THREE.MeshBasicMaterial({
+    color: "#a8c3ce",
     transparent: true,
-    opacity: 0.65,
+    opacity: 0.28,
     depthWrite: false,
   });
-  for (let i = 0; i < 120; i += 1) {
-    const star = new THREE.Mesh(new THREE.SphereGeometry(0.02 + (i % 4) * 0.01, 8, 8), starMaterial);
-    star.position.set(
-      -26 + (i % 20) * 2.6 + ((i * 13) % 5) * 0.2,
-      1.6 + ((i * 7) % 10) * 0.45,
-      -22 + Math.floor(i / 20) * 4.8 + ((i * 17) % 6) * 0.15,
+  for (let i = 0; i < 14; i += 1) {
+    const dust = new THREE.Mesh(new THREE.SphereGeometry(0.016 + (i % 3) * 0.006, 8, 8), dustMaterial);
+    dust.position.set(
+      -24 + (i % 13) * 4,
+      2 + (i % 6) * 0.7,
+      -28 + Math.floor(i / 13) * 9,
     );
-    starfield.add(star);
+    distantDust.add(dust);
   }
 
   const { map, loaded } = createRoomTextures();

@@ -14,9 +14,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "rimozione_room", label: "Rimozione", splineId: "atrium-rimozione" },
     ],
     ambience: {
-      colorA: "#1f3040",
-      colorB: "#edb86a",
-      fogDensity: 0.028,
+      colorA: "#2b3c4d",
+      colorB: "#d1b38b",
+      fogDensity: 0.02,
       audioStem: "atrium",
     },
     anchor: {
@@ -35,9 +35,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "archivio_room", label: "Entra", splineId: "manifesto-archivio" },
     ],
     ambience: {
-      colorA: "#273b4d",
-      colorB: "#f3c170",
-      fogDensity: 0.024,
+      colorA: "#2d3c4a",
+      colorB: "#d4b890",
+      fogDensity: 0.019,
       audioStem: "manifesto",
     },
     anchor: {
@@ -56,9 +56,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "offri_room", label: "Offri", splineId: "regole-offri" },
     ],
     ambience: {
-      colorA: "#283146",
-      colorB: "#89a9d8",
-      fogDensity: 0.033,
+      colorA: "#2d3b4a",
+      colorB: "#cab49a",
+      fogDensity: 0.02,
       audioStem: "regole",
     },
     anchor: {
@@ -77,9 +77,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "regole_room", label: "Regole", splineId: "rimozione-regole" },
     ],
     ambience: {
-      colorA: "#2a2f3f",
-      colorB: "#cf8b5f",
-      fogDensity: 0.039,
+      colorA: "#2f3a46",
+      colorB: "#ccb29f",
+      fogDensity: 0.021,
       audioStem: "rimozione",
     },
     anchor: {
@@ -98,9 +98,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "offering_detail_room", label: "Dettaglio", splineId: "archivio-detail" },
     ],
     ambience: {
-      colorA: "#2a5365",
-      colorB: "#82dbe2",
-      fogDensity: 0.022,
+      colorA: "#2b3f4c",
+      colorB: "#9cbfc5",
+      fogDensity: 0.018,
       audioStem: "archivio",
     },
     anchor: {
@@ -119,9 +119,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "archivio_room", label: "Archivio", splineId: "offri-archivio" },
     ],
     ambience: {
-      colorA: "#2b2e36",
-      colorB: "#f1be6f",
-      fogDensity: 0.03,
+      colorA: "#303844",
+      colorB: "#d0b18b",
+      fogDensity: 0.02,
       audioStem: "offri",
     },
     anchor: {
@@ -140,9 +140,9 @@ export const ROOM_GRAPH: Record<RoomId, RoomNode> = {
       { to: "home_atrium", label: "Atrio", splineId: "detail-atrium" },
     ],
     ambience: {
-      colorA: "#1c2d34",
-      colorB: "#e27e5f",
-      fogDensity: 0.032,
+      colorA: "#2c3b47",
+      colorB: "#cfb09a",
+      fogDensity: 0.02,
       audioStem: "detail",
     },
     anchor: {

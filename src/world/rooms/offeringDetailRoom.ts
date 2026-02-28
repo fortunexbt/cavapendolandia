@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { ART_SOURCES } from "@/world/rooms/artSources";
 import { buildRoom } from "@/world/rooms/roomFactory";
 
 export const buildOfferingDetailRoom = (texture?: THREE.Texture | null) =>
@@ -8,14 +7,12 @@ export const buildOfferingDetailRoom = (texture?: THREE.Texture | null) =>
     center: new THREE.Vector3(22, 0, -24),
     paletteShift: 5,
     muralTexture: texture,
-    artModelSource: ART_SOURCES.colorB,
-    signatureScale: 1.06,
     theme: {
-      shellColor: "#1f2f37",
-      floorColor: "#27404b",
-      glowA: "#e57f60",
-      glowB: "#9ecde0",
-      muralTint: "#e8eef3",
+      shellColor: "#293b4a",
+      floorColor: "#355063",
+      glowA: "#d8b39a",
+      glowB: "#a8c7d1",
+      muralTint: "#ebf0ea",
     },
     portalTargets: [
       { label: "Archivio", action: { type: "navigate", route: "/entra" }, offset: [-3.1, 0.8, -2.4] },

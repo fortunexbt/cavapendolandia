@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { ART_SOURCES } from "@/world/rooms/artSources";
 import { buildRoom } from "@/world/rooms/roomFactory";
 
 export const buildHomeAtriumRoom = (texture?: THREE.Texture | null) =>
@@ -8,14 +7,12 @@ export const buildHomeAtriumRoom = (texture?: THREE.Texture | null) =>
     center: new THREE.Vector3(0, 0, 0),
     paletteShift: 0,
     muralTexture: texture,
-    artModelSource: ART_SOURCES.colorA,
-    signatureScale: 1.18,
     theme: {
-      shellColor: "#142035",
-      floorColor: "#19354a",
-      glowA: "#5cc7d1",
-      glowB: "#f0be6f",
-      muralTint: "#dce9f5",
+      shellColor: "#26384c",
+      floorColor: "#30485e",
+      glowA: "#9bc8d1",
+      glowB: "#e2bd8f",
+      muralTint: "#edf1ea",
     },
     portalTargets: [
       { label: "Che cos'e", action: { type: "navigate", route: "/che-cose" }, offset: [-3.2, 0.8, -2.1] },

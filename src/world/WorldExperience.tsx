@@ -6,9 +6,8 @@ import OfferingCard from "@/components/OfferingCard";
 import { cn } from "@/lib/utils";
 import type { RoomId } from "@/world/types";
 import type { ArchivioArtifact } from "@/world/types";
-import type { WorldHotspot } from "@/world/types";
-import { CANON_ROOM_ORDER, ROOM_GRAPH } from "@/world/graph/roomGraph";
-import { resolveRoomFromPath, routeForRoom } from "@/world/engine/RouteBridge";
+import { ROOM_GRAPH } from "@/world/graph/roomGraph";
+import { resolveRoomFromPath } from "@/world/engine/RouteBridge";
 import { WorldRuntime } from "@/world/engine/WorldRuntime";
 import {
   createInitialWorldUiState,
@@ -20,41 +19,34 @@ import { LoadInOverlay } from "@/world/ui/LoadInOverlay";
 import { OffriOverlay } from "@/world/ui/OffriOverlay";
 import { getApprovedOfferingById, listApprovedOfferings } from "@/data/offeringsRepository";
 
-const ROOM_TEXT: Record<RoomId, { title: string; body: string; accent: string }> = {
+const ROOM_TEXT: Record<RoomId, { title: string; body: string }> = {
   home_atrium: {
     title: "Che cosa significa Cavapendoli per te?",
     body: "Attraversa i portali e visita ogni stanza del sito come un mondo continuo.",
-    accent: "#f1c36f",
   },
   manifesto_room: {
     title: "Che cos'e",
     body: "Un luogo in cui lasciare tracce: testo, immagini, suoni, memoria.",
-    accent: "#f1c36f",
   },
   regole_room: {
     title: "Regole",
     body: "Patto del luogo: diritti, rispetto, cura, moderazione curatoriale.",
-    accent: "#9bb4db",
   },
   rimozione_room: {
     title: "Rimozione",
     body: "Per rimuovere un contenuto, contatta cavapendoli@gmail.com.",
-    accent: "#cf8d61",
   },
   archivio_room: {
     title: "Entra",
     body: "Le offerte approvate compaiono come reperti: cliccane una per entrare nel dettaglio.",
-    accent: "#57c3cc",
   },
   offri_room: {
     title: "Offri",
     body: "Apri il modulo in stanza e deposita la tua offerta direttamente nel mondo.",
-    accent: "#f1c36f",
   },
   offering_detail_room: {
     title: "Offerta",
     body: "Una stanza dedicata a un singolo frammento dell'archivio.",
-    accent: "#e57f60",
   },
 };
 
@@ -66,16 +58,6 @@ const WEBGL2_HELP_LINKS = [
   { label: "Entra", to: "/entra" },
   { label: "Offri", to: "/offri" },
 ];
-
-const ROOM_SHORT_LABELS: Record<RoomId, string> = {
-  home_atrium: "Atrio",
-  manifesto_room: "Che cos'e",
-  regole_room: "Regole",
-  rimozione_room: "Rimozione",
-  archivio_room: "Entra",
-  offri_room: "Offri",
-  offering_detail_room: "Offerta",
-};
 
 const LOAD_IN_SESSION_KEY = "cava_world_load_in_seen_v1";
 
@@ -89,17 +71,8 @@ const WorldExperience = () => {
   const initialRoom = initialResolution.roomId ?? "home_atrium";
   const [state, dispatch] = useReducer(worldUiReducer, createInitialWorldUiState(initialRoom));
   const [compatibility, setCompatibility] = useState(WorldRuntime.checkCompatibility());
-  const [infoOverlayOpen, setInfoOverlayOpen] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return !window.matchMedia("(max-width: 900px)").matches;
-  });
-  const [mapOpen, setMapOpen] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return !window.matchMedia("(max-width: 1100px)").matches;
-  });
-  const [hoveredHotspot, setHoveredHotspot] = useState<WorldHotspot | null>(null);
-  const [visitedRooms, setVisitedRooms] = useState<Set<RoomId>>(() => new Set([initialRoom]));
-  const [simpleMode, setSimpleMode] = useState(() => {
+  const [infoOverlayOpen, setInfoOverlayOpen] = useState(false);
+  const [simpleMode] = useState(() => {
     if (typeof window === "undefined") return false;
     const stored = window.localStorage.getItem("cava_world_simple_mode_v1");
     if (stored === "1") return true;
@@ -147,11 +120,6 @@ const WorldExperience = () => {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem("cava_world_simple_mode_v1", simpleMode ? "1" : "0");
-  }, [simpleMode]);
-
-  useEffect(() => {
     if (!compatibility.webgl2) return;
     const container = containerRef.current;
     if (!container) return;
@@ -164,12 +132,10 @@ const WorldExperience = () => {
         if (state.introLocked) return;
         if (hotspot.action.type === "navigate") {
           navigate(hotspot.action.route);
-          setInfoOverlayOpen(true);
           return;
         }
         if (hotspot.action.type === "focus_offering") {
           navigate(`/o/${hotspot.action.offeringId}`);
-          setInfoOverlayOpen(true);
           return;
         }
         if (hotspot.action.type === "open_overlay") {
@@ -181,16 +147,8 @@ const WorldExperience = () => {
           setInfoOverlayOpen(true);
         }
       },
-      onHotspotHover: (hotspot) => {
-        setHoveredHotspot(hotspot);
-      },
       onRoomSettled: (roomId) => {
         dispatch({ type: "SET_CURRENT_ROOM", room: roomId });
-        setVisitedRooms((prev) => {
-          const next = new Set(prev);
-          next.add(roomId);
-          return next;
-        });
       },
     });
 
@@ -204,7 +162,6 @@ const WorldExperience = () => {
       }
       runtime.dispose();
       runtimeRef.current = null;
-      setHoveredHotspot(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compatibility.webgl2]);
@@ -269,30 +226,12 @@ const WorldExperience = () => {
     persistIntroSeen(true);
   }, [state.introSeen]);
 
-  useEffect(() => {
-    setVisitedRooms((prev) => {
-      if (prev.has(currentRoom)) return prev;
-      const next = new Set(prev);
-      next.add(currentRoom);
-      return next;
-    });
-  }, [currentRoom]);
-
   const startIntroTour = () => {
     dispatch({ type: "SET_INTRO_SEEN", seen: true });
     dispatch({ type: "SET_INTRO_LOCKED", locked: false });
     persistIntroSeen(true);
     navigate("/che-cose");
   };
-
-  const hoveredHotspotHelp =
-    hoveredHotspot?.action.type === "navigate"
-      ? "Vai alla stanza"
-      : hoveredHotspot?.action.type === "focus_offering"
-        ? "Apri dettaglio offerta"
-        : hoveredHotspot?.action.type === "open_overlay"
-          ? "Apri pannello in stanza"
-          : null;
 
   if (!compatibility.webgl2) {
     return (
@@ -325,7 +264,7 @@ const WorldExperience = () => {
   return (
     <div
       className={cn(
-        "relative min-h-screen overflow-hidden bg-[#05080f] text-[#f5eddc]",
+        "relative min-h-screen overflow-hidden bg-[#05080f] pb-24 text-[#f5eddc] md:pb-0",
         simpleMode && "text-[1.04rem] leading-relaxed",
       )}
     >
@@ -335,10 +274,10 @@ const WorldExperience = () => {
       <LoadInOverlay open={loadInOpen} onComplete={closeLoadIn} onSkip={closeLoadIn} simpleMode={simpleMode} />
 
       <header className="pointer-events-auto fixed inset-x-0 top-0 z-30 border-b border-white/20 bg-black/35 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-2 md:px-8">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-3 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] md:px-8 md:py-2">
           <button
             onClick={() => navigate("/")}
-            className="font-mono-light text-[0.62rem] uppercase tracking-[0.17em] text-[#f3e8d4]/90 sm:text-[0.7rem] sm:tracking-[0.2em]"
+            className="font-mono-light text-[0.68rem] uppercase tracking-[0.17em] text-[#f3e8d4]/90 sm:text-[0.72rem] sm:tracking-[0.2em]"
           >
             Cavapendolandia
           </button>
@@ -348,8 +287,8 @@ const WorldExperience = () => {
                 dispatch({ type: "TOGGLE_AUDIO" });
               }}
               className={cn(
-                "rounded-full border border-white/25 px-2.5 py-1 font-mono-light uppercase tracking-[0.12em] text-[#d8e7f3] sm:px-3 sm:tracking-[0.14em]",
-                simpleMode ? "text-[0.68rem]" : "text-[0.6rem]",
+                "min-h-9 rounded-full border border-white/25 px-3 py-1.5 font-mono-light uppercase tracking-[0.12em] text-[#d8e7f3] sm:px-3 sm:tracking-[0.14em]",
+                simpleMode ? "text-[0.74rem]" : "text-[0.68rem]",
               )}
             >
               Audio {state.audioEnabled ? "on" : "off"}
@@ -357,29 +296,11 @@ const WorldExperience = () => {
             <button
               onClick={() => setInfoOverlayOpen((open) => !open)}
               className={cn(
-                "rounded-full border border-white/25 px-2.5 py-1 font-mono-light uppercase tracking-[0.12em] text-[#d8e7f3] sm:px-3 sm:tracking-[0.14em]",
-                simpleMode ? "text-[0.68rem]" : "text-[0.6rem]",
+                "min-h-9 rounded-full border border-white/25 px-3 py-1.5 font-mono-light uppercase tracking-[0.12em] text-[#d8e7f3] sm:px-3 sm:tracking-[0.14em]",
+                simpleMode ? "text-[0.74rem]" : "text-[0.68rem]",
               )}
             >
               {infoOverlayOpen ? "HUD off" : "HUD on"}
-            </button>
-            <button
-              onClick={() => setMapOpen((open) => !open)}
-              className={cn(
-                "hidden rounded-full border border-white/25 px-2.5 py-1 font-mono-light uppercase tracking-[0.12em] text-[#d8e7f3] sm:px-3 sm:tracking-[0.14em] md:inline-flex",
-                simpleMode ? "text-[0.68rem]" : "text-[0.6rem]",
-              )}
-            >
-              Mappa {mapOpen ? "on" : "off"}
-            </button>
-            <button
-              onClick={() => setSimpleMode((value) => !value)}
-              className={cn(
-                "hidden rounded-full border border-white/25 px-2.5 py-1 font-mono-light uppercase tracking-[0.12em] text-[#d8e7f3] sm:px-3 sm:tracking-[0.14em] md:inline-flex",
-                simpleMode ? "text-[0.68rem]" : "text-[0.6rem]",
-              )}
-            >
-              Semplice {simpleMode ? "on" : "off"}
             </button>
           </div>
         </div>
@@ -422,14 +343,14 @@ const WorldExperience = () => {
       </AnimatePresence>
 
       <AnimatePresence>
-        {infoOverlayOpen && !state.introLocked && (
+        {infoOverlayOpen && !state.introLocked && !state.showOffriOverlay && (
           <motion.aside
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 16 }}
             className={cn(
-              "pointer-events-auto absolute right-4 top-24 z-35 w-[min(94vw,30rem)] rounded-3xl border border-white/20 bg-black/45 p-5 backdrop-blur-lg md:right-8",
-              simpleMode && "w-[min(95vw,34rem)] p-6",
+              "pointer-events-auto absolute right-4 top-24 z-35 w-[min(92vw,22rem)] rounded-3xl border border-white/18 bg-black/38 p-4 backdrop-blur-lg md:right-8",
+              simpleMode && "w-[min(94vw,24rem)] p-5",
             )}
           >
             <p
@@ -440,31 +361,16 @@ const WorldExperience = () => {
             >
               {roomNode.title}
             </p>
-            <h2 className={cn("mt-2 italic text-[#fbf2df]", simpleMode ? "text-4xl" : "text-3xl")}>{roomText.title}</h2>
-            <p className={cn("mt-3 text-[#d8e3f0]", simpleMode ? "text-base" : "text-sm")}>{roomText.body}</p>
+            <h2 className={cn("mt-2 italic text-[#fbf2df]", simpleMode ? "text-3xl" : "text-2xl")}>{roomText.title}</h2>
+            <p className={cn("mt-3 text-[#d8e3f0]", simpleMode ? "text-[0.96rem]" : "text-[0.88rem]")}>{roomText.body}</p>
 
-            <p className={cn("mt-3 text-[#b8cadf]", simpleMode ? "text-sm" : "text-[0.7rem]")}>
+            <p className={cn("mt-3 text-[#b8cadf]", simpleMode ? "text-[0.84rem]" : "text-[0.7rem]")}>
               Tocca o clicca i cerchi luminosi nella scena per muoverti stanza per stanza.
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              {roomNode.portals.map((portal) => (
-                <button
-                  key={`${roomNode.id}-${portal.to}`}
-                  onClick={() => navigate(routeForRoom(portal.to, state.selectedOfferingId))}
-                  className={cn(
-                    "rounded-full border border-white/24 px-3 py-1 font-mono-light uppercase tracking-[0.14em] text-[#d8e7f3] hover:bg-white/10",
-                    simpleMode ? "text-[0.7rem]" : "text-[0.58rem]",
-                  )}
-                >
-                  {portal.label}
-                </button>
-              ))}
-            </div>
-
             {currentRoom === "archivio_room" && (
               <div className="mt-5 max-h-[16rem] space-y-2 overflow-auto pr-2">
-                {offeringsQuery.data?.slice(0, 14).map((offering) => (
+                {offeringsQuery.data?.slice(0, 8).map((offering) => (
                   <button
                     key={offering.id}
                     onClick={() => navigate(`/o/${offering.id}`)}
@@ -501,93 +407,6 @@ const WorldExperience = () => {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {mapOpen && !state.introLocked && (
-          <motion.aside
-            initial={{ opacity: 0, x: -18 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            className="pointer-events-auto absolute bottom-6 left-4 z-30 hidden w-[min(90vw,22rem)] rounded-2xl border border-white/20 bg-black/45 p-4 backdrop-blur-md md:block"
-          >
-            <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.16em] text-[#c6d6e8]">
-              Mappa del mondo
-            </p>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              {CANON_ROOM_ORDER.map((roomId) => (
-                <button
-                  key={roomId}
-                  onClick={() => navigate(routeForRoom(roomId, state.selectedOfferingId))}
-                  className={cn(
-                    "rounded-lg border px-3 py-2 text-left",
-                    roomId === currentRoom && "border-[#f0c56f] bg-[#f0c56f]/12",
-                    state.transition?.from === roomId && "border-[#87bdd8] bg-[#87bdd8]/12",
-                    state.transition?.to === roomId && "border-[#57c5ce] bg-[#57c5ce]/14",
-                    roomId !== currentRoom &&
-                      state.transition?.from !== roomId &&
-                      state.transition?.to !== roomId &&
-                      "border-white/15 bg-black/25 hover:border-white/35",
-                  )}
-                >
-                  <p className="font-mono-light text-[0.58rem] uppercase tracking-[0.14em] text-[#dce8f3]">
-                    {ROOM_SHORT_LABELS[roomId]}
-                  </p>
-                  <p className="mt-1 text-[0.62rem] text-[#9fb5c8]">
-                    {state.transition?.to === roomId
-                      ? "in arrivo"
-                      : state.transition?.from === roomId
-                        ? "in partenza"
-                        : visitedRooms.has(roomId)
-                          ? "visitata"
-                          : "nuova"}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {state.transition && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="pointer-events-none absolute left-1/2 top-24 z-40 w-[min(92vw,24rem)] -translate-x-1/2 rounded-2xl border border-white/20 bg-black/45 p-3 backdrop-blur-md"
-          >
-            <p className="font-mono-light text-[0.58rem] uppercase tracking-[0.16em] text-[#d5e3ef]">
-              Attraversamento: {ROOM_GRAPH[state.transition.to].title}
-            </p>
-            <div className="mt-2 h-1.5 rounded-full bg-white/10">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: `linear-gradient(90deg, ${roomText.accent}, #57c5ce)` }}
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: state.transition.durationMs / 1000, ease: "linear" }}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {hoveredHotspot && !state.introLocked && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            className="pointer-events-none absolute bottom-24 left-1/2 z-40 w-[min(92vw,26rem)] -translate-x-1/2 rounded-xl border border-white/20 bg-black/55 px-4 py-2 text-center backdrop-blur-md"
-          >
-            <p className="font-mono-light text-[0.58rem] uppercase tracking-[0.16em] text-[#cfe0ed]">
-              {hoveredHotspot.kind} attivo
-            </p>
-            <p className="text-sm text-[#f4ecdd]">{hoveredHotspot.label}</p>
-            {hoveredHotspotHelp && <p className="text-xs text-[#9fb5c8]">{hoveredHotspotHelp}</p>}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <OffriOverlay
         open={state.showOffriOverlay && !state.introLocked}
         state={state.offri}
@@ -619,20 +438,18 @@ const WorldExperience = () => {
       )}
 
       {!state.introLocked && !state.showOffriOverlay && (
-        <nav className="pointer-events-auto fixed inset-x-0 bottom-0 z-30 border-t border-white/15 bg-black/35 px-3 py-2 backdrop-blur-sm md:hidden">
-          <div className="mx-auto grid max-w-xl grid-cols-3 gap-2">
+        <nav className="pointer-events-auto fixed inset-x-0 bottom-0 z-30 border-t border-white/15 bg-black/35 px-3 pb-[calc(0.55rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur-sm md:hidden">
+          <div className="mx-auto grid max-w-xl grid-cols-2 gap-2">
             {[
               { to: "/", label: "Atrio" },
-              { to: "/che-cose", label: "Che cos'e" },
               { to: "/entra", label: "Entra" },
               { to: "/offri", label: "Offri" },
-              { to: "/regole", label: "Regole" },
-              { to: "/rimozione", label: "Rimozione" },
+              { to: "/che-cose", label: "Che cos'e" },
             ].map((item) => (
               <button
                 key={item.to}
                 onClick={() => navigate(item.to)}
-                className="rounded-lg border border-white/22 bg-black/30 px-2 py-2 font-mono-light text-[0.68rem] uppercase tracking-[0.12em] text-[#dce9f5]"
+                className="min-h-11 rounded-lg border border-white/22 bg-black/30 px-2 py-2.5 font-mono-light text-[0.78rem] uppercase tracking-[0.12em] text-[#dce9f5]"
               >
                 {item.label}
               </button>

@@ -12,12 +12,12 @@ export type TransitionRailProfile = {
 const BASE: TransitionRailProfile = {
   fromBias: 0.24,
   toBias: 0.24,
-  liftA: 0.9,
-  liftB: 0.9,
+  liftA: 0.72,
+  liftB: 0.72,
   sideA: 0,
   sideB: 0,
   bank: 0,
-  durationScale: 1,
+  durationScale: 1.14,
 };
 
 const make = (partial: Partial<TransitionRailProfile>): TransitionRailProfile => ({
@@ -51,4 +51,3 @@ export const getTransitionRail = (splineId: string | null): TransitionRailProfil
   }
   return BASE;
 };
-
