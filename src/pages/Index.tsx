@@ -44,7 +44,7 @@ const Index = () => {
           variants={itemVariants}
           className="mb-10 font-mono-light text-sm uppercase tracking-[0.24em] text-muted-foreground/70 md:text-base"
         >
-          CAVAPENDOLI
+          CAVAPENDOLAND
         </motion.h1>
 
         <motion.p

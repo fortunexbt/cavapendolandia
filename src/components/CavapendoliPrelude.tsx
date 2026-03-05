@@ -69,7 +69,7 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
             transition={{ duration: 0.8 }}
             className="text-5xl md:text-7xl tracking-[0.12em]"
           >
-            CAVAPENDOLI
+            CAVAPENDOLAND
           </motion.h2>
 
           <motion.svg
