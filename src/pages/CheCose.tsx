@@ -13,37 +13,29 @@ const CheCose = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.35 }}
-          className="max-w-2xl text-center space-y-7"
+          transition={{ duration: 0.5 }}
+          className="max-w-xl text-center space-y-6"
         >
-          <h1 className="text-4xl md:text-5xl font-light mb-10">Che cos'è</h1>
+          <h1 className="text-3xl font-light mb-8">Che cos'è</h1>
 
           <p className="text-lg leading-relaxed text-foreground/80">
-            Cavapendolandia è un luogo semplice.
+            Un luogo semplice dove lasciare qualcosa.
           </p>
           <p className="text-lg leading-relaxed text-foreground/80">
-            Qui le persone lasciano una cavapendolata: un'immagine, un suono, un testo,
-            un frammento.
+            Un'immagine, un suono, un testo, un frammento.
           </p>
-          <p className="text-xl leading-relaxed text-foreground/80 italic">
-            La domanda è una sola: che cosa significa Cavapendoli per te?
-          </p>
-          <p className="text-lg leading-relaxed text-foreground/80">
-            Non troverai risposte giuste. Troverai tracce.
+          <p className="text-xl italic text-foreground/80">
+            La domanda: che cosa significa Cavapendoli per te?
           </p>
           <p className="text-lg leading-relaxed text-foreground/80">
-            Entra, vaga, torna quando vuoi.
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground mt-5 font-mono-light">
-            Cavapendoli è un nome nato dal lavoro di un artista e psicoanalista.
-            Qui diventa eco condivisa.
+            Non troverai risposte giuste. Solo tracce.
           </p>
 
-          <div className="pt-8 flex items-center justify-center gap-8">
-            <EntraComingSoon className="font-mono-light text-xs text-muted-foreground/45 underline underline-offset-4" />
+          <div className="pt-6 flex items-center justify-center gap-6">
+            <EntraComingSoon className="font-mono-light text-xs text-muted-foreground/45" />
             <Link
               to="/offri"
-              className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+              className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               Lascia una cavapendolata
             </Link>

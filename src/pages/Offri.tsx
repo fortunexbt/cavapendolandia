@@ -251,10 +251,15 @@ const Offri = () => {
             </p>
           </motion.div>
 
-          <div className="mb-12 text-center">
-            <p className="ritual-step">
-              {step} - {STEP_LABELS[step]}
-            </p>
+          <div className="mb-10 flex items-center justify-center gap-2">
+            {[1, 2, 3, 4, 5].map((s) => (
+              <div
+                key={s}
+                className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                  s === step ? "bg-foreground" : s < step ? "bg-foreground/30" : "bg-border"
+                }`}
+              />
+            ))}
           </div>
 
           <AnimatePresence mode="wait">
