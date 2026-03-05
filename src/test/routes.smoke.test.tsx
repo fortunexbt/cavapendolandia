@@ -65,9 +65,9 @@ describe("route smoke", () => {
     expect(screen.getByText(/Archivio in revisione/i)).toBeInTheDocument();
   });
 
-  it("renderizza la login admin", () => {
+  it("renderizza la login admin", async () => {
     renderWithRouter(<AdminLogin />);
-    expect(screen.getByRole("heading", { name: /Admin/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /Admin/i })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Invia link magico/i })).toBeInTheDocument();
   });
