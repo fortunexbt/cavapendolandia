@@ -27,13 +27,13 @@ const AnimatedRoutes = () => {
   const hasPlayedPrelude = useRef(false);
 
   useEffect(() => {
-    if (showPrelude && !hasPlayedPrelude.current) {
+    if (!hasPlayedPrelude.current) {
       hasPlayedPrelude.current = true;
-      setContentVisible(false);
-    } else if (!showPrelude) {
-      setContentVisible(true);
+      if (showPrelude) {
+        setContentVisible(false);
+      }
     }
-  }, [showPrelude]);
+  }, []);
 
   const handlePreludeComplete = () => {
     setContentVisible(true);
