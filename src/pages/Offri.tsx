@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,6 @@ import {
   MAX_TEXT_LENGTH,
   MAX_TITLE_LENGTH,
   canSubmitFromClientRateLimit,
-  getOrCreateSubmissionFingerprint,
   isValidHttpUrl,
   isValidInstagramHandle,
   normalizeInstagramHandle,
