@@ -244,7 +244,7 @@ const Offri = () => {
             className="text-center mb-14"
           >
             <h1 className="text-3xl md:text-5xl font-light mb-4">
-              Lascia un'offerta
+              Lascia una cavapendolata
             </h1>
             <p className="text-base italic text-muted-foreground">
               Qualcosa che possa stare qui.
