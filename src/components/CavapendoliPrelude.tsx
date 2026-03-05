@@ -1,8 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-const MOBILE_QUERY = "(max-width: 767px)";
-
 interface CavapendoliPreludeProps {
   onComplete?: () => void;
 }
@@ -10,22 +8,10 @@ interface CavapendoliPreludeProps {
 const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
   const reduceMotion = useReducedMotion();
   const hasPlayedRef = useRef(false);
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia(MOBILE_QUERY).matches : false,
-  );
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const media = window.matchMedia(MOBILE_QUERY);
-    const onChange = () => setIsMobile(media.matches);
-    onChange();
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    if (reduceMotion || isMobile) {
+    if (reduceMotion) {
       setVisible(false);
       onComplete?.();
       return;
@@ -44,9 +30,9 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
       onComplete?.();
     }, totalDurationMs);
     return () => window.clearTimeout(timeoutId);
-  }, [reduceMotion, isMobile, onComplete]);
+  }, [reduceMotion, onComplete]);
 
-  if (isMobile) return null;
+  if (reduceMotion) return null;
 
   return (
     <AnimatePresence mode="wait">
@@ -56,10 +42,10 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none fixed inset-0 z-[60] flex flex-col items-center justify-center bg-background"
+          className="pointer-events-none fixed inset-0 z-[60] flex flex-col items-center justify-center bg-background p-4"
           aria-hidden
         >
-          <p className="font-mono-light text-[0.66rem] uppercase tracking-[0.25em] text-muted-foreground mb-8">
+          <p className="font-mono-light text-xs uppercase tracking-[0.25em] text-muted-foreground mb-6 md:mb-8">
             Un luogo delicato
           </p>
 
@@ -67,14 +53,14 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl tracking-[0.12em]"
+            className="text-4xl md:text-7xl tracking-[0.12em]"
           >
             CAVAPENDOLAND
           </motion.h2>
 
           <motion.svg
             viewBox="0 0 280 240"
-            className="my-10 h-56 w-56 md:h-72 md:w-72"
+            className="my-8 h-40 w-40 md:h-72 md:w-72"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
@@ -126,9 +112,9 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
             />
           </motion.svg>
 
-          <p className="text-lg text-muted-foreground">Entri in un mondo esplorabile stanza per stanza.</p>
+          <p className="text-base md:text-lg text-muted-foreground text-center px-4">Entri in un mondo esplorabile stanza per stanza.</p>
 
-          <div className="mx-auto mt-10 h-1.5 w-full max-w-md overflow-hidden rounded-full bg-muted">
+          <div className="mx-auto mt-8 md:mt-10 h-1.5 w-full max-w-xs md:max-w-md overflow-hidden rounded-full bg-muted">
             <motion.div
               className="h-full rounded-full bg-foreground"
               initial={{ width: "0%" }}
