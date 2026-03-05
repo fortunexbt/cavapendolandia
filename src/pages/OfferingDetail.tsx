@@ -1,4 +1,3 @@
-import { lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,13 +7,9 @@ import OfferingCard from "@/components/OfferingCard";
 import { motion } from "framer-motion";
 import { withSignedFileUrl } from "@/lib/offeringMedia";
 import EntraComingSoon from "@/components/EntraComingSoon";
-import { resolveJourneyForPage } from "@/lib/worldJourney";
-
-const CavapendoliWorldCanvas = lazy(() => import("@/components/CavapendoliWorldCanvas"));
 
 const OfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const pageJourney = resolveJourneyForPage(0.62, 0.52);
 
   const { data: offering, isLoading } = useQuery({
     queryKey: ["offering", id],
@@ -48,12 +43,8 @@ const OfferingDetail = () => {
   });
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background/90">
-      <Suspense fallback={null}>
-        <CavapendoliWorldCanvas mode="vaga" journey={pageJourney} className="opacity-62" />
-      </Suspense>
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(244,240,233,0.84),rgba(244,240,233,0.94))]" />
-      <MinimalHeader immersive />
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+      <MinimalHeader />
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         {isLoading ? (

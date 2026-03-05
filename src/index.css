@@ -142,32 +142,4 @@
   .ritual-step {
     @apply font-mono-light text-xs uppercase tracking-[0.13em] text-muted-foreground/70;
   }
-
-  .world-float-slow {
-    animation: world-float-slow 18s ease-in-out infinite;
-  }
-
-  .world-float-medium {
-    animation: world-float-medium 13s ease-in-out infinite;
-  }
-}
-
-@keyframes world-float-slow {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(-1.5deg);
-  }
-  50% {
-    transform: translate3d(0, -16px, 0) rotate(1.8deg);
-  }
-}
-
-@keyframes world-float-medium {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(1deg);
-  }
-  50% {
-    transform: translate3d(0, -22px, 0) rotate(-2deg);
-  }
 }
