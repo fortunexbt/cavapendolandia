@@ -1,0 +1,312 @@
+{
+  "checks": [
+    {
+      "name": "desktop home world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop header button Audio",
+      "status": "fail",
+      "details": "not found"
+    },
+    {
+      "name": "desktop header button HUD",
+      "status": "fail",
+      "details": "not found"
+    },
+    {
+      "name": "desktop header button Mappa",
+      "status": "fail",
+      "details": "not found"
+    },
+    {
+      "name": "desktop header button Semplice",
+      "status": "fail",
+      "details": "not found"
+    },
+    {
+      "name": "desktop / world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /che-cose world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /regole world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /rimozione world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /entra world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /offri world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /o/test-offering-id world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop /varco-impossibile world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "desktop unknown route overlay",
+      "status": "fail",
+      "details": "missing"
+    },
+    {
+      "name": "desktop offri panel",
+      "status": "fail",
+      "details": "not visible"
+    },
+    {
+      "name": "desktop /admin",
+      "status": "fail",
+      "details": "appears blank"
+    },
+    {
+      "name": "desktop /admin/anticamera",
+      "status": "fail",
+      "details": "appears blank"
+    },
+    {
+      "name": "desktop /admin/archivio",
+      "status": "fail",
+      "details": "appears blank"
+    },
+    {
+      "name": "desktop /admin/nascosti",
+      "status": "fail",
+      "details": "appears blank"
+    },
+    {
+      "name": "desktop /admin/rifiutati",
+      "status": "fail",
+      "details": "appears blank"
+    },
+    {
+      "name": "desktop /admin/o/test-id",
+      "status": "fail",
+      "details": "appears blank"
+    },
+    {
+      "name": "mobile home world canvas",
+      "status": "fail",
+      "details": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n"
+    },
+    {
+      "name": "mobile bottom nav",
+      "status": "fail",
+      "details": "missing"
+    },
+    {
+      "name": "mobile nav Che cos'e",
+      "status": "warn",
+      "details": "button not found in current layout"
+    },
+    {
+      "name": "mobile nav Entra",
+      "status": "warn",
+      "details": "button not found in current layout"
+    },
+    {
+      "name": "mobile nav Offri",
+      "status": "warn",
+      "details": "button not found in current layout"
+    },
+    {
+      "name": "mobile nav Regole",
+      "status": "warn",
+      "details": "button not found in current layout"
+    },
+    {
+      "name": "mobile nav Rimozione",
+      "status": "warn",
+      "details": "button not found in current layout"
+    },
+    {
+      "name": "mobile nav Atrio",
+      "status": "warn",
+      "details": "button not found in current layout"
+    },
+    {
+      "name": "mobile offri overlay",
+      "status": "fail",
+      "details": "missing"
+    },
+    {
+      "name": "mobile overlap header/offri panel",
+      "status": "ok",
+      "details": "elements unavailable"
+    }
+  ],
+  "errors": [
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop home world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop header button Audio: not found",
+    "desktop header button HUD: not found",
+    "desktop header button Mappa: not found",
+    "desktop header button Semplice: not found",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop / world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /che-cose world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /regole world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /rimozione world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /entra world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /offri world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /o/test-offering-id world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop /varco-impossibile world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "desktop unknown route overlay: missing",
+    "desktop console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "desktop offri panel: not visible",
+    "desktop /admin: appears blank",
+    "desktop /admin/anticamera: appears blank",
+    "desktop /admin/archivio: appears blank",
+    "desktop /admin/nascosti: appears blank",
+    "desktop /admin/rifiutati: appears blank",
+    "desktop /admin/o/test-id: appears blank",
+    "mobile console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "mobile console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "mobile console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "mobile console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "mobile home world canvas: page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('canvas') to be visible\u001b[22m\n",
+    "mobile bottom nav: missing",
+    "mobile console error: Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+    "mobile offri overlay: missing"
+  ],
+  "warnings": [
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "desktop console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "desktop console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "mobile console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "mobile console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "mobile console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "mobile nav Che cos'e: button not found in current layout",
+    "mobile nav Entra: button not found in current layout",
+    "mobile nav Offri: button not found in current layout",
+    "mobile nav Regole: button not found in current layout",
+    "mobile nav Rimozione: button not found in current layout",
+    "mobile nav Atrio: button not found in current layout",
+    "mobile console warning: [Cavapendolandia] Missing Supabase env vars. App will load, but Supabase calls will fail until env vars are set.",
+    "mobile console warning: ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "mobile console warning: ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath."
+  ],
+  "screenshots": [
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-home.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-home.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-che-cose.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-regole.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-rimozione.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-entra.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-offri.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-offerta.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-route-unknown.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-admin-login.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-admin-anticamera.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-admin-archivio.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-admin-nascosti.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-admin-rifiutati.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/desktop-admin-detail.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/mobile-home.png",
+    "/Users/fortune/cavapendolandia/tmp/qa-live-2026-02-28/mobile-offri.png"
+  ]
+}

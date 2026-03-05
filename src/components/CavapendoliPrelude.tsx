@@ -56,7 +56,7 @@ const CavapendoliPrelude = ({ triggerKey, onComplete }: CavapendoliPreludeProps)
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible ? (
         <motion.div
           key={`prelude-${sequenceKey}`}
           initial={{ opacity: 0 }}
@@ -144,7 +144,7 @@ const CavapendoliPrelude = ({ triggerKey, onComplete }: CavapendoliPreludeProps)
             />
           </div>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 };

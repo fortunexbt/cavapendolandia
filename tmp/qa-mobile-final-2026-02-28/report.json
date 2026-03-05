@@ -1,0 +1,95 @@
+{
+  "checks": [
+    {
+      "name": "desktop route /",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "desktop route /che-cose",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "desktop route /regole",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "desktop route /rimozione",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "desktop route /entra",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "desktop route /offri",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "desktop route /o/11111111-1111-1111-1111-111111111111",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /che-cose",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /regole",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /rimozione",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /entra",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /offri",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile route /o/11111111-1111-1111-1111-111111111111",
+      "status": "ok",
+      "details": "world active"
+    },
+    {
+      "name": "mobile bottom nav",
+      "status": "ok",
+      "details": "mobile nav visible"
+    },
+    {
+      "name": "mobile no map button",
+      "status": "ok",
+      "details": "map hidden on mobile"
+    },
+    {
+      "name": "mobile offri overlay",
+      "status": "ok",
+      "details": "offri overlay visible"
+    },
+    {
+      "name": "mobile offri scrollable",
+      "status": "ok",
+      "details": "overlay scrolls on small screens"
+    }
+  ],
+  "errors": []
+}
