@@ -12,10 +12,10 @@ const Rimozione = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
+          transition={{ duration: 0.5 }}
           className="max-w-md text-center space-y-8"
         >
-          <h1 className="text-4xl font-light mb-8">Rimozione</h1>
+          <h1 className="text-4xl font-light">Rimozione</h1>
 
           <p className="text-xl leading-relaxed text-foreground/90">
             Se hai caricato qualcosa e desideri rimuoverlo, scrivi a:
@@ -33,9 +33,9 @@ const Rimozione = () => {
           <div className="pt-8">
             <Link
               to="/offri"
-              className="font-mono-light text-lg text-foreground hover:text-foreground transition-colors"
+              className="inline-block border-2 border-foreground/20 bg-background/80 px-10 py-4 text-lg uppercase tracking-[0.25em] font-mono-light hover:bg-foreground hover:text-primary-foreground transition-all duration-300"
             >
-              Lascia una cavapendolata →
+              Lascia una cavapendolata
             </Link>
           </div>
         </motion.div>
