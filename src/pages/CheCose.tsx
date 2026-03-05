@@ -16,38 +16,38 @@ const CheCose = () => {
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
       <MinimalHeader />
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="max-w-xl text-center space-y-8"
+          className="max-w-xl text-center space-y-10"
         >
-          <h1 className="text-4xl font-light mb-10 md:text-5xl">Che cos'è</h1>
+          <h1 className="text-4xl font-light mb-8 md:text-5xl">Che cos'è</h1>
 
-          <p className="text-xl leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/90">
             Un luogo semplice dove lasciare qualcosa.
           </p>
-          <p className="text-xl leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/90">
             Un'immagine, un suono, un testo, un frammento.
           </p>
-          <p className="text-2xl italic text-foreground/80">
+          <p className="text-2xl italic text-foreground/90">
             La domanda: che cosa significa Cavapendoli per te?
           </p>
-          <p className="text-xl leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/90">
             Non troverai risposte giuste. Solo tracce.
           </p>
 
-          <div className="pt-10 flex flex-col items-center gap-4">
+          <div className="pt-8 flex flex-col items-center gap-4">
             <Link
               to="/regole"
-              className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
+              className="font-mono-light text-lg text-foreground hover:text-foreground transition-colors"
             >
               Prossimo: Le regole →
             </Link>
             <Link
               to="/rimozione"
-              className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+              className="font-mono-light text-base text-muted-foreground/80 hover:text-foreground transition-colors"
             >
               Opzionale: info rimozione
             </Link>
@@ -57,10 +57,10 @@ const CheCose = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="pt-12 text-lg italic text-muted-foreground/50 leading-relaxed border-t border-border/30 mt-12 px-4"
+            className="pt-12 text-xl italic text-muted-foreground/70 leading-relaxed border-t border-border/40 mt-12 px-4"
           >
             {MYSTICAL_QUOTE.split("\n\n").map((para, i) => (
-              <p key={i} className="mb-3">{para}</p>
+              <p key={i} className="mb-4">{para}</p>
             ))}
           </motion.blockquote>
         </motion.div>

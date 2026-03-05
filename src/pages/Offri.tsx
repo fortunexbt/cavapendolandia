@@ -235,27 +235,27 @@ const Offri = () => {
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
       <MinimalHeader />
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
-        <div className="w-full max-w-xl">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-20">
+        <div className="w-full max-w-lg">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="text-center mb-12"
+            className="text-center mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-light mb-4">
+            <h1 className="text-3xl md:text-5xl font-light mb-3">
               Lascia una cavapendolata
             </h1>
-            <p className="text-lg italic text-muted-foreground">
+            <p className="text-lg md:text-xl italic text-muted-foreground">
               Qualcosa che possa stare qui.
             </p>
           </motion.div>
 
-          <div className="mb-10 flex items-center justify-center gap-2">
+          <div className="mb-8 flex items-center justify-center gap-3">
             {[1, 2, 3, 4, 5].map((s) => (
               <div
                 key={s}
-                className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                className={`h-3 w-3 rounded-full transition-colors ${
                   s === step ? "bg-foreground" : s < step ? "bg-foreground/30" : "bg-border"
                 }`}
               />
@@ -269,15 +269,15 @@ const Offri = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="min-h-[14rem]"
+              className="min-h-[12rem]"
             >
               {/* Step 1: Media type */}
               {step === 1 && (
                 <div className="space-y-4">
-                  <p className="font-mono-light text-muted-foreground text-center mb-6 uppercase tracking-[0.13em] text-sm">
+                  <p className="font-mono-light text-muted-foreground text-center mb-6 uppercase tracking-[0.13em] text-lg">
                     Cosa lasci?
                   </p>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {(Object.keys(MEDIA_LABELS) as MediaType[]).map((type) => (
                       <button
                         key={type}
@@ -285,7 +285,7 @@ const Offri = () => {
                           setMediaType(type);
                           setStep(2);
                         }}
-                        className={`py-4 border text-base font-mono-light transition-all duration-300 ${
+                        className={`py-5 border text-lg font-mono-light transition-all duration-300 ${
                           mediaType === type
                             ? "border-foreground bg-foreground text-primary-foreground"
                             : "border-border hover:border-foreground/30"
@@ -307,7 +307,7 @@ const Offri = () => {
                         value={textContent}
                         onChange={(e) => setTextContent(e.target.value)}
                         placeholder="Scrivi qui..."
-                        className="min-h-[180px] bg-transparent border-border/50 focus:border-foreground/30 font-serif text-base resize-none"
+                        className="min-h-[160px] bg-transparent border-border/50 focus:border-foreground/30 font-serif text-lg resize-none p-4"
                         maxLength={MAX_TEXT_LENGTH}
                       />
                     </>
@@ -318,13 +318,13 @@ const Offri = () => {
                         value={linkUrl}
                         onChange={(e) => setLinkUrl(e.target.value)}
                         placeholder="https://..."
-                        className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light"
+                        className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-lg p-4"
                         maxLength={2048}
                       />
                     </>
                   ) : (
                     <>
-                      <label className="block border border-dashed border-border/50 hover:border-foreground/30 transition-colors p-8 text-center cursor-pointer">
+                      <label className="block border-2 border-dashed border-border/50 hover:border-foreground/30 transition-colors p-10 text-center cursor-pointer rounded-lg">
                         <input
                           type="file"
                           accept={ACCEPT_MAP[mediaType] || "*/*"}
@@ -334,11 +334,11 @@ const Offri = () => {
                           className="hidden"
                         />
                         {file ? (
-                          <span className="font-mono-light text-foreground/70">
+                          <span className="font-mono-light text-lg text-foreground/70">
                             {file.name}
                           </span>
                         ) : (
-                          <span className="font-mono-light text-muted-foreground/50">
+                          <span className="font-mono-light text-lg text-muted-foreground/50">
                             Scegli un file
                           </span>
                         )}

@@ -6,7 +6,7 @@ import MinimalFooter from "@/components/MinimalFooter";
 import InitiativeHint from "@/components/InitiativeHint";
 
 const SEAHORSE_SVG = (
-  <svg viewBox="0 0 280 240" className="h-32 w-32 md:h-48 md:w-48">
+  <svg viewBox="0 0 280 240" className="h-24 w-24 md:h-48 md:w-48">
     <path d="M175 35c22 24 30 55 22 88-4 17-15 31-29 39 5 22-3 42-20 60-13 13-28 19-45 17 19-9 30-23 34-43 4-19 0-36-12-50-16-18-24-39-22-62 2-24 14-45 35-60 23-16 50-14 71 11Z" fill="currentColor" className="text-secondary" />
     <polygon points="115,92 146,68 186,74 198,108 167,127 132,117" fill="currentColor" className="text-accent" />
     <polygon points="102,129 129,108 159,133 143,163 111,156" fill="currentColor" className="text-destructive/80" />
@@ -45,7 +45,7 @@ const Index = () => {
       <AbstractShadow className="pointer-events-none absolute bottom-8 left-0 h-48 w-20 -scale-x-100 opacity-20 md:h-72 md:w-28" />
 
       <motion.main
-        className="ritual-container relative z-10 flex flex-col items-center justify-center py-20 text-center"
+        className="ritual-container relative z-10 flex flex-col items-center justify-center py-16 px-4 text-center"
         variants={containerVariants}
         initial="hidden"
         animate="show"
@@ -56,25 +56,25 @@ const Index = () => {
 
         <motion.p
           variants={itemVariants}
-          className="mt-8 mb-2 max-w-3xl text-5xl font-light italic leading-[1.2] text-foreground/82 md:text-6xl"
+          className="mt-6 mb-2 max-w-xl text-4xl md:text-6xl font-light italic leading-[1.1] text-foreground/82"
         >
           Che cosa significa Cavapendoli per te?
         </motion.p>
 
         <motion.p
           variants={itemVariants}
-          className="mb-12 font-mono-light text-sm text-muted-foreground/70 md:text-base"
+          className="mb-8 font-mono-light text-base md:text-lg text-muted-foreground/70"
         >
           Un luogo delicato. Prima di lasciare qualcosa, scopri le regole.
         </motion.p>
 
         <motion.div
           variants={itemVariants}
-          className="flex flex-col items-center gap-4"
+          className="w-full max-w-xs"
         >
           <Link
             to="/che-cose"
-            className="min-w-[18rem] border border-foreground/25 bg-background/60 px-8 py-4 text-base uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
+            className="block w-full border border-foreground/25 bg-background/60 px-8 py-5 text-lg uppercase tracking-[0.2em] font-mono-light hover:bg-foreground hover:text-primary-foreground"
           >
             Scopri
           </Link>
@@ -82,23 +82,23 @@ const Index = () => {
 
         <motion.div
           variants={itemVariants}
-          className="mt-6 flex flex-col items-center gap-3"
+          className="mt-8 flex flex-col items-center gap-3"
         >
           <Link
             to="/che-cose"
-            className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+            className="font-mono-light text-base text-muted-foreground/70 hover:text-foreground transition-colors"
           >
             Che cos'è
           </Link>
           <Link
             to="/regole"
-            className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+            className="font-mono-light text-base text-muted-foreground/70 hover:text-foreground transition-colors"
           >
             Regole
           </Link>
           <Link
             to="/rimozione"
-            className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+            className="font-mono-light text-base text-muted-foreground/70 hover:text-foreground transition-colors"
           >
             Rimozione
           </Link>

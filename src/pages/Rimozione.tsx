@@ -8,32 +8,32 @@ const Rimozione = () => {
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
       <MinimalHeader />
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-8">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5 }}
-          className="max-w-md text-center space-y-6"
+          className="max-w-md text-center space-y-8"
         >
-          <h1 className="text-3xl font-light mb-8">Rimozione</h1>
+          <h1 className="text-4xl font-light mb-8">Rimozione</h1>
 
-          <p className="text-base leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/90">
             Se hai caricato qualcosa e desideri rimuoverlo, scrivi a:
           </p>
           <a
             href="mailto:cavapendoli@gmail.com"
-            className="font-mono-light text-foreground/70 hover:text-foreground"
+            className="inline-block text-xl font-mono-light text-foreground/80 hover:text-foreground underline underline-offset-4"
           >
             cavapendoli@gmail.com
           </a>
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <p className="text-lg leading-relaxed text-muted-foreground/80">
             Indica data, titolo (se presente) e un dettaglio per riconoscerlo.
           </p>
 
           <div className="pt-8">
             <Link
               to="/offri"
-              className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
+              className="font-mono-light text-lg text-foreground hover:text-foreground transition-colors"
             >
               Lascia una cavapendolata →
             </Link>

@@ -18,38 +18,38 @@ const Regole = () => {
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
       <MinimalHeader />
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35 }}
-          className="max-w-2xl text-center"
+          className="max-w-lg text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-light mb-12">Regole del luogo</h1>
+          <h1 className="text-4xl md:text-5xl font-light mb-10">Regole del luogo</h1>
 
           <ul className="space-y-5 text-left">
             {rules.map((rule, i) => (
               <li
                 key={i}
-                className="text-lg leading-relaxed text-foreground/82 pl-5 border-l border-border/55"
+                className="text-lg leading-relaxed text-foreground/90 pl-5 border-l-2 border-border/50"
               >
                 {rule}
               </li>
             ))}
           </ul>
 
-          <div className="pt-10 flex flex-col items-center gap-4">
+          <div className="pt-12 flex flex-col items-center gap-5">
             <Link
               to="/offri"
-              className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
+              className="font-mono-light text-lg text-foreground hover:text-foreground transition-colors"
             >
               Lascia una cavapendolata →
             </Link>
             <Link
               to="/rimozione"
-              className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+              className="font-mono-light text-base text-muted-foreground/80 hover:text-foreground transition-colors"
             >
-              Prima leggo Rimozione
+              Info rimozione
             </Link>
           </div>
         </motion.div>
