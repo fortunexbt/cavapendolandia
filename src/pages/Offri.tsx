@@ -153,7 +153,6 @@ const Offri = () => {
 
     try {
       let filePath: string | null = null;
-      let fileSize: number | null = null;
 
       // Upload file if needed
       if (file && mediaType !== "text" && mediaType !== "link") {
@@ -170,13 +169,11 @@ const Offri = () => {
           .upload(path, file);
         if (uploadError) throw uploadError;
         filePath = path;
-        fileSize = file.size;
       }
 
       const { error } = await supabase.from("offerings").insert({
         media_type: mediaType,
-        file_path: filePath,
-        file_size: fileSize,
+        file_url: filePath,
         text_content: mediaType === "text" ? textContent.trim() : null,
         link_url: mediaType === "link" ? linkUrl.trim() : null,
         title: title.trim() || null,
@@ -188,7 +185,6 @@ const Offri = () => {
         consent_archive: consentArchive,
         consent_reshare: consentReshare,
         status: "pending",
-        submission_fingerprint: getOrCreateSubmissionFingerprint(),
       });
 
       if (error) throw error;
