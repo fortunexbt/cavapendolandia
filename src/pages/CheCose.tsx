@@ -4,6 +4,14 @@ import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import EntraComingSoon from "@/components/EntraComingSoon";
 
+const MYSTICAL_QUOTE = `I Cavapendoli scendono a spirale, quasi veloci. Prima erano ovunque, nei magazzini del mondo impalpabile. Lentamente, nel tempo, hanno assunto forma: prima immagini, poi dipinti, poi parole.
+Ma non si lasciavano fissare volentieri.
+Nel tempo che passa, hanno accettato di essere esposti allo sguardo degli estranei. Ora tentennano, forse non vogliono essere fermati su carta.
+Sfuggono, perché vivono di libertà.
+Sono bonari, ilari, sfuggenti e spiritosi. Vanno e vengono, svolacchiano, si posano e se ne vanno.
+Chi sa cosa fanno quando non si mostrano.
+Li invito con umiltà a entrare nel cannello della penna... e mi ridacchiano addosso.`;
+
 const CheCose = () => {
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
@@ -40,6 +48,17 @@ const CheCose = () => {
               Lascia una cavapendolata
             </Link>
           </div>
+
+          <motion.blockquote
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="pt-12 text-sm italic text-muted-foreground/50 leading-relaxed border-t border-border/30 mt-12 px-4"
+          >
+            {MYSTICAL_QUOTE.split("\n\n").map((para, i) => (
+              <p key={i} className="mb-3">{para}</p>
+            ))}
+          </motion.blockquote>
         </motion.div>
       </main>
 
