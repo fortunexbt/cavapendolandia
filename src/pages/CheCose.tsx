@@ -22,7 +22,7 @@ const CheCose = () => {
             Cavapendolandia è un luogo semplice.
           </p>
           <p className="text-lg leading-relaxed text-foreground/80">
-            Qui le persone lasciano un'offerta: un'immagine, un suono, un testo,
+            Qui le persone lasciano una cavapendolata: un'immagine, un suono, un testo,
             un frammento.
           </p>
           <p className="text-xl leading-relaxed text-foreground/80 italic">
@@ -45,7 +45,7 @@ const CheCose = () => {
               to="/offri"
               className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
             >
-              Lascia un'offerta
+              Lascia una cavapendolata
             </Link>
           </div>
         </motion.div>

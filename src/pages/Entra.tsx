@@ -20,14 +20,14 @@ const Entra = () => {
             Entra torna presto.
           </h1>
           <p className="text-lg text-muted-foreground/80 leading-relaxed mb-10">
-            Le offerte stanno entrando una a una. Stiamo revisionando i primi
+            Le cavapendolate stanno entrando una a una. Stiamo revisionando i primi
             contributi prima di aprire il passaggio.
           </p>
           <Link
             to="/offri"
             className="inline-flex rounded-full border border-foreground/25 px-7 py-2 font-mono-light text-xs uppercase tracking-[0.13em] text-foreground/85 hover:bg-foreground hover:text-primary-foreground"
           >
-            Lascia un'offerta
+            Lascia una cavapendolata
           </Link>
         </motion.div>
       </main>

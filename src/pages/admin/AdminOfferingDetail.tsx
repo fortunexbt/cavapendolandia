@@ -26,8 +26,9 @@ const AdminOfferingDetail = () => {
         .from("offerings")
         .select("*")
         .eq("id", id!)
-        .single();
+        .maybeSingle();
       if (error) throw error;
+      if (!data) return null;
       setCuratorialNote(data.curatorial_note || "");
       return withSignedFileUrl(data);
     },
@@ -36,10 +37,7 @@ const AdminOfferingDetail = () => {
 
   const updateStatus = useMutation({
     mutationFn: async (status: OfferingStatus) => {
-      const { error } = await supabase
-        .from("offerings")
-        .update({ status })
-        .eq("id", id!);
+      const { error } = await supabase.from("offerings").update({ status }).eq("id", id!);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -84,7 +82,7 @@ const AdminOfferingDetail = () => {
           ← Indietro
         </button>
         <span className="font-mono-light text-xs text-muted-foreground/40">
-          Dettaglio offerta
+          Dettaglio cavapendolata
         </span>
       </header>
 
@@ -93,7 +91,6 @@ const AdminOfferingDetail = () => {
           <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
         ) : (
           <div className="space-y-8">
-            {/* Media preview */}
             <OfferingCard
               id={offering.id}
               mediaType={offering.media_type}
@@ -109,7 +106,6 @@ const AdminOfferingDetail = () => {
               full
             />
 
-            {/* Metadata */}
             <div className="border-t border-border/30 pt-6 space-y-2 font-mono-light text-xs text-muted-foreground/60">
               <p>Stato: <span className="text-foreground/70">{offering.status}</span></p>
               <p>Tipo: <span className="text-foreground/70">{offering.media_type}</span></p>
@@ -127,7 +123,6 @@ const AdminOfferingDetail = () => {
               )}
             </div>
 
-            {/* Curatorial note */}
             <div className="border-t border-border/30 pt-6">
               <p className="font-mono-light text-xs text-muted-foreground/60 mb-2">
                 Nota curatoriale (opzionale)
@@ -147,7 +142,6 @@ const AdminOfferingDetail = () => {
               </button>
             </div>
 
-            {/* Actions */}
             <div className="border-t border-border/30 pt-6 flex items-center gap-3">
               {offering.status === "pending" && (
                 <>

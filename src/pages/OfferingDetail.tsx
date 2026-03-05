@@ -19,14 +19,14 @@ const OfferingDetail = () => {
         .select("*")
         .eq("id", id!)
         .eq("status", "approved")
-        .single();
+        .maybeSingle();
       if (error) throw error;
+      if (!data) return null;
       return withSignedFileUrl(data);
     },
     enabled: !!id,
   });
 
-  // Fetch a random offering for "un altro"
   const { data: randomOffering } = useQuery({
     queryKey: ["random-offering", id],
     queryFn: async () => {
@@ -51,7 +51,7 @@ const OfferingDetail = () => {
           <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
         ) : !offering ? (
           <div className="text-center">
-            <p className="text-lg italic text-muted-foreground/60 mb-4">Offerta non trovata.</p>
+            <p className="text-lg italic text-muted-foreground/60 mb-4">Cavapendolata non trovata.</p>
             <EntraComingSoon
               label="torna all'Archivio"
               className="font-mono-light text-muted-foreground/45 underline underline-offset-4"
@@ -64,14 +64,14 @@ const OfferingDetail = () => {
             transition={{ duration: 0.35 }}
             className="ritual-container max-w-3xl"
           >
-            <p className="ritual-label text-center mb-8">Offerta trovata</p>
+            <p className="ritual-label text-center mb-8">Cavapendolata trovata</p>
             <OfferingCard
               id={offering.id}
               mediaType={offering.media_type}
               fileUrl={offering.file_url}
               textContent={offering.text_content}
               linkUrl={offering.link_url}
-              title={offering.title || "Offerta"}
+              title={offering.title || "Cavapendolata"}
               note={offering.note}
               authorType={offering.author_type}
               authorName={offering.author_name}
@@ -97,7 +97,7 @@ const OfferingDetail = () => {
                 to="/offri"
                 className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
               >
-                lascia un'offerta
+                lascia una cavapendolata
               </Link>
             </div>
           </motion.div>

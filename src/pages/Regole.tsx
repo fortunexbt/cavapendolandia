@@ -9,7 +9,7 @@ const rules = [
   "Niente odio, molestie o contenuti violenti espliciti.",
   "Niente dati personali di terzi.",
   "Non è un social: qui non si giudica.",
-  "Le offerte entrano dopo una breve attesa.",
+  "Le cavapendolate entrano dopo una breve attesa.",
   "Ci riserviamo di non pubblicare ciò che non può stare qui.",
 ];
 
@@ -43,7 +43,7 @@ const Regole = () => {
               to="/offri"
               className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
             >
-              Lascia un'offerta
+              Lascia una cavapendolata
             </Link>
           </div>
         </motion.div>

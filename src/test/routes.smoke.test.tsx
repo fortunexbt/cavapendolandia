@@ -8,25 +8,32 @@ import Entra from "@/pages/Entra";
 import AdminLogin from "@/pages/AdminLogin";
 
 vi.mock("@/integrations/supabase/client", () => {
-  const builder: {
-    select: () => typeof builder;
-    eq: () => typeof builder;
-    order: () => Promise<{ data: []; error: null }>;
-  } = {
-    select: () => builder,
-    eq: () => builder,
-    order: async () => ({ data: [], error: null }),
+  const chain: any = {
+    select: () => chain,
+    eq: () => chain,
+    neq: () => chain,
+    order: () => chain,
+    limit: async () => ({ data: [], error: null }),
+    maybeSingle: async () => ({ data: null, error: null }),
+    insert: async () => ({ data: null, error: null }),
+    update: async () => ({ data: null, error: null }),
+    delete: async () => ({ data: null, error: null }),
   };
 
   return {
     supabase: {
-      from: () => builder,
+      from: () => chain,
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
       auth: {
-        signInWithPassword: vi.fn(),
+        signInWithOtp: vi.fn(),
+        signOut: vi.fn(),
+        onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+        getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
       },
       storage: {
         from: () => ({
           createSignedUrl: vi.fn(),
+          upload: vi.fn(),
         }),
       },
     },
@@ -47,7 +54,9 @@ describe("route smoke", () => {
 
   it("renderizza il flusso Offri", () => {
     renderWithRouter(<Offri />);
-    expect(screen.getByRole("heading", { name: /Lascia un'offerta/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Lascia una cavapendolata/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Cosa lasci\?/i)).toBeInTheDocument();
   });
 
@@ -59,7 +68,7 @@ describe("route smoke", () => {
   it("renderizza la login admin", () => {
     renderWithRouter(<AdminLogin />);
     expect(screen.getByRole("heading", { name: /Admin/i })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Accedi/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Invia link magico/i })).toBeInTheDocument();
   });
 });

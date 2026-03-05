@@ -1,76 +1,94 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useAdmin } from "@/hooks/useAdmin";
 
 const DEFAULT_ADMIN_EMAIL = "cavapendoli@gmail.com";
-const DEFAULT_ADMIN_PASSWORD = "barbantini";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const { user, isAdmin, loading } = useAdmin();
   const [email, setEmail] = useState(DEFAULT_ADMIN_EMAIL);
-  const [password, setPassword] = useState(DEFAULT_ADMIN_PASSWORD);
-  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user && isAdmin) {
+      navigate("/admin/anticamera", { replace: true });
+    }
+  }, [user, isAdmin, navigate]);
+
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password) return;
+    if (!email.trim()) return;
 
-    setLoading(true);
+    setSending(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/admin/anticamera`,
+        },
       });
       if (error) throw error;
 
-      navigate("/admin/anticamera", { replace: true });
+      setSent(true);
+      toast.success("Link magico inviato: controlla la tua email.");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Errore durante il login.";
-      toast.error(message);
+      const message = err instanceof Error ? err.message : "Errore durante l'invio del link.";
+      toast.error(message.includes("Failed to fetch") ? "Connessione al backend non disponibile." : message);
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   };
+
+  if (loading) return <div className="min-h-screen bg-background" />;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="w-full max-w-xs text-center"
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-sm text-center rounded-2xl border border-border bg-card/70 p-8"
       >
-        <h1 className="text-2xl font-light mb-8 tracking-[0.1em]">Admin</h1>
+        <h1 className="text-2xl font-light mb-3 tracking-[0.08em]">Admin</h1>
+        <p className="font-mono-light text-xs text-muted-foreground mb-7 uppercase tracking-[0.1em]">
+          Accesso via link magico
+        </p>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleMagicLink} className="space-y-4">
           <Input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email admin"
-            className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-center"
-            required
-          />
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-center"
+            className="bg-background border-input text-center"
             required
           />
           <button
             type="submit"
-            disabled={loading}
-            className="w-full font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-3 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30"
+            disabled={sending}
+            className="w-full font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-3 rounded-xl border border-foreground/20 hover:bg-foreground hover:text-primary-foreground disabled:opacity-40"
           >
-            {loading ? "..." : "Accedi"}
+            {sending ? "Invio..." : "Invia link magico"}
           </button>
         </form>
+
+        {sent && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Ti abbiamo inviato il link: aprilo dalla stessa email per entrare in Anticamera.
+          </p>
+        )}
+
+        {user && !isAdmin && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Sei autenticato ma non ancora autorizzato come admin.
+          </p>
+        )}
       </motion.div>
     </div>
   );

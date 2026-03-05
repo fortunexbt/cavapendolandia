@@ -18,7 +18,7 @@ const MinimalHeader = () => {
               to="/offri"
               className="font-mono-light text-[0.68rem] text-muted-foreground/82 hover:text-foreground"
             >
-              Lascia un'offerta
+              Lascia una cavapendolata
             </Link>
           </nav>
         </div>
