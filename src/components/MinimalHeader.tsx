@@ -11,7 +11,7 @@ const MinimalHeader = () => {
               to="/"
               className="font-mono-light text-sm uppercase tracking-[0.18em] text-foreground/78 hover:text-foreground md:text-[0.68rem]"
             >
-              CAVAPENDOLANDIA
+              CAVAPENDOLI
             </Link>
             <Link
               to="/offri"
