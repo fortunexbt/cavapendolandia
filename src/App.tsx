@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
 import Index from "./pages/Index";
 import Entra from "./pages/Entra";
@@ -22,17 +23,35 @@ const queryClient = new QueryClient();
 const AnimatedRoutes = () => {
   const location = useLocation();
   const showPrelude = !location.pathname.startsWith("/admin");
+  const [contentVisible, setContentVisible] = useState(true);
+  const hasPlayedPrelude = useRef(false);
+
+  useEffect(() => {
+    if (showPrelude && !hasPlayedPrelude.current) {
+      hasPlayedPrelude.current = true;
+      setContentVisible(false);
+    }
+  }, [showPrelude]);
+
+  const handlePreludeComplete = () => {
+    setContentVisible(true);
+  };
 
   return (
     <>
-      {showPrelude && <CavapendoliPrelude triggerKey={location.pathname} />}
+      {showPrelude && (
+        <CavapendoliPrelude
+          triggerKey={location.pathname}
+          onComplete={handlePreludeComplete}
+        />
+      )}
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: contentVisible ? 1 : 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.22, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <Routes location={location}>
             <Route path="/" element={<Index />} />
