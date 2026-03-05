@@ -4,6 +4,7 @@ import AbstractShadow from "@/components/AbstractShadow";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import EntraComingSoon from "@/components/EntraComingSoon";
+import InitiativeHint from "@/components/InitiativeHint";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -75,6 +76,8 @@ const Index = () => {
             Lascia una cavapendolata
           </Link>
         </motion.div>
+
+        <InitiativeHint />
       </motion.main>
 
       <div className="absolute bottom-0 left-0 right-0">

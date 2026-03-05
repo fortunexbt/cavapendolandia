@@ -30,6 +30,8 @@ const AnimatedRoutes = () => {
     if (showPrelude && !hasPlayedPrelude.current) {
       hasPlayedPrelude.current = true;
       setContentVisible(false);
+    } else if (!showPrelude) {
+      setContentVisible(true);
     }
   }, [showPrelude]);
 

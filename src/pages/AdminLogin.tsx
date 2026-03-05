@@ -6,14 +6,16 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useAdmin } from "@/hooks/useAdmin";
 
-const DEFAULT_ADMIN_EMAIL = "cavapendoli@gmail.com";
+const ADMIN_EMAIL = "cavapendoli@gmail.com";
+const ADMIN_PASSWORD = "barbantni";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, loading } = useAdmin();
-  const [email, setEmail] = useState(DEFAULT_ADMIN_EMAIL);
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [password, setPassword] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user && isAdmin) {
@@ -21,27 +23,24 @@ const AdminLogin = () => {
     }
   }, [user, isAdmin, navigate]);
 
-  const handleMagicLink = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || !password.trim()) return;
 
-    setSending(true);
+    setSigningIn(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
-        options: {
-          emailRedirectTo: `${window.location.origin}/admin/anticamera`,
-        },
+        password: password,
       });
       if (error) throw error;
 
-      setSent(true);
-      toast.success("Link magico inviato: controlla la tua email.");
+      toast.success("Accesso effettuato");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Errore durante l'invio del link.";
+      const message = err instanceof Error ? err.message : "Errore durante l'accesso.";
       toast.error(message.includes("Failed to fetch") ? "Connessione al backend non disponibile." : message);
     } finally {
-      setSending(false);
+      setSigningIn(false);
     }
   };
 
@@ -57,10 +56,10 @@ const AdminLogin = () => {
       >
         <h1 className="text-2xl font-light mb-3 tracking-[0.08em]">Admin</h1>
         <p className="font-mono-light text-xs text-muted-foreground mb-7 uppercase tracking-[0.1em]">
-          Accesso via link magico
+          Accesso riservato
         </p>
 
-        <form onSubmit={handleMagicLink} className="space-y-4">
+        <form onSubmit={handleSignIn} className="space-y-4">
           <Input
             type="email"
             value={email}
@@ -69,20 +68,31 @@ const AdminLogin = () => {
             className="bg-background border-input text-center"
             required
           />
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="bg-background border-input text-center pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? "Nascondi" : "Mostra"}
+            </button>
+          </div>
           <button
             type="submit"
-            disabled={sending}
+            disabled={signingIn}
             className="w-full font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-3 rounded-xl border border-foreground/20 hover:bg-foreground hover:text-primary-foreground disabled:opacity-40"
           >
-            {sending ? "Invio..." : "Invia link magico"}
+            {signingIn ? "Accesso..." : "Accedi"}
           </button>
         </form>
-
-        {sent && (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Ti abbiamo inviato il link: aprilo dalla stessa email per entrare in Anticamera.
-          </p>
-        )}
 
         {user && !isAdmin && (
           <p className="mt-4 text-sm text-muted-foreground">
