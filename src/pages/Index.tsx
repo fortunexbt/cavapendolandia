@@ -66,12 +66,12 @@ const Index = () => {
           className="flex flex-col items-center gap-4 sm:flex-row md:gap-6"
         >
           <EntraComingSoon
-            className="inline-flex min-w-[14rem] items-center justify-center border border-foreground/12 bg-background/50 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light text-muted-foreground/45"
+            className="inline-flex min-w-[14rem] items-center justify-center border border-foreground/12 bg-background/50 px-6 py-3 text-xs uppercase tracking-[0.2em] font-mono-light text-muted-foreground/45"
             hint="In arrivo: Entra si apre appena termina la revisione delle offerte."
           />
           <Link
             to="/offri"
-            className="min-w-[14rem] border border-foreground/25 bg-background/60 px-8 py-3 text-sm uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
+            className="min-w-[14rem] border border-foreground/25 bg-background/60 px-6 py-3 text-xs uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
           >
             Lascia una cavapendolata
           </Link>

@@ -281,7 +281,10 @@ const Offri = () => {
                     {(Object.keys(MEDIA_LABELS) as MediaType[]).map((type) => (
                       <button
                         key={type}
-                        onClick={() => setMediaType(type)}
+                        onClick={() => {
+                          setMediaType(type);
+                          setStep(2);
+                        }}
                         className={`py-3 border text-sm font-mono-light transition-all duration-300 ${
                           mediaType === type
                             ? "border-foreground bg-foreground text-primary-foreground"
@@ -466,19 +469,19 @@ const Offri = () => {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="mt-10 flex items-center justify-between">
-            {step > 1 ? (
+          <div className="mt-6 flex items-center justify-between">
+            {step > 1 && step !== 2 ? (
               <button
                 onClick={() => setStep((s) => s - 1)}
                 className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                ← torna indietro
+                ← torna
               </button>
             ) : (
               <div />
             )}
 
-            {step < 5 ? (
+            {step === 2 && (
               <button
                 onClick={() => canProceed() && setStep((s) => s + 1)}
                 disabled={!canProceed()}
@@ -486,7 +489,29 @@ const Offri = () => {
               >
                 avanti
               </button>
-            ) : (
+            )}
+
+            {step === 3 && (
+              <button
+                onClick={() => canProceed() && setStep((s) => s + 1)}
+                disabled={!canProceed()}
+                className="font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                avanti
+              </button>
+            )}
+
+            {step === 4 && (
+              <button
+                onClick={() => canProceed() && setStep((s) => s + 1)}
+                disabled={!canProceed()}
+                className="font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                avanti
+              </button>
+            )}
+
+            {step === 5 && (
               <button
                 onClick={handleSubmit}
                 disabled={!canProceed() || submitting}
