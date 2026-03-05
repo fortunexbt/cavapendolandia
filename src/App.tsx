@@ -40,10 +40,7 @@ const AnimatedRoutes = () => {
   return (
     <>
       {showPrelude && (
-        <CavapendoliPrelude
-          triggerKey={location.pathname}
-          onComplete={handlePreludeComplete}
-        />
+        <CavapendoliPrelude onComplete={handlePreludeComplete} />
       )}
       <AnimatePresence mode="wait">
         <motion.div

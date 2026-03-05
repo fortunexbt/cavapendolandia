@@ -4,17 +4,15 @@ import { useEffect, useRef, useState } from "react";
 const MOBILE_QUERY = "(max-width: 767px)";
 
 interface CavapendoliPreludeProps {
-  triggerKey: string;
   onComplete?: () => void;
 }
 
-const CavapendoliPrelude = ({ triggerKey, onComplete }: CavapendoliPreludeProps) => {
+const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
   const reduceMotion = useReducedMotion();
   const hasPlayedRef = useRef(false);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia(MOBILE_QUERY).matches : false,
   );
-  const [sequenceKey, setSequenceKey] = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -33,18 +31,14 @@ const CavapendoliPrelude = ({ triggerKey, onComplete }: CavapendoliPreludeProps)
       return;
     }
 
-    // Only play on initial load, not on subsequent route changes
     if (hasPlayedRef.current) {
       return;
     }
 
     hasPlayedRef.current = true;
 
-    // Longer duration for emphasis (~4.5 seconds)
     const totalDurationMs = 4500;
 
-    setSequenceKey((prev) => prev + 1);
-    setVisible(true);
     const timeoutId = window.setTimeout(() => {
       setVisible(false);
       onComplete?.();
@@ -55,10 +49,9 @@ const CavapendoliPrelude = ({ triggerKey, onComplete }: CavapendoliPreludeProps)
   if (isMobile) return null;
 
   return (
-    <AnimatePresence>
-      {visible ? (
+    <AnimatePresence mode="wait">
+      {visible && (
         <motion.div
-          key={`prelude-${sequenceKey}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -144,7 +137,7 @@ const CavapendoliPrelude = ({ triggerKey, onComplete }: CavapendoliPreludeProps)
             />
           </div>
         </motion.div>
-      ) : null}
+      )}
     </AnimatePresence>
   );
 };
