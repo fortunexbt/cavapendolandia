@@ -18,7 +18,6 @@ import {
   MAX_TEXT_LENGTH,
   MAX_TITLE_LENGTH,
   canSubmitFromClientRateLimit,
-  getOrCreateSubmissionFingerprint,
   isValidHttpUrl,
   isValidInstagramHandle,
   normalizeInstagramHandle,
@@ -153,7 +152,6 @@ const Offri = () => {
 
     try {
       let filePath: string | null = null;
-      let fileSize: number | null = null;
 
       // Upload file if needed
       if (file && mediaType !== "text" && mediaType !== "link") {
@@ -170,13 +168,11 @@ const Offri = () => {
           .upload(path, file);
         if (uploadError) throw uploadError;
         filePath = path;
-        fileSize = file.size;
       }
 
       const { error } = await supabase.from("offerings").insert({
         media_type: mediaType,
-        file_path: filePath,
-        file_size: fileSize,
+        file_url: filePath,
         text_content: mediaType === "text" ? textContent.trim() : null,
         link_url: mediaType === "link" ? linkUrl.trim() : null,
         title: title.trim() || null,
@@ -188,7 +184,6 @@ const Offri = () => {
         consent_archive: consentArchive,
         consent_reshare: consentReshare,
         status: "pending",
-        submission_fingerprint: getOrCreateSubmissionFingerprint(),
       });
 
       if (error) throw error;
@@ -215,7 +210,7 @@ const Offri = () => {
           >
             <h1 className="text-3xl md:text-4xl font-light mb-6">Accolta</h1>
             <p className="text-lg italic text-muted-foreground mb-2">
-              La tua offerta è stata accolta.
+              La tua cavapendolata è stata accolta.
             </p>
             <p className="text-lg italic text-muted-foreground mb-12">
               Ora è in attesa di entrare.
@@ -226,7 +221,7 @@ const Offri = () => {
                 onClick={resetForm}
                 className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
               >
-                Lascia un'altra offerta
+                Lascia un'altra cavapendolata
               </button>
             </div>
           </motion.div>
@@ -249,7 +244,7 @@ const Offri = () => {
             className="text-center mb-14"
           >
             <h1 className="text-3xl md:text-5xl font-light mb-4">
-              Lascia un'offerta
+              Lascia una cavapendolata
             </h1>
             <p className="text-base italic text-muted-foreground">
               Qualcosa che possa stare qui.

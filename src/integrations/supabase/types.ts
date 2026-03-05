@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      initiatives: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          details: string | null
+          id: string
+          is_active: boolean
+          prompt: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          id?: string
+          is_active?: boolean
+          prompt: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          id?: string
+          is_active?: boolean
+          prompt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       offerings: {
         Row: {
           approved_at: string | null
@@ -24,8 +54,6 @@ export type Database = {
           consent_rights: boolean
           created_at: string
           curatorial_note: string | null
-          file_path: string | null
-          file_size: number | null
           file_url: string | null
           hidden_at: string | null
           id: string
@@ -46,8 +74,6 @@ export type Database = {
           consent_rights?: boolean
           created_at?: string
           curatorial_note?: string | null
-          file_path?: string | null
-          file_size?: number | null
           file_url?: string | null
           hidden_at?: string | null
           id?: string
@@ -56,7 +82,6 @@ export type Database = {
           note?: string | null
           rejected_at?: string | null
           status?: Database["public"]["Enums"]["offering_status"]
-          submission_fingerprint?: string | null
           text_content?: string | null
           title?: string | null
         }
@@ -69,8 +94,6 @@ export type Database = {
           consent_rights?: boolean
           created_at?: string
           curatorial_note?: string | null
-          file_path?: string | null
-          file_size?: number | null
           file_url?: string | null
           hidden_at?: string | null
           id?: string
@@ -79,7 +102,6 @@ export type Database = {
           note?: string | null
           rejected_at?: string | null
           status?: Database["public"]["Enums"]["offering_status"]
-          submission_fingerprint?: string | null
           text_content?: string | null
           title?: string | null
         }
@@ -108,12 +130,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_submit_offering: {
-        Args: {
-          _fingerprint: string
-        }
-        Returns: boolean
-      }
+      has_any_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
