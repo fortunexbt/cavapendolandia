@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
@@ -28,6 +29,15 @@ const Rimozione = () => {
           <p className="text-sm leading-relaxed text-muted-foreground">
             Indica data, titolo (se presente) e un dettaglio per riconoscerlo.
           </p>
+
+          <div className="pt-8">
+            <Link
+              to="/offri"
+              className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
+            >
+              Lascia una cavapendolata →
+            </Link>
+          </div>
         </motion.div>
       </main>
 

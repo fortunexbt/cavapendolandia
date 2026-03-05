@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
-import EntraComingSoon from "@/components/EntraComingSoon";
 
 const MYSTICAL_QUOTE = `I Cavapendoli scendono a spirale, quasi veloci. Prima erano ovunque, nei magazzini del mondo impalpabile. Lentamente, nel tempo, hanno assunto forma: prima immagini, poi dipinti, poi parole.
 Ma non si lasciavano fissare volentieri.
@@ -39,13 +38,12 @@ const CheCose = () => {
             Non troverai risposte giuste. Solo tracce.
           </p>
 
-          <div className="pt-8 flex items-center justify-center gap-8">
-            <EntraComingSoon className="font-mono-light text-sm text-muted-foreground/45" />
+          <div className="pt-10 flex items-center justify-center gap-6">
             <Link
               to="/offri"
-              className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
             >
-              Lascia una cavapendolata
+              Lascia una cavapendolata →
             </Link>
           </div>
 

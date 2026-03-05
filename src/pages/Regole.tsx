@@ -38,12 +38,18 @@ const Regole = () => {
             ))}
           </ul>
 
-          <div className="pt-10">
+          <div className="pt-10 flex flex-col items-center gap-4">
             <Link
               to="/offri"
-              className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+              className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
             >
-              Lascia una cavapendolata
+              Lascia una cavapendolata →
+            </Link>
+            <Link
+              to="/rimozione"
+              className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+            >
+              Prima leggo Rimozione
             </Link>
           </div>
         </motion.div>

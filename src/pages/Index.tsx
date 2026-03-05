@@ -3,8 +3,18 @@ import { motion, type Variants } from "framer-motion";
 import AbstractShadow from "@/components/AbstractShadow";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
-import EntraComingSoon from "@/components/EntraComingSoon";
 import InitiativeHint from "@/components/InitiativeHint";
+
+const SEAHORSE_SVG = (
+  <svg viewBox="0 0 280 240" className="h-32 w-32 md:h-48 md:w-48">
+    <path d="M175 35c22 24 30 55 22 88-4 17-15 31-29 39 5 22-3 42-20 60-13 13-28 19-45 17 19-9 30-23 34-43 4-19 0-36-12-50-16-18-24-39-22-62 2-24 14-45 35-60 23-16 50-14 71 11Z" fill="currentColor" className="text-secondary" />
+    <polygon points="115,92 146,68 186,74 198,108 167,127 132,117" fill="currentColor" className="text-accent" />
+    <polygon points="102,129 129,108 159,133 143,163 111,156" fill="currentColor" className="text-destructive/80" />
+    <polygon points="161,150 189,137 203,160 183,187 154,173" fill="currentColor" className="text-ring" />
+    <ellipse cx="205" cy="84" rx="18" ry="18" fill="none" stroke="currentColor" strokeWidth="4" className="text-foreground/20" />
+    <circle cx="208" cy="84" r="5" fill="currentColor" className="text-foreground/40" />
+  </svg>
+);
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -40,40 +50,57 @@ const Index = () => {
         initial="hidden"
         animate="show"
       >
-        <motion.h1
-          variants={itemVariants}
-          className="mb-10 font-mono-light text-sm uppercase tracking-[0.24em] text-muted-foreground/70 md:text-base"
-        >
-          CAVAPENDOLAND
-        </motion.h1>
+        <motion.div variants={itemVariants}>
+          {SEAHORSE_SVG}
+        </motion.div>
 
         <motion.p
           variants={itemVariants}
-          className="mb-10 max-w-3xl text-5xl font-light italic leading-[1.2] text-foreground/82 md:text-6xl"
+          className="mt-8 mb-2 max-w-3xl text-5xl font-light italic leading-[1.2] text-foreground/82 md:text-6xl"
         >
           Che cosa significa Cavapendoli per te?
         </motion.p>
 
         <motion.p
           variants={itemVariants}
-          className="mb-10 font-mono-light text-sm text-muted-foreground/70 md:text-base"
+          className="mb-12 font-mono-light text-sm text-muted-foreground/70 md:text-base"
         >
-          Un luogo delicato. Lascia qualcosa che possa stare qui.
+          Un luogo delicato. Prima di lasciare qualcosa, scopri le regole.
         </motion.p>
 
         <motion.div
           variants={itemVariants}
-          className="flex flex-col items-center gap-5 sm:flex-row md:gap-8"
+          className="flex flex-col items-center gap-4"
         >
-          <EntraComingSoon
-            className="inline-flex min-w-[16rem] items-center justify-center border border-foreground/12 bg-background/50 px-8 py-4 text-base uppercase tracking-[0.2em] font-mono-light text-muted-foreground/45"
-            hint="In arrivo: Entra si apre appena termina la revisione delle offerte."
-          />
           <Link
-            to="/offri"
-            className="min-w-[16rem] border border-foreground/25 bg-background/60 px-8 py-4 text-base uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
+            to="/che-cose"
+            className="min-w-[18rem] border border-foreground/25 bg-background/60 px-8 py-4 text-base uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
           >
-            Lascia una cavapendolata
+            Scopri
+          </Link>
+        </motion.div>
+
+        <motion.div
+          variants={itemVariants}
+          className="mt-6 flex flex-col items-center gap-3"
+        >
+          <Link
+            to="/che-cose"
+            className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            Che cos'è
+          </Link>
+          <Link
+            to="/regole"
+            className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            Regole
+          </Link>
+          <Link
+            to="/rimozione"
+            className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            Rimozione
           </Link>
         </motion.div>
 
