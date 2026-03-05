@@ -38,12 +38,18 @@ const CheCose = () => {
             Non troverai risposte giuste. Solo tracce.
           </p>
 
-          <div className="pt-10 flex items-center justify-center gap-6">
+          <div className="pt-10 flex flex-col items-center gap-4">
             <Link
-              to="/offri"
+              to="/regole"
               className="font-mono-light text-base text-foreground hover:text-foreground transition-colors"
             >
-              Lascia una cavapendolata →
+              Prossimo: Le regole →
+            </Link>
+            <Link
+              to="/rimozione"
+              className="font-mono-light text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+            >
+              Opzionale: info rimozione
             </Link>
           </div>
 
