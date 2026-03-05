@@ -241,12 +241,12 @@ const Offri = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="text-center mb-14"
+            className="text-center mb-12"
           >
-            <h1 className="text-3xl md:text-5xl font-light mb-4">
+            <h1 className="text-4xl md:text-5xl font-light mb-4">
               Lascia una cavapendolata
             </h1>
-            <p className="text-base italic text-muted-foreground">
+            <p className="text-lg italic text-muted-foreground">
               Qualcosa che possa stare qui.
             </p>
           </motion.div>
@@ -269,12 +269,12 @@ const Offri = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="min-h-[20rem]"
+              className="min-h-[14rem]"
             >
               {/* Step 1: Media type */}
               {step === 1 && (
                 <div className="space-y-4">
-                  <p className="font-mono-light text-muted-foreground text-center mb-8 uppercase tracking-[0.13em] text-xs">
+                  <p className="font-mono-light text-muted-foreground text-center mb-6 uppercase tracking-[0.13em] text-sm">
                     Cosa lasci?
                   </p>
                   <div className="grid grid-cols-3 gap-3">
@@ -285,7 +285,7 @@ const Offri = () => {
                           setMediaType(type);
                           setStep(2);
                         }}
-                        className={`py-3 border text-sm font-mono-light transition-all duration-300 ${
+                        className={`py-4 border text-base font-mono-light transition-all duration-300 ${
                           mediaType === type
                             ? "border-foreground bg-foreground text-primary-foreground"
                             : "border-border hover:border-foreground/30"
@@ -469,11 +469,11 @@ const Offri = () => {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between">
             {step > 1 && step !== 2 ? (
               <button
                 onClick={() => setStep((s) => s - 1)}
-                className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 ← torna
               </button>
@@ -485,7 +485,7 @@ const Offri = () => {
               <button
                 onClick={() => canProceed() && setStep((s) => s + 1)}
                 disabled={!canProceed()}
-                className="font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 avanti
               </button>
@@ -495,7 +495,7 @@ const Offri = () => {
               <button
                 onClick={() => canProceed() && setStep((s) => s + 1)}
                 disabled={!canProceed()}
-                className="font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 avanti
               </button>
@@ -505,7 +505,7 @@ const Offri = () => {
               <button
                 onClick={() => canProceed() && setStep((s) => s + 1)}
                 disabled={!canProceed()}
-                className="font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 avanti
               </button>
@@ -515,7 +515,7 @@ const Offri = () => {
               <button
                 onClick={handleSubmit}
                 disabled={!canProceed() || submitting}
-                className="font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-2 border border-foreground/20 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {submitting ? "..." : "Invia all'Anticamera"}
               </button>

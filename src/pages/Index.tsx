@@ -49,29 +49,29 @@ const Index = () => {
 
         <motion.p
           variants={itemVariants}
-          className="mb-12 max-w-3xl text-4xl font-light italic leading-[1.2] text-foreground/82 md:text-6xl"
+          className="mb-10 max-w-3xl text-5xl font-light italic leading-[1.2] text-foreground/82 md:text-6xl"
         >
           Che cosa significa Cavapendoli per te?
         </motion.p>
 
         <motion.p
           variants={itemVariants}
-          className="mb-12 font-mono-light text-xs text-muted-foreground/70 md:text-sm"
+          className="mb-10 font-mono-light text-sm text-muted-foreground/70 md:text-base"
         >
           Un luogo delicato. Lascia qualcosa che possa stare qui.
         </motion.p>
 
         <motion.div
           variants={itemVariants}
-          className="flex flex-col items-center gap-4 sm:flex-row md:gap-6"
+          className="flex flex-col items-center gap-5 sm:flex-row md:gap-8"
         >
           <EntraComingSoon
-            className="inline-flex min-w-[14rem] items-center justify-center border border-foreground/12 bg-background/50 px-6 py-3 text-xs uppercase tracking-[0.2em] font-mono-light text-muted-foreground/45"
+            className="inline-flex min-w-[16rem] items-center justify-center border border-foreground/12 bg-background/50 px-8 py-4 text-base uppercase tracking-[0.2em] font-mono-light text-muted-foreground/45"
             hint="In arrivo: Entra si apre appena termina la revisione delle offerte."
           />
           <Link
             to="/offri"
-            className="min-w-[14rem] border border-foreground/25 bg-background/60 px-6 py-3 text-xs uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
+            className="min-w-[16rem] border border-foreground/25 bg-background/60 px-8 py-4 text-base uppercase tracking-[0.2em] font-mono-light hover:-translate-y-0.5 hover:bg-foreground hover:text-primary-foreground"
           >
             Lascia una cavapendolata
           </Link>

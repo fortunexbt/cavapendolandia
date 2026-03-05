@@ -14,28 +14,28 @@ const CheCose = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="max-w-xl text-center space-y-6"
+          className="max-w-xl text-center space-y-8"
         >
-          <h1 className="text-3xl font-light mb-8">Che cos'è</h1>
+          <h1 className="text-4xl font-light mb-10 md:text-5xl">Che cos'è</h1>
 
-          <p className="text-lg leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/80">
             Un luogo semplice dove lasciare qualcosa.
           </p>
-          <p className="text-lg leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/80">
             Un'immagine, un suono, un testo, un frammento.
           </p>
-          <p className="text-xl italic text-foreground/80">
+          <p className="text-2xl italic text-foreground/80">
             La domanda: che cosa significa Cavapendoli per te?
           </p>
-          <p className="text-lg leading-relaxed text-foreground/80">
+          <p className="text-xl leading-relaxed text-foreground/80">
             Non troverai risposte giuste. Solo tracce.
           </p>
 
-          <div className="pt-6 flex items-center justify-center gap-6">
-            <EntraComingSoon className="font-mono-light text-xs text-muted-foreground/45" />
+          <div className="pt-8 flex items-center justify-center gap-8">
+            <EntraComingSoon className="font-mono-light text-sm text-muted-foreground/45" />
             <Link
               to="/offri"
-              className="font-mono-light text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Lascia una cavapendolata
             </Link>
