@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      initiatives: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          details: string | null
+          id: string
+          is_active: boolean
+          prompt: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          id?: string
+          is_active?: boolean
+          prompt: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          id?: string
+          is_active?: boolean
+          prompt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       offerings: {
         Row: {
           approved_at: string | null
@@ -100,6 +130,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_any_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
