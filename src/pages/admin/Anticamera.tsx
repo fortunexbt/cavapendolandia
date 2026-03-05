@@ -32,16 +32,50 @@ const STATUS_TABS: { value: StatusFilter; label: string; path: string }[] = [
 const MEDIA_FILTERS: MediaFilter[] = ["all", "image", "video", "audio", "text", "pdf", "link"];
 
 const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter }) => {
-  const { user, isAdmin, loading, signOut } = useAdmin();
+  const { user, isAdmin, loading, signOut, isDemo } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const queryClient = useQueryClient();
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const supabaseAny = supabase as any;
 
+  const DEMO_OFFERINGS = [
+    {
+      id: "demo-1",
+      title: "Una foto del mare",
+      note: "Il mare di Ostia all'alba",
+      author_name: "Marco",
+      media_type: "image",
+      media_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400",
+      status: "pending" as const,
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: "demo-2",
+      title: "Poesia per i cavapendoli",
+      note: "Pendono e oscillano...",
+      author_name: "Giulia",
+      media_type: "text",
+      media_url: null,
+      status: "pending" as const,
+      created_at: new Date().toISOString(),
+    },
+  ];
+
+  const DEMO_INITIATIVES: Initiative[] = [
+    {
+      id: "demo-init-1",
+      prompt: "I cavapendoli oggi hanno bisogno di scarpe nuove",
+      details: "Qualcuno ha visto le loro scarpe?",
+      is_active: true,
+      created_at: new Date().toISOString(),
+    },
+  ];
+
   const { data: offerings = [], isLoading } = useQuery({
     queryKey: ["admin-offerings", statusFilter, mediaFilter],
     queryFn: async () => {
+      if (isDemo) return withSignedFileUrls(DEMO_OFFERINGS.filter((o) => o.status === statusFilter));
       let query = supabase
         .from("offerings")
         .select("*")
@@ -62,6 +96,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   const { data: initiatives = [], isLoading: initiativesLoading } = useQuery({
     queryKey: ["admin-initiatives"],
     queryFn: async () => {
+      if (isDemo) return DEMO_INITIATIVES;
       const { data, error } = await supabaseAny
         .from("initiatives")
         .select("*")

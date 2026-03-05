@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+const DEMO_USER_ID = "00000000-0000-0000-0000-000000000000";
+
 const ADMIN_ROLE = "admin" as const;
 
 const resolveAdminStatus = async (currentUser: User | null) => {
-  if (!currentUser) return false;
+  if (DEMO_MODE || !currentUser) return true;
 
   const { data: hasAdminRole } = await supabase.rpc("has_role", {
     _user_id: currentUser.id,
@@ -32,10 +35,17 @@ const resolveAdminStatus = async (currentUser: User | null) => {
 
 export const useAdmin = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(DEMO_MODE);
+  const [loading, setLoading] = useState(!DEMO_MODE);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setUser({ id: DEMO_USER_ID, email: "demo@cavapendolandia.it" } as User);
+      setIsAdmin(true);
+      setLoading(false);
+      return;
+    }
+
     const syncAuth = async (currentUser: User | null) => {
       setUser(currentUser);
       const admin = await resolveAdminStatus(currentUser);
@@ -57,8 +67,12 @@ export const useAdmin = () => {
   }, []);
 
   const signOut = async () => {
+    if (DEMO_MODE) {
+      window.location.reload();
+      return;
+    }
     await supabase.auth.signOut();
   };
 
-  return { user, isAdmin, loading, signOut };
+  return { user, isAdmin, loading, signOut, isDemo: DEMO_MODE };
 };
