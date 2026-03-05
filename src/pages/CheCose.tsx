@@ -57,7 +57,7 @@ const CheCose = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="pt-12 text-sm italic text-muted-foreground/50 leading-relaxed border-t border-border/30 mt-12 px-4"
+            className="pt-12 text-base italic text-muted-foreground/50 leading-relaxed border-t border-border/30 mt-12 px-4"
           >
             {MYSTICAL_QUOTE.split("\n\n").map((para, i) => (
               <p key={i} className="mb-3">{para}</p>
