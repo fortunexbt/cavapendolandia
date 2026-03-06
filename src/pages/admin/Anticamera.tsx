@@ -168,7 +168,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
 
   const toggleInitiative = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await supabaseAny
+      const { error } = await supabase
         .from("initiatives")
         .update({ is_active: isActive })
         .eq("id", id);
