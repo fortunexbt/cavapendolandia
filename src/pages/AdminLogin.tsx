@@ -10,7 +10,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, loading } = useAdmin();
-  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signingIn, setSigningIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
