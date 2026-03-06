@@ -99,7 +99,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     queryKey: ["admin-initiatives"],
     queryFn: async () => {
       if (isDemo) return DEMO_INITIATIVES;
-      const { data, error } = await supabaseAny
+      const { data, error } = await supabase
         .from("initiatives")
         .select("*")
         .order("created_at", { ascending: false })
