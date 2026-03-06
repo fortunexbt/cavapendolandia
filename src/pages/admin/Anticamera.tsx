@@ -111,13 +111,13 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   });
 
   const filteredOfferings = useMemo(() => {
-    if (!searchTerm.trim()) return offerings;
+    if (!searchTerm.trim()) return offerings as any[];
     const term = searchTerm.trim().toLowerCase();
 
-    return offerings.filter((offering) =>
+    return (offerings as any[]).filter((offering: any) =>
       [offering.title, offering.note, offering.author_name]
         .filter(Boolean)
-        .some((value) => value?.toLowerCase().includes(term)),
+        .some((value: string) => value?.toLowerCase().includes(term)),
     );
   }, [offerings, searchTerm]);
 

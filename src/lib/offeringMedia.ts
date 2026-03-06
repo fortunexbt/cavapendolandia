@@ -5,6 +5,7 @@ const SIGNED_URL_TTL_SECONDS = 60 * 60;
 type OfferingMediaLike = {
   file_path?: string | null;
   file_url?: string | null;
+  [key: string]: unknown;
 };
 
 const isAbsoluteUrl = (value: string) => /^https?:\/\//i.test(value);
