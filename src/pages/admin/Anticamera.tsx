@@ -182,7 +182,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
 
   const deleteInitiative = useMutation({
     mutationFn: async (initiativeId: string) => {
-      const { error } = await supabaseAny.from("initiatives").delete().eq("id", initiativeId);
+      const { error } = await supabase.from("initiatives").delete().eq("id", initiativeId);
       if (error) throw error;
     },
     onSuccess: () => {
