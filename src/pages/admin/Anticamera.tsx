@@ -37,7 +37,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   const queryClient = useQueryClient();
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const supabaseAny = supabase as any;
+  
 
   const DEMO_OFFERINGS: any[] = [
     {
