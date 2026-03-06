@@ -99,8 +99,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     queryKey: ["admin-initiatives"],
     queryFn: async () => {
       if (isDemo) return DEMO_INITIATIVES;
-      const { data, error } = await supabase
-        .from("initiatives")
+      const { data, error } = await supabase      .from("initiatives")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(6);
@@ -151,7 +150,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
 
   const createInitiative = useMutation({
     mutationFn: async ({ prompt, details }: { prompt: string; details: string }) => {
-      const { error } = await supabaseAny.from("initiatives").insert({
+      const { error } = await supabaseAnyom("initiatives").insert({
         prompt,
         details: details || null,
         is_active: true,
