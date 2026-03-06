@@ -39,14 +39,15 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   const [searchTerm, setSearchTerm] = useState("");
   const supabaseAny = supabase as any;
 
-  const DEMO_OFFERINGS = [
+  const DEMO_OFFERINGS: any[] = [
     {
       id: "demo-1",
       title: "Una foto del mare",
       note: "Il mare di Ostia all'alba",
       author_name: "Marco",
+      author_type: "name",
       media_type: "image",
-      media_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400",
+      file_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400",
       status: "pending" as const,
       created_at: new Date().toISOString(),
     },
@@ -55,8 +56,9 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
       title: "Poesia per i cavapendoli",
       note: "Pendono e oscillano...",
       author_name: "Giulia",
+      author_type: "name",
       media_type: "text",
-      media_url: null,
+      file_url: null,
       status: "pending" as const,
       created_at: new Date().toISOString(),
     },
@@ -109,13 +111,13 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   });
 
   const filteredOfferings = useMemo(() => {
-    if (!searchTerm.trim()) return offerings;
+    if (!searchTerm.trim()) return offerings as any[];
     const term = searchTerm.trim().toLowerCase();
 
-    return offerings.filter((offering) =>
+    return (offerings as any[]).filter((offering: any) =>
       [offering.title, offering.note, offering.author_name]
         .filter(Boolean)
-        .some((value) => value?.toLowerCase().includes(term)),
+        .some((value: string) => value?.toLowerCase().includes(term)),
     );
   }, [offerings, searchTerm]);
 
