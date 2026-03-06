@@ -150,7 +150,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
 
   const createInitiative = useMutation({
     mutationFn: async ({ prompt, details }: { prompt: string; details: string }) => {
-      const { error } = await supabaseAnyom("initiatives").insert({
+      const { error } = await supabase.from("initiatives").insert({
         prompt,
         details: details || null,
         is_active: true,
