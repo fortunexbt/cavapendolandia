@@ -6,8 +6,6 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useAdmin } from "@/hooks/useAdmin";
 
-const ADMIN_EMAIL = "cavapendoli@gmail.com";
-const ADMIN_PASSWORD = "barbantni";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
