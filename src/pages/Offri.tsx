@@ -263,15 +263,20 @@ const Offri = () => {
             </p>
           </motion.div>
 
-          <div className="mb-8 flex items-center justify-center gap-3">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <div
-                key={s}
-                className={`h-3 w-3 rounded-full transition-colors ${
-                  s === step ? "bg-foreground" : s < step ? "bg-foreground/30" : "bg-border"
-                }`}
-              />
-            ))}
+          <div className="mb-8 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-3">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <div
+                  key={s}
+                  className={`h-3 w-3 rounded-full transition-colors ${
+                    s === step ? "bg-foreground" : s < step ? "bg-foreground/30" : "bg-border"
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="font-mono-light text-[0.6rem] uppercase tracking-[0.15em] text-muted-foreground/60">
+              {step} — {STEP_LABELS[step]}
+            </p>
           </div>
 
           <AnimatePresence mode="wait">
