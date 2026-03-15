@@ -953,7 +953,7 @@ function GalleryRoom() {
       {/* Archway lintel */}
       <mesh position={[0, 8, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
 
       {/* Exit hint text above archway */}
