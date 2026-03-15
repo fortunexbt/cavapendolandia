@@ -1332,11 +1332,10 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
 
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
-  // ESC to exit focus mode
+  // ESC to close modals
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setCameraTarget(null);
         setSelectedOffering(null);
         setSelectedCreature(null);
       }
