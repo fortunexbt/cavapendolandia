@@ -1104,11 +1104,13 @@ function FPSController({
   modalOpen,
   joystickRef,
   onFrameClick,
+  onExit,
 }: {
   enabled: boolean;
   modalOpen: boolean;
   joystickRef: React.RefObject<JoystickInput>;
   onFrameClick?: () => void;
+  onExit?: () => void;
 }) {
   const { camera, gl, raycaster, scene } = useThree();
   const keysDown = useRef(new Set<string>());
