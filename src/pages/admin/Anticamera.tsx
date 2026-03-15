@@ -243,13 +243,18 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
               <Link
                 key={tab.value}
                 to={tab.path}
-                className={`font-mono-light text-[0.67rem] uppercase tracking-[0.12em] ${
+                className={`font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 ${
                   statusFilter === tab.value
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tab.label}
+                {statusCounts && statusCounts[tab.value] > 0 && (
+                  <Badge variant={tab.value === "pending" ? "default" : "secondary"} className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
+                    {statusCounts[tab.value]}
+                  </Badge>
+                )}
               </Link>
             ))}
           </div>
