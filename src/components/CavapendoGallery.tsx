@@ -1495,12 +1495,25 @@ function FPSController({
     };
   }, [enabled, modalOpen, camera, gl, raycaster, scene]);
 
-  // Release pointer lock on modal open
+  // Release pointer lock on modal open, re-acquire on close
+  const prevModalOpen = useRef(false);
   useEffect(() => {
     if (modalOpen && document.pointerLockElement) {
       document.exitPointerLock();
     }
-  }, [modalOpen]);
+    // Re-acquire pointer lock when modal closes
+    if (!modalOpen && prevModalOpen.current && enabled) {
+      // Small delay so the browser allows re-lock after exitPointerLock
+      const timer = setTimeout(() => {
+        if (enabled && !document.pointerLockElement) {
+          gl.domElement.requestPointerLock();
+        }
+      }, 100);
+      prevModalOpen.current = modalOpen;
+      return () => clearTimeout(timer);
+    }
+    prevModalOpen.current = modalOpen;
+  }, [modalOpen, enabled, gl]);
 
   // Cleanup audio context
   useEffect(() => {
