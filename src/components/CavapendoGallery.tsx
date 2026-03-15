@@ -1441,7 +1441,7 @@ function Scene({
           };
         } else if (wall === 1) { // left wall
           result[idx] = {
-            position: [-WALL_OFFSET, 1.2 + yJitter, clampedCoord],
+            position: [-WALL_OFFSET, -0.5 + yJitter, clampedCoord],
             rotation: [0, Math.PI / 2, tilt],
           };
         } else { // right wall
