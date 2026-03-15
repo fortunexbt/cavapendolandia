@@ -1927,7 +1927,7 @@ function VirtualJoystick({
       onTouchMove={handleMove}
       onTouchEnd={handleEnd}
       onTouchCancel={handleEnd}
-      className={`absolute bottom-8 ${side === "left" ? "left-8" : "right-8"} pointer-events-auto touch-none`}
+      className={`absolute bottom-6 ${side === "left" ? "left-6" : "right-6"} pointer-events-auto touch-none`}
       style={{
         width: RADIUS * 2 + 20,
         height: RADIUS * 2 + 20,
