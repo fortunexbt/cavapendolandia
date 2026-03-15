@@ -385,7 +385,8 @@ function ArtisticFrame({
   const canvasH = innerH - 0.1;
   const isImage = offering.media_type === "image" && offering.file_url;
   const isVideo = offering.media_type === "video" && offering.file_url;
-  const useNativeTexture = isImage || isVideo;
+  const isPdf = offering.media_type === "pdf" && (offering.file_url || offering.link_url);
+  const useNativeTexture = isImage || isVideo || isPdf;
   // For non-texture content (text, audio, link, pdf), use corrected Html scaling
   const pxW = Math.round(canvasW * 100);
   const pxH = Math.round(canvasH * 100);
