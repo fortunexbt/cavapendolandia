@@ -201,6 +201,365 @@ function GalleryDust() {
   );
 }
 
+// Cavapendoli story creatures
+const CREATURES = [
+  {
+    name: "Cavalluccio Marino",
+    story: "«Noi cavallucci siamo i primi cavapendoli: oscilliamo nell'acqua come pendoli viventi.»",
+    position: [-6, -2.5, -8] as [number, number, number],
+    rotation: [0, 0.4, 0] as [number, number, number],
+    color: "#7a9b8a",
+    emissive: "#4a6b5a",
+    geometry: "seahorse" as const,
+    scale: 0.6,
+  },
+  {
+    name: "Gufo Saggio",
+    story: "«Di notte conto i cavapendoli che dondolano tra le stelle. Non finiscono mai.»",
+    position: [8, -1.5, -5] as [number, number, number],
+    rotation: [0, -0.8, 0] as [number, number, number],
+    color: "#8b7355",
+    emissive: "#5a4a35",
+    geometry: "owl" as const,
+    scale: 0.5,
+  },
+  {
+    name: "Lucertola Sognatrice",
+    story: "«Mi fermo al sole e sogno cavapendoli fatti di luce, che oscillano senza ombra.»",
+    position: [3, -2.8, 4] as [number, number, number],
+    rotation: [-0.3, 1.2, 0] as [number, number, number],
+    color: "#6b8b5b",
+    emissive: "#3a5a2b",
+    geometry: "lizard" as const,
+    scale: 0.45,
+  },
+  {
+    name: "Lumaca Filosofa",
+    story: "«Ogni cavapendolo è una spirale, come la mia casa. Il tempo gira, mai dritto.»",
+    position: [-4, -2.85, 5] as [number, number, number],
+    rotation: [0, 2.1, 0] as [number, number, number],
+    color: "#b09878",
+    emissive: "#806848",
+    geometry: "snail" as const,
+    scale: 0.4,
+  },
+  {
+    name: "Gatto Lunare",
+    story: "«I cavapendoli migliori appaiono a mezzanotte, quando nessuno guarda.»",
+    position: [10, -2.3, 2] as [number, number, number],
+    rotation: [0, -1.5, 0] as [number, number, number],
+    color: "#4a4a5a",
+    emissive: "#2a2a3a",
+    geometry: "cat" as const,
+    scale: 0.55,
+  },
+  {
+    name: "Rana Cantante",
+    story: "«Canto per i cavapendoli: cra-cra-pendolo, cra-cra-pendolo… è la mia ninna nanna.»",
+    position: [-9, -2.7, 0] as [number, number, number],
+    rotation: [0, 1.0, 0] as [number, number, number],
+    color: "#5a8b5a",
+    emissive: "#2a5b2a",
+    geometry: "frog" as const,
+    scale: 0.4,
+  },
+];
+
+// Build a simple creature mesh based on type
+function CreatureBody({ type, color, emissive }: { type: string; color: string; emissive: string }) {
+  const matProps = { color, emissive, emissiveIntensity: 0.3, roughness: 0.7, metalness: 0.1 };
+  
+  if (type === "seahorse") {
+    return (
+      <group>
+        {/* Body - curved S shape */}
+        <mesh position={[0, 0.6, 0]}>
+          <sphereGeometry args={[0.35, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0, 0.15, 0.05]} scale={[0.8, 1, 0.7]}>
+          <sphereGeometry args={[0.3, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0.05, -0.2, 0]} scale={[0.6, 0.8, 0.5]}>
+          <sphereGeometry args={[0.25, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Tail curl */}
+        <mesh position={[0.1, -0.5, 0]} rotation={[0, 0, -0.5]} scale={[0.4, 0.6, 0.35]}>
+          <torusGeometry args={[0.2, 0.06, 8, 12, Math.PI]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Snout */}
+        <mesh position={[0.15, 0.7, 0.15]} rotation={[0, 0, -0.3]} scale={[1.5, 0.4, 0.4]}>
+          <cylinderGeometry args={[0.04, 0.06, 0.3, 8]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Eye */}
+        <mesh position={[0.08, 0.72, 0.2]}>
+          <sphereGeometry args={[0.05, 8, 8]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+        {/* Dorsal fin */}
+        <mesh position={[-0.15, 0.4, 0]} rotation={[0, 0, 0.3]} scale={[0.1, 0.5, 0.4]}>
+          <coneGeometry args={[0.3, 0.6, 6]} />
+          <meshStandardMaterial {...matProps} transparent opacity={0.7} />
+        </mesh>
+      </group>
+    );
+  }
+  
+  if (type === "owl") {
+    return (
+      <group>
+        {/* Body */}
+        <mesh position={[0, 0, 0]} scale={[0.8, 1, 0.7]}>
+          <sphereGeometry args={[0.4, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Head */}
+        <mesh position={[0, 0.5, 0.05]}>
+          <sphereGeometry args={[0.3, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Eyes */}
+        <mesh position={[-0.1, 0.55, 0.25]}>
+          <sphereGeometry args={[0.1, 8, 8]} />
+          <meshStandardMaterial color="#f0e68c" emissive="#f0e68c" emissiveIntensity={0.5} />
+        </mesh>
+        <mesh position={[0.1, 0.55, 0.25]}>
+          <sphereGeometry args={[0.1, 8, 8]} />
+          <meshStandardMaterial color="#f0e68c" emissive="#f0e68c" emissiveIntensity={0.5} />
+        </mesh>
+        {/* Pupils */}
+        <mesh position={[-0.1, 0.55, 0.33]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+        <mesh position={[0.1, 0.55, 0.33]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+        {/* Ear tufts */}
+        <mesh position={[-0.2, 0.75, 0]} rotation={[0, 0, 0.3]}>
+          <coneGeometry args={[0.06, 0.2, 4]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0.2, 0.75, 0]} rotation={[0, 0, -0.3]}>
+          <coneGeometry args={[0.06, 0.2, 4]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Beak */}
+        <mesh position={[0, 0.45, 0.3]} rotation={[0.3, 0, 0]}>
+          <coneGeometry args={[0.04, 0.1, 4]} />
+          <meshStandardMaterial color="#e8a020" />
+        </mesh>
+      </group>
+    );
+  }
+  
+  if (type === "cat") {
+    return (
+      <group>
+        {/* Body - sitting */}
+        <mesh position={[0, 0, 0]} scale={[0.6, 0.8, 0.9]}>
+          <sphereGeometry args={[0.35, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Head */}
+        <mesh position={[0, 0.5, 0.15]}>
+          <sphereGeometry args={[0.25, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Ears */}
+        <mesh position={[-0.15, 0.72, 0.1]} rotation={[0, 0, 0.2]}>
+          <coneGeometry args={[0.07, 0.15, 4]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0.15, 0.72, 0.1]} rotation={[0, 0, -0.2]}>
+          <coneGeometry args={[0.07, 0.15, 4]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Eyes */}
+        <mesh position={[-0.08, 0.53, 0.35]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#c4e060" emissive="#c4e060" emissiveIntensity={0.4} />
+        </mesh>
+        <mesh position={[0.08, 0.53, 0.35]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#c4e060" emissive="#c4e060" emissiveIntensity={0.4} />
+        </mesh>
+        {/* Tail */}
+        <mesh position={[-0.1, 0.1, -0.35]} rotation={[0.8, 0.3, 0]} scale={[0.15, 0.15, 1]}>
+          <cylinderGeometry args={[0.15, 0.05, 0.7, 8]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+      </group>
+    );
+  }
+  
+  if (type === "frog") {
+    return (
+      <group>
+        {/* Body */}
+        <mesh position={[0, 0, 0]} scale={[1, 0.6, 0.9]}>
+          <sphereGeometry args={[0.3, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Eyes - bulging */}
+        <mesh position={[-0.15, 0.25, 0.15]}>
+          <sphereGeometry args={[0.1, 8, 8]} />
+          <meshStandardMaterial color="#e8e8e0" />
+        </mesh>
+        <mesh position={[0.15, 0.25, 0.15]}>
+          <sphereGeometry args={[0.1, 8, 8]} />
+          <meshStandardMaterial color="#e8e8e0" />
+        </mesh>
+        <mesh position={[-0.15, 0.27, 0.23]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+        <mesh position={[0.15, 0.27, 0.23]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+        {/* Front legs */}
+        <mesh position={[-0.2, -0.12, 0.2]} rotation={[0.4, 0, 0.3]} scale={[0.3, 0.15, 0.5]}>
+          <boxGeometry args={[0.3, 0.1, 0.3]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0.2, -0.12, 0.2]} rotation={[0.4, 0, -0.3]} scale={[0.3, 0.15, 0.5]}>
+          <boxGeometry args={[0.3, 0.1, 0.3]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+      </group>
+    );
+  }
+  
+  if (type === "snail") {
+    return (
+      <group>
+        {/* Shell - spiral */}
+        <mesh position={[0, 0.15, -0.05]}>
+          <sphereGeometry args={[0.25, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0.05, 0.25, -0.1]} scale={[0.7, 0.7, 0.7]}>
+          <torusGeometry args={[0.12, 0.05, 8, 12, Math.PI * 1.5]} />
+          <meshStandardMaterial color="#c0a878" roughness={0.6} />
+        </mesh>
+        {/* Body */}
+        <mesh position={[0, -0.05, 0.1]} scale={[0.6, 0.35, 1.2]}>
+          <sphereGeometry args={[0.2, 12, 12]} />
+          <meshStandardMaterial color="#a09080" roughness={0.8} />
+        </mesh>
+        {/* Eye stalks */}
+        <mesh position={[-0.06, 0.15, 0.25]} rotation={[0.5, 0, 0.1]}>
+          <cylinderGeometry args={[0.015, 0.015, 0.15, 6]} />
+          <meshStandardMaterial color="#a09080" />
+        </mesh>
+        <mesh position={[0.06, 0.15, 0.25]} rotation={[0.5, 0, -0.1]}>
+          <cylinderGeometry args={[0.015, 0.015, 0.15, 6]} />
+          <meshStandardMaterial color="#a09080" />
+        </mesh>
+        {/* Eyes */}
+        <mesh position={[-0.07, 0.22, 0.3]}>
+          <sphereGeometry args={[0.025, 6, 6]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+        <mesh position={[0.07, 0.22, 0.3]}>
+          <sphereGeometry args={[0.025, 6, 6]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+      </group>
+    );
+  }
+
+  if (type === "lizard") {
+    return (
+      <group>
+        {/* Body */}
+        <mesh position={[0, 0, 0]} scale={[0.5, 0.3, 1.2]}>
+          <sphereGeometry args={[0.25, 12, 12]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Head */}
+        <mesh position={[0, 0.05, 0.3]} scale={[0.7, 0.5, 0.8]}>
+          <sphereGeometry args={[0.15, 10, 10]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Eyes */}
+        <mesh position={[-0.07, 0.1, 0.4]}>
+          <sphereGeometry args={[0.03, 6, 6]} />
+          <meshStandardMaterial color="#e8c020" emissive="#e8c020" emissiveIntensity={0.3} />
+        </mesh>
+        <mesh position={[0.07, 0.1, 0.4]}>
+          <sphereGeometry args={[0.03, 6, 6]} />
+          <meshStandardMaterial color="#e8c020" emissive="#e8c020" emissiveIntensity={0.3} />
+        </mesh>
+        {/* Tail */}
+        <mesh position={[0, -0.02, -0.35]} rotation={[0.1, 0, 0]} scale={[0.2, 0.15, 1.5]}>
+          <cylinderGeometry args={[0.08, 0.02, 0.4, 8]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        {/* Legs */}
+        <mesh position={[-0.15, -0.08, 0.1]} rotation={[0, 0, 0.6]}>
+          <cylinderGeometry args={[0.025, 0.02, 0.15, 6]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+        <mesh position={[0.15, -0.08, 0.1]} rotation={[0, 0, -0.6]}>
+          <cylinderGeometry args={[0.025, 0.02, 0.15, 6]} />
+          <meshStandardMaterial {...matProps} />
+        </mesh>
+      </group>
+    );
+  }
+  
+  // Fallback sphere
+  return (
+    <mesh>
+      <sphereGeometry args={[0.3, 12, 12]} />
+      <meshStandardMaterial {...matProps} />
+    </mesh>
+  );
+}
+
+// A story creature that bobs gently and shows its story on click
+function StoryCreature({ 
+  creature, 
+  onSelect 
+}: { 
+  creature: typeof CREATURES[number];
+  onSelect: (creature: typeof CREATURES[number]) => void;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame((state) => {
+    if (groupRef.current) {
+      groupRef.current.position.y = creature.position[1] + Math.sin(state.clock.elapsedTime * 0.8 + creature.position[0]) * 0.08;
+    }
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      position={creature.position}
+      rotation={creature.rotation}
+      scale={creature.scale}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(creature);
+      }}
+    >
+      <Float speed={0.8} rotationIntensity={0.15} floatIntensity={0}>
+        <CreatureBody type={creature.geometry} color={creature.color} emissive={creature.emissive} />
+      </Float>
+      {/* Subtle glow underneath */}
+      <pointLight position={[0, -0.2, 0]} intensity={0.15} color={creature.color} distance={3} />
+    </group>
+  );
+}
+
 // Main 3D Scene
 function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
   const reduceMotion = useReducedMotion();
