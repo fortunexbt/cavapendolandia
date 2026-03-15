@@ -606,12 +606,12 @@ function useStuccoTexture() {
       ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, 0.08)`;
       ctx.fill();
     }
-    // Dense noise grain
-    for (let i = 0; i < 80000; i++) {
+    // Dense noise grain (reduced for performance)
+    for (let i = 0; i < 15000; i++) {
       const x = Math.random() * size;
       const y = Math.random() * size;
       const brightness = 170 + Math.random() * 70;
-      const alpha = 0.1 + Math.random() * 0.2;
+      const alpha = 0.12 + Math.random() * 0.25;
       ctx.fillStyle = `rgba(${brightness}, ${brightness - 10}, ${brightness - 25}, ${alpha})`;
       ctx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
     }
@@ -882,9 +882,9 @@ function GalleryRoom() {
   return (
     <group>
       {/* Floor — terracotta tiles */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.5} roughness={0.85} />
+        <meshStandardMaterial map={tileTex} roughness={0.85} />
       </mesh>
       {/* Center medallion */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.99, 0]}>
@@ -926,34 +926,34 @@ function GalleryRoom() {
       )}
 
       {/* Back wall */}
-      <mesh position={[0, 4, -hd]} receiveShadow>
+      <mesh position={[0, 4, -hd]}>
         <planeGeometry args={[ROOM_W, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
       {/* Left wall */}
-      <mesh position={[-hw, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+      <mesh position={[-hw, 4, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
       {/* Right wall */}
-      <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+      <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
 
       {/* Front wall — archway: two side panels + lintel */}
-      <mesh position={[-hw / 2 - 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
+      <mesh position={[-hw / 2 - 1.5, 4, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
-      <mesh position={[hw / 2 + 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
+      <mesh position={[hw / 2 + 1.5, 4, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
       {/* Archway lintel */}
       <mesh position={[0, 8, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
 
       {/* Exit hint text above archway */}
@@ -982,7 +982,7 @@ function GalleryRoom() {
   );
 }
 
-// ─── Volumetric Light Shafts ────────────────────────────────────────────────
+// ─── Volumetric Light Shafts (static, no useFrame) ──────────────────────────
 
 function LightShaft({ position, targetY = -3, color = "#fff8e8" }: {
   position: [number, number, number];
@@ -990,20 +990,11 @@ function LightShaft({ position, targetY = -3, color = "#fff8e8" }: {
   color?: string;
 }) {
   const height = position[1] - targetY;
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      const t = state.clock.elapsedTime;
-      const mat = meshRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.04 + Math.sin(t * 0.3 + position[0]) * 0.015;
-    }
-  });
 
   return (
-    <mesh ref={meshRef} position={[position[0], position[1] - height / 2, position[2]]}>
-      <coneGeometry args={[2.5, height, 16, 1, true]} />
-      <meshBasicMaterial color={color} transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} />
+    <mesh position={[position[0], position[1] - height / 2, position[2]]}>
+      <coneGeometry args={[2.5, height, 8, 1, true]} />
+      <meshBasicMaterial color={color} transparent opacity={0.04} side={THREE.DoubleSide} depthWrite={false} />
     </mesh>
   );
 }
@@ -1013,7 +1004,6 @@ function VolumetricLights() {
     <group>
       <LightShaft position={[-6, 10, -16]} />
       <LightShaft position={[4, 10, -16]} />
-      <LightShaft position={[0, 10, -16]} color="#f8f0e0" />
     </group>
   );
 }
@@ -1031,51 +1021,24 @@ function CreatureShadow({ position }: { position: [number, number, number] }) {
 
 // ─── Track Light Fixture ─────────────────────────────────────────────────────
 
-function TrackLight({ position, targetY = -0.5 }: { position: [number, number, number]; targetY?: number }) {
-  const spotRef = useRef<THREE.SpotLight>(null);
-  const targetRef = useRef<THREE.Object3D>(null);
+// ─── Track Light (optimized: just a warm pointLight + tiny bulb glow) ────────
 
-  useEffect(() => {
-    if (spotRef.current && targetRef.current) {
-      spotRef.current.target = targetRef.current;
-    }
-  }, []);
-
+function TrackLight({ position, targetY: _targetY = -0.5 }: { position: [number, number, number]; targetY?: number }) {
   return (
     <group>
-      {/* Ceiling fixture body */}
+      {/* Bulb glow dot */}
       <mesh position={position}>
-        <cylinderGeometry args={[0.08, 0.12, 0.25, 8]} />
-        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
-      </mesh>
-      {/* Fixture arm */}
-      <mesh position={[position[0], position[1] - 0.2, position[2]]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.15, 6]} />
-        <meshStandardMaterial color="#333" roughness={0.5} metalness={0.6} />
-      </mesh>
-      {/* Light housing (cone) */}
-      <mesh position={[position[0], position[1] - 0.32, position[2]]} rotation={[Math.PI, 0, 0]}>
-        <coneGeometry args={[0.1, 0.15, 8]} />
-        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
-      </mesh>
-      {/* Bulb glow */}
-      <mesh position={[position[0], position[1] - 0.35, position[2]]}>
-        <sphereGeometry args={[0.04, 8, 8]} />
+        <sphereGeometry args={[0.05, 6, 6]} />
         <meshBasicMaterial color="#fff8e0" />
       </mesh>
-      {/* Spotlight */}
-      <spotLight
-        ref={spotRef}
+      {/* Warm point light (much cheaper than spotLight) */}
+      <pointLight
         position={position}
-        angle={0.45}
-        penumbra={0.8}
-        intensity={1.8}
+        intensity={0.6}
         color="#fff0d0"
-        distance={14}
-        castShadow={false}
+        distance={10}
+        decay={2}
       />
-      {/* Target for spotlight direction */}
-      <object3D ref={targetRef} position={[position[0], targetY, position[2]]} />
     </group>
   );
 }
@@ -1083,41 +1046,32 @@ function TrackLight({ position, targetY = -0.5 }: { position: [number, number, n
 // ─── Lighting ───────────────────────────────────────────────────────────────
 
 function GalleryLighting({ framePositions }: { framePositions?: { position: [number, number, number]; rotation: [number, number, number] }[] }) {
+  // Only render track lights for the first 8 frames (perf budget)
+  const limitedFrames = useMemo(() => framePositions?.slice(0, 8) ?? [], [framePositions]);
+
   return (
     <>
-      {/* Low ambient — track lights provide primary illumination */}
-      <ambientLight intensity={0.12} color="#e8ddd0" />
+      {/* Ambient — slightly higher to compensate for fewer spotlights */}
+      <ambientLight intensity={0.18} color="#e8ddd0" />
 
-      {/* Main directional for shadows */}
+      {/* Main directional (no shadow for perf) */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.35}
+        intensity={0.4}
         color="#fff5e6"
-        castShadow
-        shadow-mapSize={[1024, 1024]}
       />
 
       {/* Warm pool — back wall */}
-      <spotLight
-        position={[0, 9, -14]}
-        angle={0.5}
-        penumbra={0.9}
-        intensity={0.8}
-        color="#ffe8c0"
-        castShadow
-        target-position={[0, 0, -17]}
-      />
+      <pointLight position={[0, 8, -15]} intensity={0.7} color="#ffe8c0" distance={20} />
 
-      {/* Subtle fill — left and right (dimmer now) */}
+      {/* Subtle fill */}
       <pointLight position={[-12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
       <pointLight position={[12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
 
-      {/* Per-frame track lights */}
-      {framePositions?.map((fp, i) => {
-        // Place light on ceiling above the frame, offset slightly from wall
+      {/* Per-frame track lights (limited) */}
+      {limitedFrames.map((fp, i) => {
         const [fx, _fy, fz] = fp.position;
         const ry = fp.rotation[1];
-        // Offset away from wall so light shines down at an angle
         const offsetX = Math.sin(ry) * 1.5;
         const offsetZ = -Math.cos(ry) * 1.5;
         return (
@@ -1134,7 +1088,7 @@ function GalleryLighting({ framePositions }: { framePositions?: { position: [num
 
 function GalleryDust() {
   return (
-    <Sparkles count={200} scale={40} size={1} speed={0.15} color="#c9b896" opacity={0.25} />
+    <Sparkles count={60} scale={40} size={1.2} speed={0.15} color="#c9b896" opacity={0.2} />
   );
 }
 
@@ -1394,17 +1348,6 @@ function StoryCreature({
         <sphereGeometry args={[1.2, 8, 8]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
-
-      <Html position={[0, 1.4, 0]} center distanceFactor={8} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
-        <div style={{
-          background: "rgba(0,0,0,0.55)", color: "#fff", padding: "3px 10px",
-          borderRadius: "10px", fontSize: "10px", fontFamily: "Georgia, serif",
-          whiteSpace: "nowrap", textAlign: "center",
-        }}>
-          {creature.name}
-        </div>
-      </Html>
-      <pointLight position={[0, -0.3, 0]} intensity={0.25} color={creature.color} distance={5} />
     </group>
   );
 }
@@ -1737,7 +1680,7 @@ function Scene({
       <VolumetricLights />
       <GalleryRoom />
 
-      {offerings.slice(0, 24).map((offering, i) => {
+      {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
         return (
           <ArtisticFrame
@@ -1754,13 +1697,7 @@ function Scene({
         <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
 
-      {CREATURES.map((creature) => (
-        <CreatureShadow key={`shadow-${creature.name}`} position={creature.position} />
-      ))}
-
       <GalleryDust />
-      <Stars radius={80} depth={60} count={500} factor={1.5} saturation={0} fade speed={0.1} />
-      <Environment preset="apartment" />
 
       {/* FPS Controller */}
       <FPSController
@@ -2080,7 +2017,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
           failIfMajorPerformanceCaveat: false,
         }}
         style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%", position: "relative", zIndex: 0 }}
-        shadows
+        shadows={false}
       >
         <Suspense fallback={<LoadingFallback />}>
           <Scene
