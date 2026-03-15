@@ -2043,7 +2043,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
   }, []);
 
   return (
-    <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px", isolation: "isolate" }} onClick={handleCanvasClick}>
+    <div className={`relative w-full ${className}`} style={{ isolation: "isolate" }} onClick={handleCanvasClick}>
       <Canvas
         camera={{ position: [0, 0, 12], fov: 50 }}
         gl={{
@@ -2052,7 +2052,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
           powerPreference: "high-performance",
           failIfMajorPerformanceCaveat: false,
         }}
-        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%", position: "relative", zIndex: 0 }}
+        style={{ background: "#1a1a1a", width: "100%", height: "100%" }}
         shadows={false}
       >
         <Suspense fallback={<LoadingFallback />}>
