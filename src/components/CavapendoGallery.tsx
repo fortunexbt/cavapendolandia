@@ -282,6 +282,48 @@ function ImageCanvas({ url, width, height }: { url: string; width: number; heigh
   );
 }
 
+// ─── Texture-based Canvas for PDFs (renders first page) ─────────────────────
+
+function PdfCanvas({ url, width, height }: { url: string; width: number; height: number }) {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const pdfjsLib = await import("pdfjs-dist");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
+        const page = await pdf.getPage(1);
+        const scale = 2;
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d")!;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        if (cancelled) return;
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        setTexture(tex);
+      } catch (err) {
+        console.warn("[PdfCanvas] Failed to render PDF:", err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [url]);
+
+  if (!texture) return null;
+
+  return (
+    <mesh position={[0, 0, 0.10]}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
 // ─── Texture-based Canvas for Videos ────────────────────────────────────────
 
 function VideoCanvas({ url, width, height }: { url: string; width: number; height: number }) {
@@ -343,7 +385,8 @@ function ArtisticFrame({
   const canvasH = innerH - 0.1;
   const isImage = offering.media_type === "image" && offering.file_url;
   const isVideo = offering.media_type === "video" && offering.file_url;
-  const useNativeTexture = isImage || isVideo;
+  const isPdf = offering.media_type === "pdf" && (offering.file_url || offering.link_url);
+  const useNativeTexture = isImage || isVideo || isPdf;
   // For non-texture content (text, audio, link, pdf), use corrected Html scaling
   const pxW = Math.round(canvasW * 100);
   const pxH = Math.round(canvasH * 100);
@@ -388,9 +431,10 @@ function ArtisticFrame({
           <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
         </mesh>
 
-        {/* Native texture for image/video — fits exactly within canvas bounds */}
+        {/* Native texture for image/video/pdf — fits exactly within canvas bounds */}
         {isImage && <ImageCanvas url={offering.file_url!} width={canvasW} height={canvasH} />}
         {isVideo && <VideoCanvas url={offering.file_url!} width={canvasW} height={canvasH} />}
+        {isPdf && <PdfCanvas url={(offering.file_url || offering.link_url)!} width={canvasW} height={canvasH} />}
 
         {/* Html for non-media types (text, audio, link, pdf) */}
         {!useNativeTexture && (
@@ -463,16 +507,22 @@ function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number;
     );
   }
   if (offering.media_type === "link" && offering.link_url) {
+    const domain = offering.link_url.replace(/^https?:\/\//, "").split("/")[0];
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", gap: "6px", padding: "16px", fontFamily: "Georgia, serif", textAlign: "center" }}>
-        <div style={{ fontSize: "24px" }}>🔗</div>
-        <div style={{ fontSize: "10px", color: "#5a5a5a", wordBreak: "break-all" }}>
-          {offering.link_url.replace(/^https?:\/\//, "").slice(0, 40)}
+        justifyContent: "center", gap: "6px", padding: "12px", fontFamily: "Georgia, serif", textAlign: "center",
+        width: `${pxW}px`, height: `${pxH}px`, overflow: "hidden" }}>
+        <div style={{ fontSize: "20px" }}>🔗</div>
+        <div style={{ fontSize: "11px", color: "#3a3a3a", fontWeight: "bold" }}>
+          {offering.title || domain}
+        </div>
+        <div style={{ fontSize: "8px", color: "#8a8a8a", wordBreak: "break-all" }}>
+          {domain}
         </div>
       </div>
     );
   }
+  // pdf type with texture rendered via PdfCanvas — fallback label
   if (offering.media_type === "pdf") {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
@@ -1463,7 +1513,7 @@ function Scene({
       <VolumetricLights />
       <GalleryRoom />
 
-      {offerings.slice(0, 16).map((offering, i) => {
+      {offerings.slice(0, 24).map((offering, i) => {
         const pos = positions[i];
         return (
           <ArtisticFrame
@@ -1572,9 +1622,28 @@ function OfferingModal({ offering, onClose }: { offering: Offering | null; onClo
           {offering.media_type === "audio" && offering.file_url && (
             <div className="mb-4"><audio src={offering.file_url} controls className="w-full" /></div>
           )}
+          {offering.media_type === "pdf" && (offering.file_url || offering.link_url) && (
+            <div className="mb-4 bg-muted rounded overflow-hidden" style={{ height: "400px" }}>
+              <iframe
+                src={(offering.file_url || offering.link_url)!}
+                className="w-full h-full border-0"
+                title={offering.title || "PDF"}
+              />
+            </div>
+          )}
           {offering.media_type === "link" && offering.link_url && (
-            <a href={offering.link_url} target="_blank" rel="noopener noreferrer"
-              className="block mb-4 text-accent-foreground hover:underline">🔗 Apri link →</a>
+            <div className="mb-4">
+              <div className="bg-muted rounded overflow-hidden mb-2" style={{ height: "300px" }}>
+                <iframe
+                  src={offering.link_url}
+                  className="w-full h-full border-0"
+                  title={offering.title || "Link"}
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              </div>
+              <a href={offering.link_url} target="_blank" rel="noopener noreferrer"
+                className="block text-accent-foreground hover:underline text-sm">🔗 Apri in una nuova scheda →</a>
+            </div>
           )}
           <div className="mt-6 pt-4 border-t border-border/30 text-sm text-muted-foreground">
             <p>Di <span className="font-medium text-foreground">{authorDisplay}</span></p>
@@ -1722,7 +1791,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
         .select("id, title, note, text_content, media_type, file_url, link_url, author_name, author_type, created_at, approved_at")
         .eq("status", "approved")
         .order("approved_at", { ascending: false })
-        .limit(16);
+        .limit(24);
       if (error) throw error;
       if (!data?.length) return null;
       return withSignedFileUrls(data);
