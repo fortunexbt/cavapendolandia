@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 export type ThemeMode = "system" | "light" | "dark";
 
-const STORAGE_KEY = "cavapendolandia-admin-theme";
+const STORAGE_KEY = "cavapendolandia-theme";
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 const getSystemPrefersDark = () =>
