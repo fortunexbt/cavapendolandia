@@ -186,6 +186,7 @@ function DramaticLighting() {
 // Main 3D Scene
 function Scene() {
   const reduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
 
   return (
     <>
