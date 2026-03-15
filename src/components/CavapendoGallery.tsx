@@ -39,11 +39,11 @@ interface Offering {
 // Cached in Supabase Storage; generated via ElevenLabs Music API on first play.
 
 const MUSIC_TRACKS: { key: string; prompt: string }[] = [
-  { key: "ambient-1", prompt: "deep atmospheric ambient music, Pink Floyd inspired, slow evolving synthesizer pads, reverberant guitar echoes, melancholic and spacious" },
-  { key: "ambient-2", prompt: "Blade Runner inspired ambient, warm analog synth drones, distant reverb, rainy night atmosphere, Vangelis style pads" },
-  { key: "ambient-3", prompt: "lofi ambient beats, soft dusty vinyl crackle, mellow Rhodes piano chords, warm tape saturation, slow downtempo" },
-  { key: "ambient-4", prompt: "Aphex Twin Selected Ambient Works style, gentle evolving synth textures, dreamy ethereal pads, soft granular synthesis" },
-  { key: "ambient-5", prompt: "deep space ambient, slow cinematic strings, warm sub bass drone, contemplative and immersive, sci-fi atmosphere" },
+  { key: "ambient-1", prompt: "Deep atmospheric ambient music featuring slow evolving synthesizer pads, reverberant guitar echoes, and a melancholic, spacious vibe reminiscent of classic progressive rock soundscapes" },
+  { key: "ambient-2", prompt: "Warm analog synth drones with distant reverb, rainy night atmosphere, lush cinematic pads, retro sci-fi film soundtrack feel" },
+  { key: "ambient-3", prompt: "Lofi downtempo ambient beats, soft dusty vinyl crackle, mellow electric piano chords, warm tape saturation, cozy late night cafe" },
+  { key: "ambient-4", prompt: "Gentle evolving synth textures, dreamy ethereal pads, soft granular synthesis, contemplative electronic ambient music" },
+  { key: "ambient-5", prompt: "Deep space ambient, slow cinematic strings, warm sub bass drone, contemplative and immersive, atmospheric soundtrack music" },
 ];
 
 const AUDIO_BUCKET = "offerings";
