@@ -561,7 +561,7 @@ function StoryCreature({
 }
 
 // Main 3D Scene
-function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
+function Scene({ offerings, onSelectOffering, onSelectCreature }: GalleryRoomProps & { onSelectCreature: (c: typeof CREATURES[number]) => void }) {
   const reduceMotion = useReducedMotion();
   
   // Pin frames to walls with random tilt and placement
@@ -571,26 +571,26 @@ function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
     const rightSlots = { count: 0 };
     
     return offerings.map((o, i) => {
-      const wall = i % 3; // cycle across 3 walls
+      const wall = i % 3;
       const seed = o.id.charCodeAt(0) * 100 + i;
-      const tilt = (seededRandom(seed) - 0.5) * 0.2; // ±0.1 rad (~6°)
+      const tilt = (seededRandom(seed) - 0.5) * 0.2;
       const yJitter = (seededRandom(seed + 1) - 0.5) * 1.2;
       
-      if (wall === 0) { // Back wall
+      if (wall === 0) {
         const slot = backSlots.count++;
         const x = (slot - 2) * 3.5 + (seededRandom(seed + 2) - 0.5) * 0.8;
         return {
           position: [x, 1 + yJitter, -17.8] as [number, number, number],
           rotation: [0, 0, tilt] as [number, number, number]
         };
-      } else if (wall === 1) { // Left wall
+      } else if (wall === 1) {
         const slot = leftSlots.count++;
         const z = (slot - 1) * 3.5 + (seededRandom(seed + 3) - 0.5) * 0.8;
         return {
           position: [-17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, Math.PI / 2, tilt] as [number, number, number]
         };
-      } else { // Right wall
+      } else {
         const slot = rightSlots.count++;
         const z = (slot - 1) * 3.5 + (seededRandom(seed + 4) - 0.5) * 0.8;
         return {
@@ -622,6 +622,15 @@ function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
           />
         );
       })}
+      
+      {/* Story creatures scattered around the room */}
+      {CREATURES.map((creature) => (
+        <StoryCreature
+          key={creature.name}
+          creature={creature}
+          onSelect={onSelectCreature}
+        />
+      ))}
       
       <GalleryDust />
       
