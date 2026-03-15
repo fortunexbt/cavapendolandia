@@ -1305,6 +1305,7 @@ function Scene({
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
+  const exitFiredOrbit = useRef(false);
 
   // Boundary clamp every frame (orbit mode)
   useFrame(() => {
