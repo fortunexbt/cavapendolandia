@@ -936,7 +936,7 @@ function GalleryRoom() {
         <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Right wall */}
-      <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+      <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, 14]} />
         <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
