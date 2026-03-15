@@ -40,7 +40,7 @@ const SFX_PROMPTS: Record<string, string> = {
 };
 
 const AUDIO_BUCKET = "offerings"; // reuse existing public bucket
-const AUDIO_PREFIX = "gallery-sfx";
+const AUDIO_PREFIX = "gallery-sfx-v2"; // v2: warm jazz/classical prompts
 
 async function fetchCachedAudio(key: string): Promise<string | null> {
   const path = `${AUDIO_PREFIX}/${key}.mp3`;
