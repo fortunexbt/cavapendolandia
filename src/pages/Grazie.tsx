@@ -20,7 +20,9 @@ const Grazie = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 1 }}
           >
-            <p className="text-4xl mb-6">🏛️</p>
+            <svg viewBox="0 0 280 240" className="h-16 w-16 mx-auto mb-6 text-secondary">
+              <path d="M175 35c22 24 30 55 22 88-4 17-15 31-29 39 5 22-3 42-20 60-13 13-28 19-45 17 19-9 30-23 34-43 4-19 0-36-12-50-16-18-24-39-22-62 2-24 14-45 35-60 23-16 50-14 71 11Z" fill="currentColor" />
+            </svg>
             <h1 className="text-3xl md:text-4xl font-serif tracking-wide text-foreground mb-4">
               Grazie per la visita
             </h1>
@@ -40,13 +42,13 @@ const Grazie = () => {
           >
             <Link
               to="/"
-              className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-md hover:bg-primary/90 transition-colors font-mono-light text-sm"
+              className="inline-block border border-foreground/25 px-7 py-3 font-mono-light text-xs uppercase tracking-[0.13em] text-foreground/85 hover:bg-foreground hover:text-primary-foreground transition-all duration-300"
             >
               Torna all'inizio
             </Link>
             <Link
               to="/galleria"
-              className="inline-block border border-border px-6 py-3 rounded-md hover:bg-accent transition-colors font-mono-light text-sm text-foreground"
+              className="inline-block border border-border/50 px-7 py-3 font-mono-light text-xs uppercase tracking-[0.13em] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all duration-300"
             >
               Rientra nella Galleria
             </Link>

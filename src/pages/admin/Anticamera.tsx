@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import AdminThemeToggle from "@/components/admin/AdminThemeToggle";
 import AnticameraOfferingRow from "@/components/admin/AnticameraOfferingRow";
@@ -93,6 +94,27 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
       return withSignedFileUrls(data || []);
     },
     enabled: isAdmin,
+  });
+
+  // Fetch counts for all status tabs
+  const { data: statusCounts } = useQuery({
+    queryKey: ["admin-status-counts"],
+    queryFn: async () => {
+      const counts: Record<StatusFilter, number> = { pending: 0, approved: 0, rejected: 0, hidden: 0 };
+      const results = await Promise.all(
+        (["pending", "approved", "rejected", "hidden"] as StatusFilter[]).map(async (s) => {
+          const { count, error } = await supabase
+            .from("offerings")
+            .select("*", { count: "exact", head: true })
+            .eq("status", s);
+          return { status: s, count: error ? 0 : (count ?? 0) };
+        })
+      );
+      results.forEach((r) => { counts[r.status] = r.count; });
+      return counts;
+    },
+    enabled: isAdmin,
+    staleTime: 30_000,
   });
 
   const { data: initiatives = [], isLoading: initiativesLoading } = useQuery({
@@ -221,13 +243,18 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
               <Link
                 key={tab.value}
                 to={tab.path}
-                className={`font-mono-light text-[0.67rem] uppercase tracking-[0.12em] ${
+                className={`font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 ${
                   statusFilter === tab.value
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tab.label}
+                {statusCounts && statusCounts[tab.value] > 0 && (
+                  <Badge variant={tab.value === "pending" ? "default" : "secondary"} className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
+                    {statusCounts[tab.value]}
+                  </Badge>
+                )}
               </Link>
             ))}
           </div>

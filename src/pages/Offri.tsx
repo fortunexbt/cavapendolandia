@@ -263,15 +263,20 @@ const Offri = () => {
             </p>
           </motion.div>
 
-          <div className="mb-8 flex items-center justify-center gap-3">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <div
-                key={s}
-                className={`h-3 w-3 rounded-full transition-colors ${
-                  s === step ? "bg-foreground" : s < step ? "bg-foreground/30" : "bg-border"
-                }`}
-              />
-            ))}
+          <div className="mb-8 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-3">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <div
+                  key={s}
+                  className={`h-3 w-3 rounded-full transition-colors ${
+                    s === step ? "bg-foreground" : s < step ? "bg-foreground/30" : "bg-border"
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="font-mono-light text-[0.6rem] uppercase tracking-[0.15em] text-muted-foreground/60">
+              {step} — {STEP_LABELS[step]}
+            </p>
           </div>
 
           <AnimatePresence mode="wait">
@@ -482,7 +487,7 @@ const Offri = () => {
 
           {/* Navigation */}
           <div className="mt-4 flex items-center justify-between">
-            {step > 1 && step !== 2 ? (
+            {step > 1 ? (
               <button
                 onClick={() => setStep((s) => s - 1)}
                 className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -493,27 +498,7 @@ const Offri = () => {
               <div />
             )}
 
-            {step === 2 && (
-              <button
-                onClick={() => canProceed() && setStep((s) => s + 1)}
-                disabled={!canProceed()}
-                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                avanti
-              </button>
-            )}
-
-            {step === 3 && (
-              <button
-                onClick={() => canProceed() && setStep((s) => s + 1)}
-                disabled={!canProceed()}
-                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                avanti
-              </button>
-            )}
-
-            {step === 4 && (
+            {step >= 2 && step <= 4 && (
               <button
                 onClick={() => canProceed() && setStep((s) => s + 1)}
                 disabled={!canProceed()}

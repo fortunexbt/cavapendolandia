@@ -3,6 +3,7 @@ import { useRef, useMemo } from "react";
 import { Float, Sparkles, Environment, MeshDistortMaterial, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
 import * as THREE from "three";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CavapendoWorldProps {
   className?: string;
@@ -51,10 +52,10 @@ function CavapendoloOrb({ position = [0, 0, 0] }: { position?: [number, number, 
 }
 
 // Floating cavapendoli - small magical creatures/spirits
-function CavapendoliSwarm() {
+function CavapendoliSwarm({ count = 40 }: { count?: number }) {
   const particles = useMemo(() => {
     const temp = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < count; i++) {
       temp.push({
         position: [
           (Math.random() - 0.5) * 15,
@@ -185,6 +186,7 @@ function DramaticLighting() {
 // Main 3D Scene
 function Scene() {
   const reduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -208,11 +210,11 @@ function Scene() {
       <FloatingCrystal position={[1, -0.5, -3]} scale={0.25} color="#6a5545" rotationSpeed={0.9} />
       
       {/* Swarm of tiny cavapendoli particles */}
-      <CavapendoliSwarm />
+      <CavapendoliSwarm count={isMobile ? 12 : 40} />
       
       {/* Ambient sparkles */}
       <Sparkles
-        count={120}
+        count={isMobile ? 40 : 120}
         scale={15}
         size={1.5}
         speed={0.3}
@@ -224,7 +226,7 @@ function Scene() {
       <Stars
         radius={50}
         depth={50}
-        count={1000}
+        count={isMobile ? 300 : 1000}
         factor={2}
         saturation={0}
         fade

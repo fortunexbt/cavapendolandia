@@ -1,5 +1,7 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import MinimalHeader from "@/components/MinimalHeader";
+import MinimalFooter from "@/components/MinimalFooter";
 
 const NotFound = () => {
   const location = useLocation();
@@ -9,14 +11,26 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Pagina non trovata</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-background">
+      <MinimalHeader />
+
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12 text-center">
+        <p className="font-mono-light text-xs uppercase tracking-[0.25em] text-muted-foreground mb-6">
+          Stanza vuota
+        </p>
+        <h1 className="text-5xl md:text-7xl font-light text-foreground/80 mb-4">404</h1>
+        <p className="text-lg italic text-muted-foreground/60 mb-10">
+          Questa stanza non esiste ancora.
+        </p>
+        <Link
+          to="/"
+          className="inline-block border border-foreground/25 px-7 py-2 font-mono-light text-xs uppercase tracking-[0.13em] text-foreground/85 hover:bg-foreground hover:text-primary-foreground transition-all duration-300"
+        >
           Torna alla soglia
-        </a>
-      </div>
+        </Link>
+      </main>
+
+      <MinimalFooter />
     </div>
   );
 };

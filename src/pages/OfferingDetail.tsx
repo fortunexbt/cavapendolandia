@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import MinimalHeader from "@/components/MinimalHeader";
@@ -10,6 +11,14 @@ import EntraComingSoon from "@/components/EntraComingSoon";
 
 const OfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const { data: offering, isLoading } = useQuery({
     queryKey: ["offering", id],
@@ -81,6 +90,12 @@ const OfferingDetail = () => {
             />
 
             <div className="mt-14 flex flex-wrap items-center justify-center gap-6">
+              <button
+                onClick={handleCopyLink}
+                className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
+              >
+                {copied ? "copiato ✓" : "copia link"}
+              </button>
               {randomOffering && (
                 <Link
                   to={`/o/${randomOffering.id}`}
