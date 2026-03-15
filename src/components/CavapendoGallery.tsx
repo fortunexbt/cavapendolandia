@@ -1122,6 +1122,7 @@ function FPSController({
   const upVec = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const velocityY = useRef(0);
   const isGrounded = useRef(true);
+  const exitFired = useRef(false);
 
   // Pointer lock + keyboard + mouse look
   useEffect(() => {
