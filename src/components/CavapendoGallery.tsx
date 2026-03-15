@@ -1031,51 +1031,24 @@ function CreatureShadow({ position }: { position: [number, number, number] }) {
 
 // ─── Track Light Fixture ─────────────────────────────────────────────────────
 
-function TrackLight({ position, targetY = -0.5 }: { position: [number, number, number]; targetY?: number }) {
-  const spotRef = useRef<THREE.SpotLight>(null);
-  const targetRef = useRef<THREE.Object3D>(null);
+// ─── Track Light (optimized: just a warm pointLight + tiny bulb glow) ────────
 
-  useEffect(() => {
-    if (spotRef.current && targetRef.current) {
-      spotRef.current.target = targetRef.current;
-    }
-  }, []);
-
+function TrackLight({ position, targetY: _targetY = -0.5 }: { position: [number, number, number]; targetY?: number }) {
   return (
     <group>
-      {/* Ceiling fixture body */}
+      {/* Bulb glow dot */}
       <mesh position={position}>
-        <cylinderGeometry args={[0.08, 0.12, 0.25, 8]} />
-        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
-      </mesh>
-      {/* Fixture arm */}
-      <mesh position={[position[0], position[1] - 0.2, position[2]]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.15, 6]} />
-        <meshStandardMaterial color="#333" roughness={0.5} metalness={0.6} />
-      </mesh>
-      {/* Light housing (cone) */}
-      <mesh position={[position[0], position[1] - 0.32, position[2]]} rotation={[Math.PI, 0, 0]}>
-        <coneGeometry args={[0.1, 0.15, 8]} />
-        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
-      </mesh>
-      {/* Bulb glow */}
-      <mesh position={[position[0], position[1] - 0.35, position[2]]}>
-        <sphereGeometry args={[0.04, 8, 8]} />
+        <sphereGeometry args={[0.05, 6, 6]} />
         <meshBasicMaterial color="#fff8e0" />
       </mesh>
-      {/* Spotlight */}
-      <spotLight
-        ref={spotRef}
+      {/* Warm point light (much cheaper than spotLight) */}
+      <pointLight
         position={position}
-        angle={0.45}
-        penumbra={0.8}
-        intensity={1.8}
+        intensity={0.6}
         color="#fff0d0"
-        distance={14}
-        castShadow={false}
+        distance={10}
+        decay={2}
       />
-      {/* Target for spotlight direction */}
-      <object3D ref={targetRef} position={[position[0], targetY, position[2]]} />
     </group>
   );
 }
