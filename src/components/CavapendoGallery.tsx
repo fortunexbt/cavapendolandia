@@ -205,39 +205,38 @@ function GalleryDust() {
 function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
   const reduceMotion = useReducedMotion();
   
-  // Calculate positions for offerings
+  // Pin frames to walls with random tilt and placement
   const positions = useMemo(() => {
-    return offerings.map((_, i) => {
-      const wall = i % 4;
-      const posOnWall = Math.floor(i / 4);
+    const backSlots = { count: 0 };
+    const leftSlots = { count: 0 };
+    const rightSlots = { count: 0 };
+    
+    return offerings.map((o, i) => {
+      const wall = i % 3; // cycle across 3 walls
+      const seed = o.id.charCodeAt(0) * 100 + i;
+      const tilt = (seededRandom(seed) - 0.5) * 0.2; // ±0.1 rad (~6°)
+      const yJitter = (seededRandom(seed + 1) - 0.5) * 1.2;
       
       if (wall === 0) { // Back wall
+        const slot = backSlots.count++;
+        const x = (slot - 2) * 3.5 + (seededRandom(seed + 2) - 0.5) * 0.8;
         return {
-          position: [(posOnWall - 2.5) * 4, 0.8 + (i % 2) * 0.4, -15] as [number, number, number],
-          rotation: [0, 0, 0] as [number, number, number]
+          position: [x, 1 + yJitter, -17.8] as [number, number, number],
+          rotation: [0, 0, tilt] as [number, number, number]
         };
       } else if (wall === 1) { // Left wall
+        const slot = leftSlots.count++;
+        const z = (slot - 1) * 3.5 + (seededRandom(seed + 3) - 0.5) * 0.8;
         return {
-          position: [-15, 0.8 + (posOnWall % 2) * 0.4, (posOnWall - 1.5) * 3.5] as [number, number, number],
-          rotation: [0, Math.PI / 2, 0] as [number, number, number]
+          position: [-17.8, 1 + yJitter, z] as [number, number, number],
+          rotation: [0, Math.PI / 2, tilt] as [number, number, number]
         };
-      } else if (wall === 2) { // Right wall  
+      } else { // Right wall
+        const slot = rightSlots.count++;
+        const z = (slot - 1) * 3.5 + (seededRandom(seed + 4) - 0.5) * 0.8;
         return {
-          position: [15, 0.8 + (posOnWall % 2) * 0.4, (posOnWall - 1.5) * 3.5] as [number, number, number],
-          rotation: [0, -Math.PI / 2, 0] as [number, number, number]
-        };
-      } else { // Floating in center
-        return {
-          position: [
-            (Math.random() - 0.5) * 10,
-            Math.random() * 2.5 - 0.5,
-            (Math.random() - 0.5) * 8 - 3
-          ] as [number, number, number],
-          rotation: [
-            Math.random() * 0.2,
-            Math.random() * Math.PI,
-            Math.random() * 0.2
-          ] as [number, number, number]
+          position: [17.8, 1 + yJitter, z] as [number, number, number],
+          rotation: [0, -Math.PI / 2, tilt] as [number, number, number]
         };
       }
     });
