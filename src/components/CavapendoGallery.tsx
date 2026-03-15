@@ -1314,6 +1314,12 @@ function Scene({
         clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
       }
       clampVec3(camera.position, CAM_BOUND, 0.35, CAM_Y_MAX, CAM_BOUND);
+
+      // Exit zone detection (orbit mode)
+      if (!exitFiredOrbit.current && onExit && camera.position.z > 16.5 && Math.abs(camera.position.x) < 3) {
+        exitFiredOrbit.current = true;
+        onExit();
+      }
     }
   });
 
