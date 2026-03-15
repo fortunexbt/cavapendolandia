@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Sparkles, Environment, Stars, Html, type OrbitControlsChangeEvent } from "@react-three/drei";
+import { OrbitControls, Sparkles, Environment, Stars, Html } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
