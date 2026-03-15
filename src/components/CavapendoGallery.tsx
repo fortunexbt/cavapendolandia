@@ -1056,41 +1056,32 @@ function TrackLight({ position, targetY: _targetY = -0.5 }: { position: [number,
 // ─── Lighting ───────────────────────────────────────────────────────────────
 
 function GalleryLighting({ framePositions }: { framePositions?: { position: [number, number, number]; rotation: [number, number, number] }[] }) {
+  // Only render track lights for the first 8 frames (perf budget)
+  const limitedFrames = useMemo(() => framePositions?.slice(0, 8) ?? [], [framePositions]);
+
   return (
     <>
-      {/* Low ambient — track lights provide primary illumination */}
-      <ambientLight intensity={0.12} color="#e8ddd0" />
+      {/* Ambient — slightly higher to compensate for fewer spotlights */}
+      <ambientLight intensity={0.18} color="#e8ddd0" />
 
-      {/* Main directional for shadows */}
+      {/* Main directional (no shadow for perf) */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.35}
+        intensity={0.4}
         color="#fff5e6"
-        castShadow
-        shadow-mapSize={[1024, 1024]}
       />
 
       {/* Warm pool — back wall */}
-      <spotLight
-        position={[0, 9, -14]}
-        angle={0.5}
-        penumbra={0.9}
-        intensity={0.8}
-        color="#ffe8c0"
-        castShadow
-        target-position={[0, 0, -17]}
-      />
+      <pointLight position={[0, 8, -15]} intensity={0.7} color="#ffe8c0" distance={20} />
 
-      {/* Subtle fill — left and right (dimmer now) */}
+      {/* Subtle fill */}
       <pointLight position={[-12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
       <pointLight position={[12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
 
-      {/* Per-frame track lights */}
-      {framePositions?.map((fp, i) => {
-        // Place light on ceiling above the frame, offset slightly from wall
+      {/* Per-frame track lights (limited) */}
+      {limitedFrames.map((fp, i) => {
         const [fx, _fy, fz] = fp.position;
         const ry = fp.rotation[1];
-        // Offset away from wall so light shines down at an angle
         const offsetX = Math.sin(ry) * 1.5;
         const offsetZ = -Math.cos(ry) * 1.5;
         return (
