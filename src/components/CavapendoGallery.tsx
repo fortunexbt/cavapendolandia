@@ -1,9 +1,10 @@
 import { Suspense, useMemo, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Float, Sparkles, Environment } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, Float, Sparkles, Environment, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import * as THREE from "three";
 
 // Types
 interface Offering {
@@ -24,17 +25,17 @@ interface GalleryRoomProps {
   onSelectOffering: (offering: Offering) => void;
 }
 
-const OFFERING_COLORS = [
-  "#8b7355",
-  "#a08060", 
-  "#9a8468",
-  "#7a6350",
-  "#b09070",
-  "#6a5545",
+const FRAME_COLORS = [
+  "#6b5b4b",
+  "#8b7355", 
+  "#7a6250",
+  "#5b4b3b",
+  "#9b8365",
+  "#4b3b2b",
 ];
 
-// Simple frame component - no Text, just geometry
-function SimpleFrame({ 
+// Artistic frame with ornate border
+function ArtisticFrame({ 
   offering, 
   position, 
   rotation = [0, 0, 0],
@@ -45,95 +46,172 @@ function SimpleFrame({
   rotation?: [number, number, number];
   onClick: () => void;
 }) {
-  const colorIndex = offering.id.charCodeAt(0) % OFFERING_COLORS.length;
+  const colorIndex = offering.id.charCodeAt(0) % FRAME_COLORS.length;
+  const frameRef = useRef<THREE.Group>(null);
   
   return (
     <group position={position} rotation={rotation}>
-      <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.4}>
-        <mesh onClick={onClick}>
-          {/* Main frame */}
-          <boxGeometry args={[1.2, 1.5, 0.1]} />
-          <meshStandardMaterial 
-            color={OFFERING_COLORS[colorIndex]}
-            roughness={0.5}
-            metalness={0.1}
-          />
-        </mesh>
-        
-        {/* Inner canvas */}
-        <mesh position={[0, 0, 0.06]}>
-          <boxGeometry args={[1, 1.3, 0.02]} />
-          <meshStandardMaterial 
-            color="#f8f5ef"
-            roughness={0.9}
-          />
-        </mesh>
-        
-        {/* Content indicator */}
-        {offering.media_type === "text" && (
-          <mesh position={[0, 0.1, 0.08]}>
-            <boxGeometry args={[0.6, 0.8, 0.01]} />
-            <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
+      <Float speed={1} rotationIntensity={0.1} floatIntensity={0.3}>
+        <group 
+          ref={frameRef}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+        >
+          {/* Outer frame - ornate border */}
+          <mesh>
+            <boxGeometry args={[1.4, 1.7, 0.12]} />
+            <meshStandardMaterial 
+              color={FRAME_COLORS[colorIndex]}
+              roughness={0.6}
+              metalness={0.1}
+            />
           </mesh>
-        )}
-        {offering.media_type === "image" && (
-          <mesh position={[0, 0, 0.08]}>
-            <boxGeometry args={[0.8, 0.8, 0.01]} />
-            <meshStandardMaterial color="#d4c4b0" roughness={0.85} />
+          
+          {/* Inner frame detail */}
+          <mesh position={[0, 0, 0.07]}>
+            <boxGeometry args={[1.2, 1.5, 0.02]} />
+            <meshStandardMaterial 
+              color="#4a3a2a"
+              roughness={0.8}
+            />
           </mesh>
-        )}
-        {offering.media_type === "link" && (
-          <mesh position={[0, 0, 0.08]}>
-            <boxGeometry args={[0.7, 0.5, 0.01]} />
-            <meshStandardMaterial color="#c4b4a0" roughness={0.85} />
+          
+          {/* Canvas/white space */}
+          <mesh position={[0, 0, 0.09]}>
+            <boxGeometry args={[1.05, 1.35, 0.01]} />
+            <meshStandardMaterial 
+              color="#f5f0e8"
+              roughness={0.95}
+            />
           </mesh>
-        )}
+          
+          {/* Content representation */}
+          {offering.media_type === "text" && (
+            <mesh position={[0, 0.1, 0.1]}>
+              <boxGeometry args={[0.7, 0.8, 0.005]} />
+              <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
+            </mesh>
+          )}
+          {offering.media_type === "image" && (
+            <mesh position={[0, 0, 0.1]}>
+              <boxGeometry args={[0.9, 0.9, 0.005]} />
+              <meshStandardMaterial color="#d4c4b0" roughness={0.85} />
+            </mesh>
+          )}
+          {offering.media_type === "link" && (
+            <mesh position={[0, 0, 0.1]}>
+              <boxGeometry args={[0.75, 0.5, 0.005]} />
+              <meshStandardMaterial color="#c4b4a0" roughness={0.85} />
+            </mesh>
+          )}
+          {offering.media_type === "video" && (
+            <mesh position={[0, 0, 0.1]}>
+              <boxGeometry args={[0.85, 0.6, 0.005]} />
+              <meshStandardMaterial color="#b4a490" roughness={0.85} />
+            </mesh>
+          )}
+        </group>
       </Float>
     </group>
   );
 }
 
-// Gallery room with walls and floor
+// Mouse-reactive camera for gallery
+function GalleryCameraRig() {
+  const { camera } = useThree();
+  const targetPos = useRef(new THREE.Vector3(0, 1, 12));
+  
+  useFrame((state) => {
+    const mouseX = state.pointer.x * 2;
+    const mouseY = state.pointer.y * 1;
+    
+    targetPos.current.set(mouseX, 1 + mouseY, 12);
+    camera.position.lerp(targetPos.current, 0.015);
+    camera.lookAt(0, 1, 0);
+  });
+  
+  return null;
+}
+
+// Gallery room with better atmosphere
 function GalleryRoom() {
   return (
     <group>
-      {/* Floor - warm wood color */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]} receiveShadow>
-        <planeGeometry args={[50, 50]} />
-        <meshStandardMaterial color="#d8d0c5" roughness={0.9} />
+      {/* Floor - warm stone */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
+        <planeGeometry args={[60, 60]} />
+        <meshStandardMaterial color="#d8d0c5" roughness={0.85} />
       </mesh>
       
-      {/* Back wall */}
-      <mesh position={[0, 4, -15]} receiveShadow>
-        <planeGeometry args={[50, 20]} />
+      {/* Floor center glow */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.99, 0]}>
+        <circleGeometry args={[8, 32]} />
+        <meshStandardMaterial
+          color="#e8e0d5"
+          transparent
+          opacity={0.4}
+        />
+      </mesh>
+      
+      {/* Back wall - warm white */}
+      <mesh position={[0, 4, -18]} receiveShadow>
+        <planeGeometry args={[60, 20]} />
         <meshStandardMaterial color="#f0ebe3" roughness={0.95} />
       </mesh>
       
       {/* Left wall */}
-      <mesh position={[-15, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[50, 20]} />
+      <mesh position={[-18, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[60, 20]} />
         <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
       </mesh>
       
       {/* Right wall */}
-      <mesh position={[15, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[50, 20]} />
+      <mesh position={[18, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[60, 20]} />
         <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
       </mesh>
     </group>
   );
 }
 
-// Ambient particles floating in the room
-function AmbientDust() {
+// Dramatic gallery lighting
+function GalleryLighting() {
+  return (
+    <>
+      <ambientLight intensity={0.4} />
+      
+      {/* Main overhead light */}
+      <directionalLight 
+        position={[10, 15, 10]} 
+        intensity={0.5} 
+        color="#fff5e6"
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+      />
+      
+      {/* Warm accent lights */}
+      <pointLight position={[0, 5, 5]} intensity={0.5} color="#f5e6d6" />
+      <pointLight position={[-10, 3, 3]} intensity={0.25} color="#e6d6c6" />
+      <pointLight position={[10, 3, 3]} intensity={0.25} color="#e6d6c6" />
+      
+      {/* Subtle floor reflection */}
+      <pointLight position={[0, -2, 0]} intensity={0.3} color="#d6c6b6" />
+    </>
+  );
+}
+
+// Floating dust particles
+function GalleryDust() {
   return (
     <Sparkles
-      count={150}
-      scale={30}
-      size={1.2}
-      speed={0.2}
+      count={200}
+      scale={40}
+      size={1}
+      speed={0.15}
       color="#c9b896"
-      opacity={0.3}
+      opacity={0.25}
     />
   );
 }
@@ -150,63 +228,51 @@ function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
       
       if (wall === 0) { // Back wall
         return {
-          position: [(posOnWall - 2.5) * 3.5, 0.5 + (i % 2) * 0.3, -12] as [number, number, number],
+          position: [(posOnWall - 2.5) * 4, 0.8 + (i % 2) * 0.4, -15] as [number, number, number],
           rotation: [0, 0, 0] as [number, number, number]
         };
       } else if (wall === 1) { // Left wall
         return {
-          position: [-12, 0.5 + (posOnWall % 2) * 0.3, (posOnWall - 1.5) * 3] as [number, number, number],
+          position: [-15, 0.8 + (posOnWall % 2) * 0.4, (posOnWall - 1.5) * 3.5] as [number, number, number],
           rotation: [0, Math.PI / 2, 0] as [number, number, number]
         };
       } else if (wall === 2) { // Right wall  
         return {
-          position: [12, 0.5 + (posOnWall % 2) * 0.3, (posOnWall - 1.5) * 3] as [number, number, number],
+          position: [15, 0.8 + (posOnWall % 2) * 0.4, (posOnWall - 1.5) * 3.5] as [number, number, number],
           rotation: [0, -Math.PI / 2, 0] as [number, number, number]
         };
       } else { // Floating in center
         return {
           position: [
-            (Math.random() - 0.5) * 8,
-            Math.random() * 2 - 0.5,
-            (Math.random() - 0.5) * 6
+            (Math.random() - 0.5) * 10,
+            Math.random() * 2.5 - 0.5,
+            (Math.random() - 0.5) * 8 - 3
           ] as [number, number, number],
           rotation: [
-            Math.random() * 0.3,
+            Math.random() * 0.2,
             Math.random() * Math.PI,
-            Math.random() * 0.3
+            Math.random() * 0.2
           ] as [number, number, number]
         };
       }
     });
   }, [offerings]);
 
-  if (reduceMotion) return null;
-
   return (
     <>
-      {/* Lighting */}
-      <ambientLight intensity={0.6} />
-      <directionalLight 
-        position={[8, 12, 8]} 
-        intensity={0.7} 
-        color="#fff5e6"
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-      />
-      <pointLight position={[0, 4, 0]} intensity={0.4} color="#e8dcd0" />
-      <pointLight position={[-8, 2, 4]} intensity={0.25} color="#d4c4b0" />
+      <fog attach="fog" args={["#f5f0e8", 15, 50]} />
       
-      {/* Environment for subtle reflections */}
-      <Environment preset="apartment" />
+      <GalleryLighting />
       
-      {/* Room structure */}
+      {!reduceMotion && <GalleryCameraRig />}
+      
       <GalleryRoom />
       
-      {/* Offerings as frames */}
+      {/* Offerings as artistic frames */}
       {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
         return (
-          <SimpleFrame
+          <ArtisticFrame
             key={offering.id}
             offering={offering}
             position={pos.position}
@@ -216,20 +282,27 @@ function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
         );
       })}
       
-      {/* Ambient particles */}
-      <AmbientDust />
+      <GalleryDust />
       
-      {/* Atmospheric fog */}
-      <fog attach="fog" args={["#f5f0e8", 10, 40]} />
+      <Stars
+        radius={80}
+        depth={60}
+        count={500}
+        factor={1.5}
+        saturation={0}
+        fade
+        speed={0.1}
+      />
       
-      {/* Camera controls */}
+      <Environment preset="apartment" />
+      
       <OrbitControls
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={3}
-        maxDistance={25}
-        maxPolarAngle={Math.PI * 0.8}
+        minDistance={4}
+        maxDistance={30}
+        maxPolarAngle={Math.PI * 0.75}
         target={[0, 1, 0]}
       />
     </>
@@ -266,13 +339,14 @@ function OfferingModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
         onClick={onClose}
       >
         <motion.div
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: 20 }}
+          transition={{ type: "spring", damping: 20 }}
           className="relative max-w-lg w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30"
           onClick={(e) => e.stopPropagation()}
         >
@@ -338,7 +412,7 @@ function OfferingModal({
 function CavapendoGallery({ className = "" }: { className?: string }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   
-  // Demo offerings - in production, fetch from Supabase
+  // Demo offerings
   const demoOfferings: Offering[] = useMemo(() => [
     {
       id: "demo-1",
@@ -429,36 +503,28 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
     },
   ], []);
 
-  const handleSelect = (offering: Offering) => {
-    setSelectedOffering(offering);
-  };
-
-  const handleClose = () => {
-    setSelectedOffering(null);
-  };
-
   return (
     <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px" }}>
       <Canvas
-        camera={{ position: [0, 2, 10], fov: 45 }}
+        camera={{ position: [0, 1, 12], fov: 45 }}
         gl={{ 
           antialias: true, 
           alpha: true,
           powerPreference: "high-performance",
           failIfMajorPerformanceCaveat: false
         }}
-        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e8e0d5 100%)", width: "100%", height: "100%" }}
+        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%" }}
         shadows
       >
         <Suspense fallback={<LoadingFallback />}>
           <Scene 
             offerings={demoOfferings}
-            onSelectOffering={handleSelect}
+            onSelectOffering={setSelectedOffering}
           />
         </Suspense>
       </Canvas>
       
-      {/* UI Overlay - instructions */}
+      {/* UI Overlay */}
       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none">
         <div className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20">
           <p className="font-mono-light text-xs text-muted-foreground">
@@ -473,10 +539,9 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
         </Link>
       </div>
       
-      {/* Detail Modal */}
       <OfferingModal 
         offering={selectedOffering}
-        onClose={handleClose}
+        onClose={() => setSelectedOffering(null)}
       />
     </div>
   );
