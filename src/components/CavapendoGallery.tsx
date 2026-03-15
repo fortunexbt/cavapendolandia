@@ -34,7 +34,7 @@ const FRAME_COLORS = [
   "#4b3b2b",
 ];
 
-// Artistic frame with ornate border
+// Artistic frame pinned to wall
 function ArtisticFrame({ 
   offering, 
   position, 
@@ -47,73 +47,69 @@ function ArtisticFrame({
   onClick: () => void;
 }) {
   const colorIndex = offering.id.charCodeAt(0) % FRAME_COLORS.length;
-  const frameRef = useRef<THREE.Group>(null);
   
   return (
     <group position={position} rotation={rotation}>
-      <Float speed={1} rotationIntensity={0.1} floatIntensity={0.3}>
-        <group 
-          ref={frameRef}
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick();
-          }}
-        >
-          {/* Outer frame - ornate border */}
-          <mesh>
-            <boxGeometry args={[1.4, 1.7, 0.12]} />
-            <meshStandardMaterial 
-              color={FRAME_COLORS[colorIndex]}
-              roughness={0.6}
-              metalness={0.1}
-            />
+      <group 
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+      >
+        {/* Outer frame */}
+        <mesh>
+          <boxGeometry args={[1.4, 1.7, 0.12]} />
+          <meshStandardMaterial 
+            color={FRAME_COLORS[colorIndex]}
+            roughness={0.6}
+            metalness={0.1}
+          />
+        </mesh>
+        
+        {/* Inner frame detail */}
+        <mesh position={[0, 0, 0.07]}>
+          <boxGeometry args={[1.2, 1.5, 0.02]} />
+          <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
+        </mesh>
+        
+        {/* Canvas/white space */}
+        <mesh position={[0, 0, 0.09]}>
+          <boxGeometry args={[1.05, 1.35, 0.01]} />
+          <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
+        </mesh>
+        
+        {/* Content representation */}
+        {offering.media_type === "text" && (
+          <mesh position={[0, 0.1, 0.1]}>
+            <boxGeometry args={[0.7, 0.8, 0.005]} />
+            <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
           </mesh>
-          
-          {/* Inner frame detail */}
-          <mesh position={[0, 0, 0.07]}>
-            <boxGeometry args={[1.2, 1.5, 0.02]} />
-            <meshStandardMaterial 
-              color="#4a3a2a"
-              roughness={0.8}
-            />
+        )}
+        {offering.media_type === "image" && (
+          <mesh position={[0, 0, 0.1]}>
+            <boxGeometry args={[0.9, 0.9, 0.005]} />
+            <meshStandardMaterial color="#d4c4b0" roughness={0.85} />
           </mesh>
-          
-          {/* Canvas/white space */}
-          <mesh position={[0, 0, 0.09]}>
-            <boxGeometry args={[1.05, 1.35, 0.01]} />
-            <meshStandardMaterial 
-              color="#f5f0e8"
-              roughness={0.95}
-            />
+        )}
+        {offering.media_type === "link" && (
+          <mesh position={[0, 0, 0.1]}>
+            <boxGeometry args={[0.75, 0.5, 0.005]} />
+            <meshStandardMaterial color="#c4b4a0" roughness={0.85} />
           </mesh>
-          
-          {/* Content representation */}
-          {offering.media_type === "text" && (
-            <mesh position={[0, 0.1, 0.1]}>
-              <boxGeometry args={[0.7, 0.8, 0.005]} />
-              <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
-            </mesh>
-          )}
-          {offering.media_type === "image" && (
-            <mesh position={[0, 0, 0.1]}>
-              <boxGeometry args={[0.9, 0.9, 0.005]} />
-              <meshStandardMaterial color="#d4c4b0" roughness={0.85} />
-            </mesh>
-          )}
-          {offering.media_type === "link" && (
-            <mesh position={[0, 0, 0.1]}>
-              <boxGeometry args={[0.75, 0.5, 0.005]} />
-              <meshStandardMaterial color="#c4b4a0" roughness={0.85} />
-            </mesh>
-          )}
-          {offering.media_type === "video" && (
-            <mesh position={[0, 0, 0.1]}>
-              <boxGeometry args={[0.85, 0.6, 0.005]} />
-              <meshStandardMaterial color="#b4a490" roughness={0.85} />
-            </mesh>
-          )}
-        </group>
-      </Float>
+        )}
+        {offering.media_type === "video" && (
+          <mesh position={[0, 0, 0.1]}>
+            <boxGeometry args={[0.85, 0.6, 0.005]} />
+            <meshStandardMaterial color="#b4a490" roughness={0.85} />
+          </mesh>
+        )}
+        
+        {/* Pin/nail at top */}
+        <mesh position={[0, 0.85, 0.08]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
+        </mesh>
+      </group>
     </group>
   );
 }
