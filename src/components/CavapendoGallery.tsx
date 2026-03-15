@@ -1185,8 +1185,17 @@ function OfferingModal({
               Di <span className="font-medium text-foreground">{authorDisplay}</span>
             </p>
             <p className="mt-1 text-xs">
-              {new Date(offering.created_at).toLocaleDateString("it-IT")}
+              Inviata: {new Date(offering.created_at).toLocaleDateString("it-IT")}
             </p>
+            {offering.approved_at && (
+              <p className="mt-1 text-xs">
+                In galleria dal: {new Date(offering.approved_at).toLocaleDateString("it-IT")}
+              </p>
+            )}
+            <p className="mt-1 text-xs uppercase tracking-wide">
+              Tipo: {offering.media_type}
+            </p>
+            <p className="mt-1 text-[10px] opacity-80">ID: {offering.id}</p>
           </div>
         </motion.div>
       </motion.div>
