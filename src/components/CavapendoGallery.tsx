@@ -7,6 +7,16 @@ import { useQuery } from "@tanstack/react-query";
 import * as THREE from "three";
 import { supabase } from "@/integrations/supabase/client";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+// ─── Shared Input State (for mobile joysticks → scene) ──────────────────────
+
+interface JoystickInput {
+  moveX: number;
+  moveZ: number;
+  lookX: number;
+  lookY: number;
+}
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -198,17 +208,25 @@ function useAmbientAudio(audioEnabled: boolean) {
 
 // ─── Room Boundary Constants ────────────────────────────────────────────────
 
-const CAM_BOUND = 17.3;     // camera can approach walls closely while staying inside
-const TARGET_BOUND = 17.2;  // allow panning target almost up to the walls
-const CAM_Y_MIN = 0.35;
+const CAM_BOUND = 17.7;     // ~10cm from walls at ±18
+const TARGET_BOUND = 17.2;  // orbit target bound (orbit mode only)
+const CAM_Y_MIN = -1.8;     // eye level (floor at y=-3)
 const CAM_Y_MAX = 8;
 const TARGET_Y_MIN = -2;
 const TARGET_Y_MAX = 7;
+const FPS_SPEED = 6;        // units/sec
+const LOOK_SENSITIVITY = 0.002;
 
 function clampVec3(v: THREE.Vector3, xBound: number, yMin: number, yMax: number, zBound: number) {
   v.x = THREE.MathUtils.clamp(v.x, -xBound, xBound);
   v.y = THREE.MathUtils.clamp(v.y, yMin, yMax);
   v.z = THREE.MathUtils.clamp(v.z, -xBound, zBound);
+}
+
+function clampCamera(pos: THREE.Vector3) {
+  pos.x = THREE.MathUtils.clamp(pos.x, -CAM_BOUND, CAM_BOUND);
+  pos.y = THREE.MathUtils.clamp(pos.y, CAM_Y_MIN, CAM_Y_MAX);
+  pos.z = THREE.MathUtils.clamp(pos.z, -CAM_BOUND, CAM_BOUND);
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -1078,26 +1096,164 @@ function StoryCreature({
   );
 }
 
+// ─── FPS Camera Controller ──────────────────────────────────────────────────
+
+function FPSController({
+  enabled,
+  modalOpen,
+  joystickRef,
+}: {
+  enabled: boolean;
+  modalOpen: boolean;
+  joystickRef: React.RefObject<JoystickInput>;
+}) {
+  const { camera, gl } = useThree();
+  const keysDown = useRef(new Set<string>());
+  const euler = useRef(new THREE.Euler(0, 0, 0, "YXZ"));
+  const isLocked = useRef(false);
+  const direction = useRef(new THREE.Vector3());
+  const forward = useRef(new THREE.Vector3());
+  const right = useRef(new THREE.Vector3());
+  const upVec = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+
+  // Pointer lock + keyboard + mouse look
+  useEffect(() => {
+    if (!enabled) {
+      keysDown.current.clear();
+      if (document.pointerLockElement === gl.domElement) document.exitPointerLock();
+      return;
+    }
+
+    const canvas = gl.domElement;
+
+    const onLockChange = () => {
+      isLocked.current = document.pointerLockElement === canvas;
+    };
+    document.addEventListener("pointerlockchange", onLockChange);
+
+    const onClick = () => {
+      if (!modalOpen && enabled && !isLocked.current) {
+        canvas.requestPointerLock();
+      }
+    };
+    canvas.addEventListener("click", onClick);
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isLocked.current) return;
+      euler.current.setFromQuaternion(camera.quaternion);
+      euler.current.y -= e.movementX * LOOK_SENSITIVITY;
+      euler.current.x -= e.movementY * LOOK_SENSITIVITY;
+      euler.current.x = THREE.MathUtils.clamp(euler.current.x, -Math.PI / 2 + 0.1, Math.PI / 2 - 0.1);
+      camera.quaternion.setFromEuler(euler.current);
+    };
+    document.addEventListener("mousemove", onMouseMove);
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyQ", "KeyE", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+        e.preventDefault();
+        keysDown.current.add(e.code);
+      }
+    };
+    const onKeyUp = (e: KeyboardEvent) => keysDown.current.delete(e.code);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+
+    return () => {
+      document.removeEventListener("pointerlockchange", onLockChange);
+      canvas.removeEventListener("click", onClick);
+      document.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      if (document.pointerLockElement === canvas) document.exitPointerLock();
+    };
+  }, [enabled, modalOpen, camera, gl]);
+
+  // Release pointer lock on modal open
+  useEffect(() => {
+    if (modalOpen && document.pointerLockElement) {
+      document.exitPointerLock();
+    }
+  }, [modalOpen]);
+
+  useFrame((_, delta) => {
+    if (!enabled) return;
+
+    const keys = keysDown.current;
+    const joy = joystickRef.current;
+    direction.current.set(0, 0, 0);
+
+    // Keyboard input
+    if (keys.has("KeyW") || keys.has("ArrowUp")) direction.current.z -= 1;
+    if (keys.has("KeyS") || keys.has("ArrowDown")) direction.current.z += 1;
+    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x -= 1;
+    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x += 1;
+    if (keys.has("KeyQ")) direction.current.y -= 1;
+    if (keys.has("KeyE")) direction.current.y += 1;
+
+    // Joystick input (mobile)
+    if (joy) {
+      direction.current.x += joy.moveX;
+      direction.current.z += joy.moveZ;
+
+      // Apply look from right joystick
+      if (Math.abs(joy.lookX) > 0.01 || Math.abs(joy.lookY) > 0.01) {
+        euler.current.setFromQuaternion(camera.quaternion);
+        euler.current.y -= joy.lookX * 3 * delta;
+        euler.current.x -= joy.lookY * 3 * delta;
+        euler.current.x = THREE.MathUtils.clamp(euler.current.x, -Math.PI / 2 + 0.1, Math.PI / 2 - 0.1);
+        camera.quaternion.setFromEuler(euler.current);
+      }
+    }
+
+    if (direction.current.lengthSq() < 0.001) return;
+    direction.current.normalize();
+
+    // Build movement vectors from camera orientation
+    camera.getWorldDirection(forward.current);
+    forward.current.y = 0;
+    forward.current.normalize();
+    right.current.crossVectors(forward.current, upVec).negate();
+
+    const move = new THREE.Vector3();
+    move.addScaledVector(right.current, direction.current.x);
+    move.addScaledVector(upVec, direction.current.y);
+    move.addScaledVector(forward.current, -direction.current.z);
+
+    camera.position.addScaledVector(move, FPS_SPEED * delta);
+    clampCamera(camera.position);
+  });
+
+  return null;
+}
+
 // ─── Scene ──────────────────────────────────────────────────────────────────
 
 function Scene({
   offerings,
   onSelectOffering,
   onSelectCreature,
+  controlMode,
+  modalOpen,
+  joystickRef,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
   onSelectCreature: (c: typeof CREATURES[number]) => void;
+  controlMode: "fps" | "orbit";
+  modalOpen: boolean;
+  joystickRef: React.RefObject<JoystickInput>;
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
 
-  // Single useFrame clamp — enforces boundaries every frame
+  // Boundary clamp every frame (orbit mode)
   useFrame(() => {
-    if (controlsRef.current?.target) {
-      clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
+    if (controlMode === "orbit") {
+      if (controlsRef.current?.target) {
+        clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
+      }
+      clampVec3(camera.position, CAM_BOUND, 0.35, CAM_Y_MAX, CAM_BOUND);
     }
-    clampVec3(camera.position, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
   });
 
   const positions = useMemo(() => {
@@ -1160,33 +1316,40 @@ function Scene({
         <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
 
-      {/* Creature shadows */}
       {CREATURES.map((creature) => (
         <CreatureShadow key={`shadow-${creature.name}`} position={creature.position} />
       ))}
 
       <GalleryDust />
-
       <Stars radius={80} depth={60} count={500} factor={1.5} saturation={0} fade speed={0.1} />
-
       <Environment preset="apartment" />
 
-      <OrbitControls
-        ref={controlsRef}
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        minDistance={0.2}
-        maxDistance={18}
-        maxPolarAngle={Math.PI * 0.88}
-        minPolarAngle={Math.PI * 0.08}
-        target={[0, 1, 0]}
-        zoomSpeed={0.9}
-        panSpeed={0.55}
-        rotateSpeed={0.6}
-        enableDamping={true}
-        dampingFactor={0.1}
+      {/* FPS Controller */}
+      <FPSController
+        enabled={controlMode === "fps"}
+        modalOpen={modalOpen}
+        joystickRef={joystickRef}
       />
+
+      {/* Orbit Controls (fallback mode) */}
+      {controlMode === "orbit" && (
+        <OrbitControls
+          ref={controlsRef}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={0.2}
+          maxDistance={18}
+          maxPolarAngle={Math.PI * 0.88}
+          minPolarAngle={Math.PI * 0.08}
+          target={[0, 1, 0]}
+          zoomSpeed={0.9}
+          panSpeed={0.55}
+          rotateSpeed={0.6}
+          enableDamping={true}
+          dampingFactor={0.1}
+        />
+      )}
     </>
   );
 }
@@ -1274,6 +1437,93 @@ const DEMO_OFFERINGS: Offering[] = [
   { id: "demo-6", title: "Colore B", media_type: "image", file_url: "/cavapendoli/models-bw.png", link_url: null, author_name: "Luca", author_type: "name", created_at: "2024-01-20" },
 ];
 
+// ─── Virtual Joystick ───────────────────────────────────────────────────────
+
+function VirtualJoystick({
+  side,
+  onInput,
+}: {
+  side: "left" | "right";
+  onInput: (x: number, y: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchIdRef = useRef<number | null>(null);
+  const centerRef = useRef({ x: 0, y: 0 });
+  const RADIUS = 50;
+
+  const [stickPos, setStickPos] = useState({ x: 0, y: 0 });
+
+  const handleStart = useCallback((e: React.TouchEvent) => {
+    if (touchIdRef.current !== null) return;
+    const touch = e.changedTouches[0];
+    touchIdRef.current = touch.identifier;
+    const rect = containerRef.current!.getBoundingClientRect();
+    centerRef.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  }, []);
+
+  const handleMove = useCallback((e: React.TouchEvent) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      if (touch.identifier !== touchIdRef.current) continue;
+      const dx = touch.clientX - centerRef.current.x;
+      const dy = touch.clientY - centerRef.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const clampedDist = Math.min(dist, RADIUS);
+      const angle = Math.atan2(dy, dx);
+      const nx = (Math.cos(angle) * clampedDist) / RADIUS;
+      const ny = (Math.sin(angle) * clampedDist) / RADIUS;
+      setStickPos({ x: nx * RADIUS * 0.6, y: ny * RADIUS * 0.6 });
+      onInput(nx, ny);
+    }
+  }, [onInput]);
+
+  const handleEnd = useCallback((e: React.TouchEvent) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === touchIdRef.current) {
+        touchIdRef.current = null;
+        setStickPos({ x: 0, y: 0 });
+        onInput(0, 0);
+      }
+    }
+  }, [onInput]);
+
+  return (
+    <div
+      ref={containerRef}
+      onTouchStart={handleStart}
+      onTouchMove={handleMove}
+      onTouchEnd={handleEnd}
+      onTouchCancel={handleEnd}
+      className={`absolute bottom-8 ${side === "left" ? "left-8" : "right-8"} pointer-events-auto touch-none`}
+      style={{
+        width: RADIUS * 2 + 20,
+        height: RADIUS * 2 + 20,
+      }}
+    >
+      {/* Base ring */}
+      <div
+        className="absolute inset-0 rounded-full border-2 border-foreground/20 bg-background/20 backdrop-blur-sm"
+      />
+      {/* Stick */}
+      <div
+        className="absolute rounded-full bg-foreground/40 backdrop-blur-sm"
+        style={{
+          width: 40,
+          height: 40,
+          left: "50%",
+          top: "50%",
+          transform: `translate(calc(-50% + ${stickPos.x}px), calc(-50% + ${stickPos.y}px))`,
+          transition: touchIdRef.current !== null ? "none" : "transform 0.15s ease-out",
+        }}
+      />
+      {/* Label */}
+      <div className="absolute -top-5 left-0 right-0 text-center text-[10px] text-foreground/40 font-mono-light">
+        {side === "left" ? "MUOVI" : "GUARDA"}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 function CavapendoGallery({ className = "" }: { className?: string }) {
@@ -1281,10 +1531,17 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
+  const isMobile = useIsMobile();
+  const [controlMode, setControlMode] = useState<"fps" | "orbit">(isMobile ? "fps" : "fps");
+  const [enterPromptVisible, setEnterPromptVisible] = useState(!isMobile);
+
+  const joystickRef = useRef<JoystickInput>({ moveX: 0, moveZ: 0, lookX: 0, lookY: 0 });
+
+  const modalOpen = !!(selectedOffering || selectedCreature);
 
   // Auto-hide hint
   useEffect(() => {
-    const timer = setTimeout(() => setHintVisible(false), 6000);
+    const timer = setTimeout(() => setHintVisible(false), 8000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -1310,22 +1567,46 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
 
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
-  // ESC to close modals
+  // ESC to close modals (but don't override pointer lock ESC behavior)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setSelectedOffering(null);
-        setSelectedCreature(null);
+        if (selectedOffering || selectedCreature) {
+          setSelectedOffering(null);
+          setSelectedCreature(null);
+        }
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedOffering, selectedCreature]);
+
+  // Hide enter prompt when pointer lock is acquired
+  useEffect(() => {
+    const onLockChange = () => {
+      if (document.pointerLockElement) {
+        setEnterPromptVisible(false);
+      }
+    };
+    document.addEventListener("pointerlockchange", onLockChange);
+    return () => document.removeEventListener("pointerlockchange", onLockChange);
+  }, []);
+
+  // Joystick callbacks
+  const handleLeftJoystick = useCallback((x: number, y: number) => {
+    joystickRef.current.moveX = x;
+    joystickRef.current.moveZ = y;
+  }, []);
+
+  const handleRightJoystick = useCallback((x: number, y: number) => {
+    joystickRef.current.lookX = x;
+    joystickRef.current.lookY = y;
   }, []);
 
   return (
     <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px", isolation: "isolate" }}>
       <Canvas
-        camera={{ position: [0, 1, 12], fov: 45 }}
+        camera={{ position: [0, 0, 12], fov: 50 }}
         gl={{
           antialias: true,
           alpha: true,
@@ -1340,9 +1621,47 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             offerings={offerings}
             onSelectOffering={setSelectedOffering}
             onSelectCreature={setSelectedCreature}
+            controlMode={controlMode}
+            modalOpen={modalOpen}
+            joystickRef={joystickRef}
           />
         </Suspense>
       </Canvas>
+
+      {/* FPS Crosshair (desktop only, when in FPS mode and no modal) */}
+      {controlMode === "fps" && !isMobile && !modalOpen && !enterPromptVisible && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 5 }}>
+          <div className="w-1 h-1 rounded-full bg-foreground/40" />
+        </div>
+      )}
+
+      {/* Enter prompt (desktop FPS — click to lock pointer) */}
+      <AnimatePresence>
+        {enterPromptVisible && controlMode === "fps" && !isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ zIndex: 15 }}
+          >
+            <div className="bg-background/80 backdrop-blur-sm px-8 py-5 rounded-lg border border-border/30 text-center">
+              <p className="font-serif text-lg text-foreground mb-1">🏛️ La Galleria</p>
+              <p className="font-mono-light text-sm text-muted-foreground">
+                Clicca per entrare • WASD per muoverti • Mouse per guardarti intorno
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile joysticks */}
+      {isMobile && controlMode === "fps" && !modalOpen && (
+        <>
+          <VirtualJoystick side="left" onInput={handleLeftJoystick} />
+          <VirtualJoystick side="right" onInput={handleRightJoystick} />
+        </>
+      )}
 
       {/* UI Overlay */}
       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none" style={{ zIndex: 10 }}>
@@ -1356,6 +1675,17 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             {audioEnabled ? "🔊" : "🔇"}
           </button>
 
+          {/* Mode toggle (desktop only) */}
+          {!isMobile && (
+            <button
+              onClick={() => setControlMode((m) => m === "fps" ? "orbit" : "fps")}
+              className="pointer-events-auto bg-background/80 backdrop-blur-sm px-3 py-2 rounded-md border border-border/30 text-lg hover:bg-background/95 transition-colors"
+              title={controlMode === "fps" ? "Passa a Orbita" : "Passa a Prima persona"}
+            >
+              {controlMode === "fps" ? "🖱️" : "🎮"}
+            </button>
+          )}
+
           {/* Hint text */}
           <AnimatePresence>
             {hintVisible && (
@@ -1367,7 +1697,12 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
                 className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20"
               >
                 <p className="font-mono-light text-xs text-muted-foreground">
-                  🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura
+                  {isMobile
+                    ? "👆 Joystick sinistro: muoviti • Destro: guardati intorno • Tocca un quadro"
+                    : controlMode === "fps"
+                      ? "⌨️ WASD per muoverti • Mouse per guardare • Clicca un quadro o una creatura"
+                      : "🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura"
+                  }
                 </p>
               </motion.div>
             )}
