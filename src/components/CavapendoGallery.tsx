@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Sparkles, Environment, Stars, Html, type OrbitControlsChangeEvent } from "@react-three/drei";
+import { OrbitControls, Sparkles, Environment, Stars, Html } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -198,10 +198,9 @@ function useAmbientAudio(audioEnabled: boolean) {
 
 // ─── Room Boundary Constants ────────────────────────────────────────────────
 
-const ROOM_HALF = 18;
-const CAM_BOUND = 16;       // camera.position clamped here
+const CAM_BOUND = 15.5;     // camera.position clamped here
 const TARGET_BOUND = 14;    // orbit target clamped here
-const CAM_Y_MIN = -2;
+const CAM_Y_MIN = 0.5;
 const CAM_Y_MAX = 8;
 const TARGET_Y_MIN = -2;
 const TARGET_Y_MAX = 7;
@@ -212,81 +211,11 @@ function clampVec3(v: THREE.Vector3, xBound: number, yMin: number, yMax: number,
   v.z = THREE.MathUtils.clamp(v.z, -xBound, zBound);
 }
 
-function clampInsideRoom(camera: THREE.Camera, controls: any) {
-  if (controls?.target) {
-    clampVec3(controls.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
-  }
-  clampVec3(camera.position, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
-}
-
-// useFrame guard that runs every frame to enforce boundaries
-function BoundsGuard({ controlsRef }: { controlsRef: React.RefObject<any> }) {
-  const { camera } = useThree();
-  useFrame(() => {
-    clampInsideRoom(camera, controlsRef.current);
-  });
-  return null;
-}
-
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const FRAME_COLORS = [
   "#6b5b4b", "#8b7355", "#7a6250", "#5b4b3b", "#9b8365", "#4b3b2b",
 ];
-
-// ─── Fly-to-frame camera controller ────────────────────────────────────────
-
-interface CameraTarget {
-  position: THREE.Vector3;
-  lookAt: THREE.Vector3;
-}
-
-function CameraController({
-  target,
-  onArrived,
-}: {
-  target: CameraTarget | null;
-  onArrived: () => void;
-}) {
-  const { camera } = useThree();
-  const arrivedRef = useRef(false);
-  const startPosRef = useRef(new THREE.Vector3());
-  const startLookRef = useRef(new THREE.Vector3());
-  const progressRef = useRef(0);
-  const currentLookAt = useRef(new THREE.Vector3(0, 1, 0));
-
-  useEffect(() => {
-    if (target) {
-      startPosRef.current.copy(camera.position);
-      startLookRef.current.copy(currentLookAt.current);
-      progressRef.current = 0;
-      arrivedRef.current = false;
-    }
-  }, [target, camera]);
-
-  useFrame((_, delta) => {
-    if (!target) return;
-    if (arrivedRef.current) return;
-
-    progressRef.current = Math.min(1, progressRef.current + delta * 1.2);
-    const t = easeInOutCubic(progressRef.current);
-
-    camera.position.lerpVectors(startPosRef.current, target.position, t);
-    currentLookAt.current.lerpVectors(startLookRef.current, target.lookAt, t);
-    camera.lookAt(currentLookAt.current);
-
-    if (progressRef.current >= 1 && !arrivedRef.current) {
-      arrivedRef.current = true;
-      onArrived();
-    }
-  });
-
-  return null;
-}
-
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
 
 // ─── Frame sizing ───────────────────────────────────────────────────────────
 
@@ -842,16 +771,16 @@ function CreatureShadow({ position }: { position: [number, number, number] }) {
 function GalleryLighting() {
   return (
     <>
-      {/* Low ambient — let zones shine */}
-      <ambientLight intensity={0.15} color="#f0e8d8" />
+      {/* Higher ambient for consistent visibility */}
+      <ambientLight intensity={0.25} color="#f0e8d8" />
 
       {/* Main directional for shadows */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.4}
+        intensity={0.45}
         color="#fff5e6"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
       />
 
       {/* Warm pool — back wall */}
@@ -859,25 +788,15 @@ function GalleryLighting() {
         position={[0, 9, -14]}
         angle={0.5}
         penumbra={0.9}
-        intensity={1.2}
+        intensity={1.0}
         color="#ffe8c0"
         castShadow
         target-position={[0, 0, -17]}
       />
 
-      {/* Cool zone — entrance */}
-      <pointLight position={[0, 6, 14]} intensity={0.4} color="#c8d8f0" distance={20} />
-
-      {/* Frame spotlights — track lighting */}
-      <spotLight position={[-8, 8, -16]} angle={0.3} penumbra={0.7} intensity={0.8} color="#fff0d8" castShadow target-position={[-8, 1, -17.8]} />
-      <spotLight position={[8, 8, -16]} angle={0.3} penumbra={0.7} intensity={0.8} color="#fff0d8" castShadow target-position={[8, 1, -17.8]} />
-      <spotLight position={[-16, 8, -5]} angle={0.3} penumbra={0.7} intensity={0.7} color="#f8e8d0" castShadow target-position={[-17.8, 1, -5]} />
-      <spotLight position={[16, 8, -5]} angle={0.3} penumbra={0.7} intensity={0.7} color="#f8e8d0" castShadow target-position={[17.8, 1, -5]} />
-
-      {/* Fill lights */}
-      <pointLight position={[-10, 3, 3]} intensity={0.2} color="#e6d6c6" distance={15} />
-      <pointLight position={[10, 3, 3]} intensity={0.2} color="#e6d6c6" distance={15} />
-      <pointLight position={[0, 0, 0]} intensity={0.15} color="#d6c6b6" distance={12} />
+      {/* Fill — left and right */}
+      <pointLight position={[-12, 4, 0]} intensity={0.3} color="#e6d6c6" distance={20} />
+      <pointLight position={[12, 4, 0]} intensity={0.3} color="#e6d6c6" distance={20} />
     </>
   );
 }
@@ -1165,26 +1084,21 @@ function Scene({
   offerings,
   onSelectOffering,
   onSelectCreature,
-  cameraTarget,
-  setCameraTarget,
-  onCameraArrived,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
   onSelectCreature: (c: typeof CREATURES[number]) => void;
-  cameraTarget: CameraTarget | null;
-  setCameraTarget: (t: CameraTarget | null) => void;
-  onCameraArrived: () => void;
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
 
-  // Disable orbit controls when flying to a target
-  useEffect(() => {
-    if (controlsRef.current) {
-      controlsRef.current.enabled = !cameraTarget;
+  // Single useFrame clamp — enforces boundaries every frame
+  useFrame(() => {
+    if (controlsRef.current?.target) {
+      clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
     }
-  }, [cameraTarget]);
+    clampVec3(camera.position, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
+  });
 
   const positions = useMemo(() => {
     const backSlots = { count: 0 };
@@ -1203,7 +1117,6 @@ function Scene({
         return {
           position: [x, 1 + yJitter, -17.8] as [number, number, number],
           rotation: [0, 0, tilt] as [number, number, number],
-          normal: [0, 0, 1] as [number, number, number],
         };
       } else if (wall === 1) {
         const slot = leftSlots.count++;
@@ -1211,7 +1124,6 @@ function Scene({
         return {
           position: [-17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, Math.PI / 2, tilt] as [number, number, number],
-          normal: [1, 0, 0] as [number, number, number],
         };
       } else {
         const slot = rightSlots.count++;
@@ -1219,55 +1131,10 @@ function Scene({
         return {
           position: [17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, -Math.PI / 2, tilt] as [number, number, number],
-          normal: [-1, 0, 0] as [number, number, number],
         };
       }
     });
   }, [offerings]);
-
-  // Fly-to for frames: compute a viewpoint 3 units in front of the frame
-  const handleFrameClick = useCallback(
-    (offering: Offering, index: number) => {
-      const pos = positions[index];
-      if (!pos) {
-        onSelectOffering(offering);
-        return;
-      }
-      const framePos = new THREE.Vector3(...pos.position);
-      const normal = new THREE.Vector3(...pos.normal);
-      const viewPos = framePos.clone().add(normal.multiplyScalar(3));
-      viewPos.y = THREE.MathUtils.clamp(viewPos.y, CAM_Y_MIN, CAM_Y_MAX);
-      clampVec3(viewPos, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
-
-      setCameraTarget({
-        position: viewPos,
-        lookAt: new THREE.Vector3(...pos.position),
-      });
-      // Open modal after arrival
-      setTimeout(() => onSelectOffering(offering), 900);
-    },
-    [positions, onSelectOffering, setCameraTarget],
-  );
-
-  // Fly-to for creatures
-  const handleCreatureClick = useCallback(
-    (creature: typeof CREATURES[number]) => {
-      const creaturePos = new THREE.Vector3(...creature.position);
-      const dir = new THREE.Vector3().subVectors(camera.position, creaturePos).normalize();
-      dir.y = 0.2;
-      dir.normalize();
-      const viewPos = creaturePos.clone().add(dir.multiplyScalar(3));
-      viewPos.y = Math.max(viewPos.y, creaturePos.y + 0.5);
-      clampVec3(viewPos, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
-
-      setCameraTarget({
-        position: viewPos,
-        lookAt: creaturePos.clone().add(new THREE.Vector3(0, 0.5, 0)),
-      });
-      setTimeout(() => onSelectCreature(creature), 900);
-    },
-    [camera, onSelectCreature, setCameraTarget],
-  );
 
   return (
     <>
@@ -1275,9 +1142,6 @@ function Scene({
       <GalleryLighting />
       <VolumetricLights />
       <GalleryRoom />
-
-      <CameraController target={cameraTarget} onArrived={onCameraArrived} />
-      <BoundsGuard controlsRef={controlsRef} />
 
       {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
@@ -1287,13 +1151,13 @@ function Scene({
             offering={offering}
             position={pos.position}
             rotation={pos.rotation}
-            onClick={() => handleFrameClick(offering, i)}
+            onClick={() => onSelectOffering(offering)}
           />
         );
       })}
 
       {CREATURES.map((creature) => (
-        <StoryCreature key={creature.name} creature={creature} onSelect={handleCreatureClick} />
+        <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
 
       {/* Creature shadows */}
@@ -1312,19 +1176,16 @@ function Scene({
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={0.8}
-        maxDistance={16}
+        minDistance={0.5}
+        maxDistance={14}
         maxPolarAngle={Math.PI * 0.85}
         minPolarAngle={Math.PI * 0.1}
         target={[0, 1, 0]}
-        zoomSpeed={0.8}
-        panSpeed={0.6}
-        rotateSpeed={0.7}
+        zoomSpeed={0.7}
+        panSpeed={0.4}
+        rotateSpeed={0.6}
         enableDamping={true}
-        dampingFactor={0.12}
-        onChange={() => {
-          clampInsideRoom(camera, controlsRef.current);
-        }}
+        dampingFactor={0.1}
       />
     </>
   );
@@ -1419,7 +1280,6 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
-  const [cameraTarget, setCameraTarget] = useState<CameraTarget | null>(null);
   const [hintVisible, setHintVisible] = useState(true);
 
   // Auto-hide hint
@@ -1450,11 +1310,10 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
 
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
-  // ESC to exit focus mode
+  // ESC to close modals
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setCameraTarget(null);
         setSelectedOffering(null);
         setSelectedCreature(null);
       }
@@ -1481,9 +1340,6 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             offerings={offerings}
             onSelectOffering={setSelectedOffering}
             onSelectCreature={setSelectedCreature}
-            cameraTarget={cameraTarget}
-            setCameraTarget={setCameraTarget}
-            onCameraArrived={() => setCameraTarget(null)}
           />
         </Suspense>
       </Canvas>
