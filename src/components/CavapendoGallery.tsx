@@ -884,7 +884,7 @@ function GalleryRoom() {
       {/* Floor — terracotta tiles */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.3} roughness={0.85} />
+        <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.5} roughness={0.85} />
       </mesh>
       {/* Center medallion */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.99, 0]}>
@@ -892,35 +892,68 @@ function GalleryRoom() {
         <meshStandardMaterial color="#c8b090" transparent opacity={0.35} roughness={0.9} />
       </mesh>
 
+      {/* Floor edge darkening (ambient occlusion ring) */}
+      {[hw, hd].length && (
+        <>
+          {/* Back edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.98, -hd + 2]}>
+            <planeGeometry args={[ROOM_W, 4]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.08} depthWrite={false} />
+          </mesh>
+          {/* Front edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.98, hd - 2]}>
+            <planeGeometry args={[ROOM_W, 4]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.06} depthWrite={false} />
+          </mesh>
+          {/* Left edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-hw + 2, -2.98, 0]}>
+            <planeGeometry args={[4, ROOM_D]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.08} depthWrite={false} />
+          </mesh>
+          {/* Right edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[hw - 2, -2.98, 0]}>
+            <planeGeometry args={[4, ROOM_D]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.08} depthWrite={false} />
+          </mesh>
+          {/* Corner patches (darker) */}
+          {[[-hw+2, -hd+2], [hw-2, -hd+2], [-hw+2, hd-2], [hw-2, hd-2]].map(([cx, cz], i) => (
+            <mesh key={`corner-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[cx, -2.97, cz]}>
+              <circleGeometry args={[3, 16]} />
+              <meshBasicMaterial color="#000" transparent opacity={0.06} depthWrite={false} />
+            </mesh>
+          ))}
+        </>
+      )}
+
       {/* Back wall */}
       <mesh position={[0, 4, -hd]} receiveShadow>
         <planeGeometry args={[ROOM_W, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Left wall */}
       <mesh position={[-hw, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[ROOM_D, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Right wall */}
       <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[ROOM_D, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
 
       {/* Front wall — archway: two side panels + lintel */}
       <mesh position={[-hw / 2 - 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       <mesh position={[hw / 2 + 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Archway lintel */}
       <mesh position={[0, 8, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
 
       {/* Exit hint text above archway */}
