@@ -1095,16 +1095,22 @@ function StoryCreature({
 
 // ─── FPS Camera Controller ──────────────────────────────────────────────────
 
+const EYE_HEIGHT = -1.8; // floor at y=-3, eyes ~1.2m above
+const JUMP_VELOCITY = 6;
+const GRAVITY = -15;
+
 function FPSController({
   enabled,
   modalOpen,
   joystickRef,
+  onFrameClick,
 }: {
   enabled: boolean;
   modalOpen: boolean;
   joystickRef: React.RefObject<JoystickInput>;
+  onFrameClick?: () => void;
 }) {
-  const { camera, gl } = useThree();
+  const { camera, gl, raycaster, scene } = useThree();
   const keysDown = useRef(new Set<string>());
   const euler = useRef(new THREE.Euler(0, 0, 0, "YXZ"));
   const isLocked = useRef(false);
@@ -1112,6 +1118,8 @@ function FPSController({
   const forward = useRef(new THREE.Vector3());
   const right = useRef(new THREE.Vector3());
   const upVec = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+  const velocityY = useRef(0);
+  const isGrounded = useRef(true);
 
   // Pointer lock + keyboard + mouse look
   useEffect(() => {
@@ -1128,9 +1136,31 @@ function FPSController({
     };
     document.addEventListener("pointerlockchange", onLockChange);
 
-    const onClick = () => {
-      if (!modalOpen && enabled && !isLocked.current) {
+    const onClick = (e: MouseEvent) => {
+      if (!enabled) return;
+      if (!isLocked.current && !modalOpen) {
         canvas.requestPointerLock();
+        return;
+      }
+      // When locked, cast a ray from screen center to detect frame clicks
+      if (isLocked.current) {
+        raycaster.setFromCamera({ x: 0, y: 0 } as THREE.Vector2, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+        for (const hit of intersects) {
+          // Walk up to find a group/mesh with onPointerDown handler
+          let obj: THREE.Object3D | null = hit.object;
+          while (obj) {
+            // R3F stores event handlers on __r3f
+            const r3f = (obj as any).__r3f;
+            if (r3f?.handlers?.onPointerDown) {
+              // Release pointer lock so user can interact with modal
+              document.exitPointerLock();
+              r3f.handlers.onPointerDown({ stopPropagation: () => {} });
+              return;
+            }
+            obj = obj.parent;
+          }
+        }
       }
     };
     canvas.addEventListener("click", onClick);
@@ -1146,9 +1176,14 @@ function FPSController({
     document.addEventListener("mousemove", onMouseMove);
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyQ", "KeyE", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+      if (["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(e.code)) {
         e.preventDefault();
         keysDown.current.add(e.code);
+      }
+      // Jump
+      if (e.code === "Space" && isGrounded.current) {
+        velocityY.current = JUMP_VELOCITY;
+        isGrounded.current = false;
       }
     };
     const onKeyUp = (e: KeyboardEvent) => keysDown.current.delete(e.code);
@@ -1163,7 +1198,7 @@ function FPSController({
       window.removeEventListener("keyup", onKeyUp);
       if (document.pointerLockElement === canvas) document.exitPointerLock();
     };
-  }, [enabled, modalOpen, camera, gl]);
+  }, [enabled, modalOpen, camera, gl, raycaster, scene]);
 
   // Release pointer lock on modal open
   useEffect(() => {
@@ -1182,14 +1217,12 @@ function FPSController({
     // Keyboard input
     if (keys.has("KeyW") || keys.has("ArrowUp")) direction.current.z -= 1;
     if (keys.has("KeyS") || keys.has("ArrowDown")) direction.current.z += 1;
-    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x -= 1;
-    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x += 1;
-    if (keys.has("KeyQ")) direction.current.y -= 1;
-    if (keys.has("KeyE")) direction.current.y += 1;
+    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x += 1;   // fixed: was inverted
+    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x -= 1;  // fixed: was inverted
 
     // Joystick input (mobile)
     if (joy) {
-      direction.current.x += joy.moveX;
+      direction.current.x -= joy.moveX;  // fixed: match corrected convention
       direction.current.z += joy.moveZ;
 
       // Apply look from right joystick
@@ -1202,22 +1235,41 @@ function FPSController({
       }
     }
 
-    if (direction.current.lengthSq() < 0.001) return;
-    direction.current.normalize();
+    // Horizontal movement
+    const hasHorizontal = Math.abs(direction.current.x) > 0.001 || Math.abs(direction.current.z) > 0.001;
+    if (hasHorizontal) {
+      const hDir = new THREE.Vector3(direction.current.x, 0, direction.current.z).normalize();
 
-    // Build movement vectors from camera orientation
-    camera.getWorldDirection(forward.current);
-    forward.current.y = 0;
-    forward.current.normalize();
-    right.current.crossVectors(forward.current, upVec).negate();
+      // Build movement vectors from camera orientation
+      camera.getWorldDirection(forward.current);
+      forward.current.y = 0;
+      forward.current.normalize();
+      right.current.crossVectors(forward.current, upVec).negate();
 
-    const move = new THREE.Vector3();
-    move.addScaledVector(right.current, direction.current.x);
-    move.addScaledVector(upVec, direction.current.y);
-    move.addScaledVector(forward.current, -direction.current.z);
+      const move = new THREE.Vector3();
+      move.addScaledVector(right.current, hDir.x);
+      move.addScaledVector(forward.current, -hDir.z);
 
-    camera.position.addScaledVector(move, FPS_SPEED * delta);
-    clampCamera(camera.position);
+      camera.position.addScaledVector(move, FPS_SPEED * delta);
+    }
+
+    // Gravity + jump (fixed to floor)
+    velocityY.current += GRAVITY * delta;
+    camera.position.y += velocityY.current * delta;
+    if (camera.position.y <= EYE_HEIGHT) {
+      camera.position.y = EYE_HEIGHT;
+      velocityY.current = 0;
+      isGrounded.current = true;
+    }
+
+    // Clamp horizontal bounds
+    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -CAM_BOUND, CAM_BOUND);
+    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -CAM_BOUND, CAM_BOUND);
+    // Cap max height (e.g. jump near ceiling)
+    if (camera.position.y > CAM_Y_MAX) {
+      camera.position.y = CAM_Y_MAX;
+      velocityY.current = 0;
+    }
   });
 
   return null;
