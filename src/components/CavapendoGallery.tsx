@@ -282,6 +282,48 @@ function ImageCanvas({ url, width, height }: { url: string; width: number; heigh
   );
 }
 
+// ─── Texture-based Canvas for PDFs (renders first page) ─────────────────────
+
+function PdfCanvas({ url, width, height }: { url: string; width: number; height: number }) {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const pdfjsLib = await import("pdfjs-dist");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
+        const page = await pdf.getPage(1);
+        const scale = 2;
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d")!;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        if (cancelled) return;
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        setTexture(tex);
+      } catch (err) {
+        console.warn("[PdfCanvas] Failed to render PDF:", err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [url]);
+
+  if (!texture) return null;
+
+  return (
+    <mesh position={[0, 0, 0.10]}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
 // ─── Texture-based Canvas for Videos ────────────────────────────────────────
 
 function VideoCanvas({ url, width, height }: { url: string; width: number; height: number }) {
