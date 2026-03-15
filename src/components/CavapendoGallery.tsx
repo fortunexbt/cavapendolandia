@@ -142,19 +142,26 @@ function ArtisticFrame({
 // Renders the actual content inside a frame
 function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number; pxH: number }) {
   if (offering.media_type === "text" && offering.text_content) {
+    const fontSize = Math.max(9, Math.min(13, pxH / 18));
     return (
       <div style={{
-        padding: "12px",
+        padding: "10px",
         fontFamily: "Georgia, serif",
-        fontSize: "11px",
+        fontSize: `${fontSize}px`,
         lineHeight: "1.5",
         color: "#2a2a2a",
         textAlign: "center",
         fontStyle: "italic",
         wordBreak: "break-word",
+        width: `${pxW}px`,
+        height: `${pxH}px`,
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}>
-        {offering.text_content.length > 160
-          ? offering.text_content.slice(0, 160) + "…"
+        {offering.text_content.length > Math.floor(pxW * pxH / 80)
+          ? offering.text_content.slice(0, Math.floor(pxW * pxH / 80)) + "…"
           : offering.text_content}
       </div>
     );
