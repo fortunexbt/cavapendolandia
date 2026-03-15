@@ -52,6 +52,7 @@ const STEP_LABELS: Record<number, string> = {
 };
 
 const Offri = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -67,6 +68,12 @@ const Offri = () => {
   const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!submitted) return;
+    const timer = setTimeout(() => navigate("/galleria"), 3000);
+    return () => clearTimeout(timer);
+  }, [submitted, navigate]);
 
   const normalizedAuthorName = useMemo(() => {
     if (authorType !== "instagram") return authorName.trim();
