@@ -2014,16 +2014,22 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
     return () => window.removeEventListener("keydown", handleKey);
   }, [selectedOffering, selectedCreature]);
 
-  // Hide enter prompt when pointer lock is acquired
+  // Hide enter prompt when pointer lock is acquired + start audio on first interaction
   useEffect(() => {
     const onLockChange = () => {
       if (document.pointerLockElement) {
         setEnterPromptVisible(false);
+        startAudio();
       }
     };
     document.addEventListener("pointerlockchange", onLockChange);
     return () => document.removeEventListener("pointerlockchange", onLockChange);
-  }, []);
+  }, [startAudio]);
+
+  // For mobile: start audio on first canvas touch
+  const handleCanvasClick = useCallback(() => {
+    startAudio();
+  }, [startAudio]);
 
   // Joystick callbacks
   const handleLeftJoystick = useCallback((x: number, y: number) => {
