@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -52,6 +52,7 @@ const STEP_LABELS: Record<number, string> = {
 };
 
 const Offri = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [mediaType, setMediaType] = useState<MediaType | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -67,6 +68,12 @@ const Offri = () => {
   const [honeypot, setHoneypot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!submitted) return;
+    const timer = setTimeout(() => navigate("/galleria"), 3000);
+    return () => clearTimeout(timer);
+  }, [submitted, navigate]);
 
   const normalizedAuthorName = useMemo(() => {
     if (authorType !== "instagram") return authorName.trim();
@@ -215,8 +222,13 @@ const Offri = () => {
             <p className="text-lg italic text-muted-foreground mb-12">
               Ora è in attesa di entrare.
             </p>
-            <div className="flex items-center justify-center gap-8">
-              <EntraComingSoon className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground/45 underline underline-offset-4" />
+            <div className="flex flex-col items-center gap-4">
+              <Link
+                to="/galleria"
+                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500"
+              >
+                Vai alla Galleria →
+              </Link>
               <button
                 onClick={resetForm}
                 className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
