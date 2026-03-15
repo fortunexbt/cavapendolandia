@@ -1687,6 +1687,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
             controlMode={controlMode}
             modalOpen={modalOpen}
             joystickRef={joystickRef}
+            onExit={onExit}
           />
         </Suspense>
       </Canvas>
