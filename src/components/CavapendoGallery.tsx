@@ -1410,6 +1410,7 @@ function Scene({
         enabled={controlMode === "fps"}
         modalOpen={modalOpen}
         joystickRef={joystickRef}
+        onExit={onExit}
       />
 
       {/* Orbit Controls (fallback mode) */}
