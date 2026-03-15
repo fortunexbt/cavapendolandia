@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import AdminThemeToggle from "@/components/admin/AdminThemeToggle";
 import AnticameraOfferingRow from "@/components/admin/AnticameraOfferingRow";
