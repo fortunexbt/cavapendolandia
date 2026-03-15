@@ -29,18 +29,18 @@ interface Offering {
 // if not cached → upload result to storage → sequential loading with long gaps.
 
 const SFX_PROMPTS: Record<string, string> = {
-  seahorse: "gentle underwater bubbling ambient loop, soft water currents, calming aquatic atmosphere",
-  owl: "quiet nighttime crickets and distant owl hooting, peaceful nocturnal forest ambience",
-  cat: "soft cat purring ambient loop, gentle and soothing, rhythmic breathing",
-  frog: "gentle frog croaking near a pond, water dripping, quiet swamp ambience at dusk",
-  lizard: "rustling dry leaves and twigs, warm sun on rocks, gentle desert wind",
-  snail: "soft wind through grass, very quiet rain drops on leaves, dewy morning atmosphere",
-  room: "large empty museum hall reverberant drone, distant footsteps echo, hushed quiet space",
-  whisper: "very quiet page turning sounds, paper rustling, hushed library whispers",
+  room: "warm cozy art gallery ambient loop, soft piano jazz background music, gentle double bass, relaxed bossa nova cafe atmosphere, lo-fi warm tones",
+  seahorse: "gentle soft harp arpeggios, warm and dreamy, slow tempo, calming classical music loop",
+  owl: "soft muted trumpet playing a slow jazz melody, warm brushed drums, intimate nightclub atmosphere",
+  cat: "soft acoustic guitar fingerpicking, gentle bossa nova rhythm, warm and soothing cafe music",
+  frog: "light pizzicato strings, playful and gentle classical music, whimsical and charming",
+  lizard: "soft vibraphone melody, warm jazz chords, gentle and relaxing lounge music",
+  snail: "gentle celeste and soft strings, slow waltz tempo, dreamy and enchanting classical music",
+  whisper: "very quiet ambient pad, warm analog synthesizer drone, peaceful and meditative",
 };
 
 const AUDIO_BUCKET = "offerings"; // reuse existing public bucket
-const AUDIO_PREFIX = "gallery-sfx";
+const AUDIO_PREFIX = "gallery-sfx-v2"; // v2: warm jazz/classical prompts
 
 async function fetchCachedAudio(key: string): Promise<string | null> {
   const path = `${AUDIO_PREFIX}/${key}.mp3`;
