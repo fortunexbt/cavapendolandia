@@ -41,7 +41,7 @@ const Galleria = () => {
             className="border border-border/30 rounded-lg overflow-hidden"
             style={{ height: "70vh", minHeight: "500px" }}
           >
-            <CavapendoGallery className="h-full w-full" />
+            <CavapendoGallery className="h-full w-full" onExit={handleExit} />
           </motion.div>
         </div>
       </motion.main>
