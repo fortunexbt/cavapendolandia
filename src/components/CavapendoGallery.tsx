@@ -2214,7 +2214,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.85, y: 20 }}
               transition={{ type: "spring", damping: 20 }}
-              className="relative max-w-sm w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30 text-center"
+              className="relative max-w-sm w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30 text-center max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <button onClick={() => setSelectedCreature(null)} className="absolute top-3 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none">×</button>
