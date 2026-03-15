@@ -6,6 +6,9 @@ import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 
 const Galleria = () => {
+  const navigate = useNavigate();
+  const handleExit = useCallback(() => navigate("/grazie"), [navigate]);
+
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
       <MinimalHeader />
