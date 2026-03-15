@@ -1256,7 +1256,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
           powerPreference: "high-performance",
           failIfMajorPerformanceCaveat: false
         }}
-        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%" }}
+        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%", position: "relative", zIndex: 0 }}
         shadows
       >
         <Suspense fallback={<LoadingFallback />}>
