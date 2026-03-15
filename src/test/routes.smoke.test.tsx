@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { ReactNode } from "react";
 import Index from "@/pages/Index";
@@ -46,29 +46,29 @@ const renderWithRouter = (component: ReactNode) => {
 
 describe("route smoke", () => {
   it("renderizza la Soglia", () => {
-    renderWithRouter(<Index />);
+    const view = renderWithRouter(<Index />);
     expect(
-      screen.getByText(/Che cosa significa Cavapendoli per te/i),
+      view.getByText(/Che cosa significa Cavapendoli per te/i),
     ).toBeInTheDocument();
   });
 
   it("renderizza il flusso Offri", () => {
-    renderWithRouter(<Offri />);
+    const view = renderWithRouter(<Offri />);
     expect(
-      screen.getByRole("heading", { name: /Lascia una cavapendolata/i }),
+      view.getByRole("heading", { name: /Lascia una cavapendolata/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Cosa lasci\?/i)).toBeInTheDocument();
+    expect(view.getByText(/Cosa lasci\?/i)).toBeInTheDocument();
   });
 
   it("renderizza Entra in stato revisione", () => {
-    renderWithRouter(<Entra />);
-    expect(screen.getByText(/Archivio in revisione/i)).toBeInTheDocument();
+    const view = renderWithRouter(<Entra />);
+    expect(view.getByText(/Archivio in revisione/i)).toBeInTheDocument();
   });
 
   it("renderizza la login admin", async () => {
-    renderWithRouter(<AdminLogin />);
-    expect(await screen.findByRole("heading", { name: /Admin/i })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Invia link magico/i })).toBeInTheDocument();
+    const view = renderWithRouter(<AdminLogin />);
+    expect(await view.findByRole("heading", { name: /Admin/i })).toBeInTheDocument();
+    expect(view.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
+    expect(view.getByRole("button", { name: /Invia link magico/i })).toBeInTheDocument();
   });
 });

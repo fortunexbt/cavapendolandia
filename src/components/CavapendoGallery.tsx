@@ -9,8 +9,8 @@ import { Link } from "react-router-dom";
 interface Offering {
   id: string;
   title: string | null;
-  note: string | null;
-  text_content: string | null;
+  note?: string | null;
+  text_content?: string | null;
   media_type: string;
   file_url: string | null;
   link_url: string | null;
