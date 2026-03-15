@@ -1436,7 +1436,7 @@ function Scene({
 
         if (wall === 0) { // back wall
           result[idx] = {
-            position: [clampedCoord, 1.2 + yJitter, -WALL_OFFSET],
+            position: [clampedCoord, -0.5 + yJitter, -WALL_OFFSET],
             rotation: [0, 0, tilt],
           };
         } else if (wall === 1) { // left wall
