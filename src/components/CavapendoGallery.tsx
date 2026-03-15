@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useMemo, useState, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Float, Sparkles, Environment, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
