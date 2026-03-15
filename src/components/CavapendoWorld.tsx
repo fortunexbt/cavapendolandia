@@ -3,6 +3,7 @@ import { useRef, useMemo } from "react";
 import { Float, Sparkles, Environment, MeshDistortMaterial, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
 import * as THREE from "three";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CavapendoWorldProps {
   className?: string;
