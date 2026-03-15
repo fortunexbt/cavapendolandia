@@ -234,59 +234,7 @@ const FRAME_COLORS = [
   "#6b5b4b", "#8b7355", "#7a6250", "#5b4b3b", "#9b8365", "#4b3b2b",
 ];
 
-// ─── Fly-to-frame camera controller ────────────────────────────────────────
-
-interface CameraTarget {
-  position: THREE.Vector3;
-  lookAt: THREE.Vector3;
-}
-
-function CameraController({
-  target,
-  onArrived,
-}: {
-  target: CameraTarget | null;
-  onArrived: () => void;
-}) {
-  const { camera } = useThree();
-  const arrivedRef = useRef(false);
-  const startPosRef = useRef(new THREE.Vector3());
-  const startLookRef = useRef(new THREE.Vector3());
-  const progressRef = useRef(0);
-  const currentLookAt = useRef(new THREE.Vector3(0, 1, 0));
-
-  useEffect(() => {
-    if (target) {
-      startPosRef.current.copy(camera.position);
-      startLookRef.current.copy(currentLookAt.current);
-      progressRef.current = 0;
-      arrivedRef.current = false;
-    }
-  }, [target, camera]);
-
-  useFrame((_, delta) => {
-    if (!target) return;
-    if (arrivedRef.current) return;
-
-    progressRef.current = Math.min(1, progressRef.current + delta * 1.2);
-    const t = easeInOutCubic(progressRef.current);
-
-    camera.position.lerpVectors(startPosRef.current, target.position, t);
-    currentLookAt.current.lerpVectors(startLookRef.current, target.lookAt, t);
-    camera.lookAt(currentLookAt.current);
-
-    if (progressRef.current >= 1 && !arrivedRef.current) {
-      arrivedRef.current = true;
-      onArrived();
-    }
-  });
-
-  return null;
-}
-
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
+// (fly-to system removed — pure free navigation)
 
 // ─── Frame sizing ───────────────────────────────────────────────────────────
 
