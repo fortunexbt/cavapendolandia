@@ -1589,7 +1589,7 @@ function VirtualJoystick({
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
-function CavapendoGallery({ className = "" }: { className?: string }) {
+function CavapendoGallery({ className = "", onExit }: { className?: string; onExit?: () => void }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
