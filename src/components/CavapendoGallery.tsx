@@ -1358,17 +1358,6 @@ function StoryCreature({
         <sphereGeometry args={[1.2, 8, 8]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
-
-      <Html position={[0, 1.4, 0]} center distanceFactor={8} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
-        <div style={{
-          background: "rgba(0,0,0,0.55)", color: "#fff", padding: "3px 10px",
-          borderRadius: "10px", fontSize: "10px", fontFamily: "Georgia, serif",
-          whiteSpace: "nowrap", textAlign: "center",
-        }}>
-          {creature.name}
-        </div>
-      </Html>
-      <pointLight position={[0, -0.3, 0]} intensity={0.25} color={creature.color} distance={5} />
     </group>
   );
 }
