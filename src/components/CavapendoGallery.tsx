@@ -1029,18 +1029,69 @@ function CreatureShadow({ position }: { position: [number, number, number] }) {
   );
 }
 
+// ─── Track Light Fixture ─────────────────────────────────────────────────────
+
+function TrackLight({ position, targetY = -0.5 }: { position: [number, number, number]; targetY?: number }) {
+  const spotRef = useRef<THREE.SpotLight>(null);
+  const targetRef = useRef<THREE.Object3D>(null);
+
+  useEffect(() => {
+    if (spotRef.current && targetRef.current) {
+      spotRef.current.target = targetRef.current;
+    }
+  }, []);
+
+  return (
+    <group>
+      {/* Ceiling fixture body */}
+      <mesh position={position}>
+        <cylinderGeometry args={[0.08, 0.12, 0.25, 8]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
+      </mesh>
+      {/* Fixture arm */}
+      <mesh position={[position[0], position[1] - 0.2, position[2]]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.15, 6]} />
+        <meshStandardMaterial color="#333" roughness={0.5} metalness={0.6} />
+      </mesh>
+      {/* Light housing (cone) */}
+      <mesh position={[position[0], position[1] - 0.32, position[2]]} rotation={[Math.PI, 0, 0]}>
+        <coneGeometry args={[0.1, 0.15, 8]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
+      </mesh>
+      {/* Bulb glow */}
+      <mesh position={[position[0], position[1] - 0.35, position[2]]}>
+        <sphereGeometry args={[0.04, 8, 8]} />
+        <meshBasicMaterial color="#fff8e0" />
+      </mesh>
+      {/* Spotlight */}
+      <spotLight
+        ref={spotRef}
+        position={position}
+        angle={0.45}
+        penumbra={0.8}
+        intensity={1.8}
+        color="#fff0d0"
+        distance={14}
+        castShadow={false}
+      />
+      {/* Target for spotlight direction */}
+      <object3D ref={targetRef} position={[position[0], targetY, position[2]]} />
+    </group>
+  );
+}
+
 // ─── Lighting ───────────────────────────────────────────────────────────────
 
-function GalleryLighting() {
+function GalleryLighting({ framePositions }: { framePositions?: { position: [number, number, number]; rotation: [number, number, number] }[] }) {
   return (
     <>
-      {/* Higher ambient for consistent visibility */}
-      <ambientLight intensity={0.25} color="#f0e8d8" />
+      {/* Low ambient — track lights provide primary illumination */}
+      <ambientLight intensity={0.12} color="#e8ddd0" />
 
       {/* Main directional for shadows */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.45}
+        intensity={0.35}
         color="#fff5e6"
         castShadow
         shadow-mapSize={[1024, 1024]}
@@ -1051,15 +1102,32 @@ function GalleryLighting() {
         position={[0, 9, -14]}
         angle={0.5}
         penumbra={0.9}
-        intensity={1.0}
+        intensity={0.8}
         color="#ffe8c0"
         castShadow
         target-position={[0, 0, -17]}
       />
 
-      {/* Fill — left and right */}
-      <pointLight position={[-12, 4, 0]} intensity={0.3} color="#e6d6c6" distance={20} />
-      <pointLight position={[12, 4, 0]} intensity={0.3} color="#e6d6c6" distance={20} />
+      {/* Subtle fill — left and right (dimmer now) */}
+      <pointLight position={[-12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
+      <pointLight position={[12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
+
+      {/* Per-frame track lights */}
+      {framePositions?.map((fp, i) => {
+        // Place light on ceiling above the frame, offset slightly from wall
+        const [fx, _fy, fz] = fp.position;
+        const ry = fp.rotation[1];
+        // Offset away from wall so light shines down at an angle
+        const offsetX = Math.sin(ry) * 1.5;
+        const offsetZ = -Math.cos(ry) * 1.5;
+        return (
+          <TrackLight
+            key={`track-${i}`}
+            position={[fx + offsetX, 9.2, fz + offsetZ]}
+            targetY={fp.position[1]}
+          />
+        );
+      })}
     </>
   );
 }
