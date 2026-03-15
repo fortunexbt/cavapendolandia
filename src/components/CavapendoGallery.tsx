@@ -1856,6 +1856,7 @@ function OfferingModal({ offering, onClose }: { offering: Offering | null; onClo
           </div>
         </motion.div>
       </motion.div>
+      )}
     </AnimatePresence>
   );
 }
