@@ -1749,7 +1749,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
                   {isMobile
                     ? "👆 Joystick sinistro: muoviti • Destro: guardati intorno • Tocca un quadro"
                     : controlMode === "fps"
-                      ? "⌨️ WASD per muoverti • Mouse per guardare • Clicca un quadro o una creatura"
+                      ? "⌨️ WASD per muoverti • Spazio per saltare • Mouse per guardare • Clicca un quadro"
                       : "🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura"
                   }
                 </p>
