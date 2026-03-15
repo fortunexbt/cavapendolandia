@@ -810,18 +810,42 @@ function CreatureShadow({ position }: { position: [number, number, number] }) {
 function GalleryLighting() {
   return (
     <>
-      <ambientLight intensity={0.35} />
+      {/* Low ambient — let zones shine */}
+      <ambientLight intensity={0.15} color="#f0e8d8" />
+
+      {/* Main directional for shadows */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.5}
+        intensity={0.4}
         color="#fff5e6"
         castShadow
         shadow-mapSize={[2048, 2048]}
       />
-      <pointLight position={[0, 5, 5]} intensity={0.5} color="#f5e6d6" />
-      <pointLight position={[-10, 3, 3]} intensity={0.25} color="#e6d6c6" />
-      <pointLight position={[10, 3, 3]} intensity={0.25} color="#e6d6c6" />
-      <pointLight position={[0, -2, 0]} intensity={0.3} color="#d6c6b6" />
+
+      {/* Warm pool — back wall */}
+      <spotLight
+        position={[0, 9, -14]}
+        angle={0.5}
+        penumbra={0.9}
+        intensity={1.2}
+        color="#ffe8c0"
+        castShadow
+        target-position={[0, 0, -17]}
+      />
+
+      {/* Cool zone — entrance */}
+      <pointLight position={[0, 6, 14]} intensity={0.4} color="#c8d8f0" distance={20} />
+
+      {/* Frame spotlights — track lighting */}
+      <spotLight position={[-8, 8, -16]} angle={0.3} penumbra={0.7} intensity={0.8} color="#fff0d8" castShadow target-position={[-8, 1, -17.8]} />
+      <spotLight position={[8, 8, -16]} angle={0.3} penumbra={0.7} intensity={0.8} color="#fff0d8" castShadow target-position={[8, 1, -17.8]} />
+      <spotLight position={[-16, 8, -5]} angle={0.3} penumbra={0.7} intensity={0.7} color="#f8e8d0" castShadow target-position={[-17.8, 1, -5]} />
+      <spotLight position={[16, 8, -5]} angle={0.3} penumbra={0.7} intensity={0.7} color="#f8e8d0" castShadow target-position={[17.8, 1, -5]} />
+
+      {/* Fill lights */}
+      <pointLight position={[-10, 3, 3]} intensity={0.2} color="#e6d6c6" distance={15} />
+      <pointLight position={[10, 3, 3]} intensity={0.2} color="#e6d6c6" distance={15} />
+      <pointLight position={[0, 0, 0]} intensity={0.15} color="#d6c6b6" distance={12} />
     </>
   );
 }
