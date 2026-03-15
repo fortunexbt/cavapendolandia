@@ -103,6 +103,7 @@ function useAmbientAudio(audioEnabled: boolean) {
   const trackIndexRef = useRef(0);
   const abortRef = useRef(false);
   const timerRef = useRef<number | null>(null);
+  const startedRef = useRef(false);
 
   const ensureContext = useCallback(() => {
     if (!ctxRef.current) {
@@ -124,7 +125,13 @@ function useAmbientAudio(audioEnabled: boolean) {
     const { ctx, master } = ensureContext();
     const track = MUSIC_TRACKS[index % MUSIC_TRACKS.length];
 
-    const blobUrl = await getTrackUrl(track.key, track.prompt);
+    let blobUrl: string | null = null;
+    try {
+      blobUrl = await getTrackUrl(track.key, track.prompt);
+    } catch (err) {
+      console.warn(`[Music] Failed to get track "${track.key}":`, err);
+      return;
+    }
     if (!blobUrl || abortRef.current) return;
 
     const audio = new Audio(blobUrl);
@@ -150,7 +157,8 @@ function useAmbientAudio(audioEnabled: boolean) {
     nextRef.current = entry;
     try {
       await audio.play();
-    } catch {
+    } catch (err) {
+      console.warn("[Music] Playback failed:", err);
       return;
     }
     if (abortRef.current) { audio.pause(); return; }
@@ -168,7 +176,18 @@ function useAmbientAudio(audioEnabled: boolean) {
     };
   }, [ensureContext]);
 
+  // Called on user gesture to kick off audio
+  const startAudio = useCallback(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    if (audioEnabled) {
+      abortRef.current = false;
+      playTrack(trackIndexRef.current);
+    }
+  }, [audioEnabled, playTrack]);
+
   useEffect(() => {
+    if (!startedRef.current) return; // don't auto-start before user gesture
     if (audioEnabled) {
       abortRef.current = false;
       playTrack(trackIndexRef.current);
@@ -201,6 +220,8 @@ function useAmbientAudio(audioEnabled: boolean) {
       ctxRef.current?.close();
     };
   }, []);
+
+  return { startAudio };
 }
 
 // ─── Room Boundary Constants ────────────────────────────────────────────────
