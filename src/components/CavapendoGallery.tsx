@@ -1791,7 +1791,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
         .select("id, title, note, text_content, media_type, file_url, link_url, author_name, author_type, created_at, approved_at")
         .eq("status", "approved")
         .order("approved_at", { ascending: false })
-        .limit(16);
+        .limit(24);
       if (error) throw error;
       if (!data?.length) return null;
       return withSignedFileUrls(data);
