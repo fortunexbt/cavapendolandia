@@ -250,6 +250,77 @@ function getFrameSize(offering: Offering): { w: number; h: number } {
   return { w: 1.4, h: 1.7 };
 }
 
+// ─── Texture-based Canvas for Images ────────────────────────────────────────
+
+function ImageCanvas({ url, width, height }: { url: string; width: number; height: number }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin("anonymous");
+    loader.load(
+      url,
+      (tex) => {
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        setTexture(tex);
+      },
+      undefined,
+      () => setTexture(null),
+    );
+    return () => { texture?.dispose(); };
+  }, [url]);
+
+  if (!texture) return null;
+
+  return (
+    <mesh ref={meshRef} position={[0, 0, 0.10]}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
+// ─── Texture-based Canvas for Videos ────────────────────────────────────────
+
+function VideoCanvas({ url, width, height }: { url: string; width: number; height: number }) {
+  const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = document.createElement("video");
+    video.src = url;
+    video.crossOrigin = "anonymous";
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    video.play().catch(() => {});
+    videoRef.current = video;
+
+    const tex = new THREE.VideoTexture(video);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    setTexture(tex);
+
+    return () => {
+      video.pause();
+      video.src = "";
+      tex.dispose();
+    };
+  }, [url]);
+
+  if (!texture) return null;
+
+  return (
+    <mesh position={[0, 0, 0.10]}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
 // ─── Artistic Frame ─────────────────────────────────────────────────────────
 
 function ArtisticFrame({
@@ -270,13 +341,17 @@ function ArtisticFrame({
   const innerH = h - border * 2;
   const canvasW = innerW - 0.1;
   const canvasH = innerH - 0.1;
-  const pxW = Math.round(canvasW * 140);
-  const pxH = Math.round(canvasH * 140);
+  const isImage = offering.media_type === "image" && offering.file_url;
+  const isVideo = offering.media_type === "video" && offering.file_url;
+  const useNativeTexture = isImage || isVideo;
+  // For non-texture content (text, audio, link, pdf), use corrected Html scaling
+  const pxW = Math.round(canvasW * 50);
+  const pxH = Math.round(canvasH * 50);
   const [hovered, setHovered] = useState(false);
 
   return (
     <group position={position} rotation={rotation}>
-      {/* Hit area — must be OUTSIDE the Html group to sit on top in the raycaster */}
+      {/* Hit area */}
       <mesh
         position={[0, 0, 0.25]}
         onPointerDown={(e) => {
@@ -291,7 +366,6 @@ function ArtisticFrame({
       </mesh>
 
       <group>
-
         {/* Outer frame */}
         <mesh>
           <boxGeometry args={[w, h, 0.12]} />
@@ -308,33 +382,39 @@ function ArtisticFrame({
           <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
         </mesh>
 
-        {/* Canvas */}
+        {/* Canvas background */}
         <mesh position={[0, 0, 0.09]}>
           <boxGeometry args={[canvasW, canvasH, 0.01]} />
           <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
         </mesh>
 
-        {/* Inline media */}
-        <Html
-          position={[0, 0, 0.11]}
-          transform
-          distanceFactor={4}
-          pointerEvents="none"
-          style={{
-            width: `${pxW}px`,
-            height: `${pxH}px`,
-            overflow: "hidden",
-            pointerEvents: "none",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "transparent",
-            userSelect: "none",
-          }}
-          zIndexRange={[0, 0]}
-        >
-          <FrameContent offering={offering} pxW={pxW} pxH={pxH} />
-        </Html>
+        {/* Native texture for image/video — fits exactly within canvas bounds */}
+        {isImage && <ImageCanvas url={offering.file_url!} width={canvasW} height={canvasH} />}
+        {isVideo && <VideoCanvas url={offering.file_url!} width={canvasW} height={canvasH} />}
+
+        {/* Html for non-media types (text, audio, link, pdf) */}
+        {!useNativeTexture && (
+          <Html
+            position={[0, 0, 0.11]}
+            transform
+            distanceFactor={1.4}
+            pointerEvents="none"
+            style={{
+              width: `${pxW}px`,
+              height: `${pxH}px`,
+              overflow: "hidden",
+              pointerEvents: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "transparent",
+              userSelect: "none",
+            }}
+            zIndexRange={[0, 0]}
+          >
+            <FrameContent offering={offering} pxW={pxW} pxH={pxH} />
+          </Html>
+        )}
 
         {/* Pin */}
         <mesh position={[0, h / 2, 0.08]}>
@@ -369,20 +449,7 @@ function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number;
       </div>
     );
   }
-  if (offering.media_type === "image" && offering.file_url) {
-    return (
-      <img src={offering.file_url} alt={offering.title || "Immagine"}
-        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "2px" }}
-        crossOrigin="anonymous" />
-    );
-  }
-  if (offering.media_type === "video" && offering.file_url) {
-    return (
-      <video src={offering.file_url} autoPlay muted loop playsInline
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        crossOrigin="anonymous" />
-    );
-  }
+  // image and video types are rendered as native Three.js textures in ArtisticFrame
   if (offering.media_type === "audio" && offering.file_url) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
