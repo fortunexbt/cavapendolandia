@@ -427,6 +427,22 @@ function ArtisticFrame({
       </mesh>
 
       <group>
+        {/* Shadow plane behind frame (fake contact shadow) */}
+        <mesh position={[0, -0.05, -0.08]}>
+          <planeGeometry args={[w + 0.3, h + 0.3]} />
+          <meshBasicMaterial color="#000" transparent opacity={0.15} depthWrite={false} />
+        </mesh>
+
+        {/* Outer frame bevel (slightly larger, darker) */}
+        <mesh position={[0, 0, -0.02]}>
+          <boxGeometry args={[w + 0.06, h + 0.06, 0.08]} />
+          <meshStandardMaterial
+            color="#3a2a1a"
+            roughness={0.7}
+            metalness={0.15}
+          />
+        </mesh>
+
         {/* Outer frame */}
         <mesh>
           <boxGeometry args={[w, h, 0.12]} />
