@@ -1,28 +1,11 @@
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useMemo } from "react";
-import { Float, Sparkles, Environment, MeshDistortMaterial, Stars, Cloud } from "@react-three/drei";
+import { Float, Sparkles, Environment, MeshDistortMaterial, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
 import * as THREE from "three";
 
 interface CavapendoWorldProps {
   className?: string;
-}
-
-// Mouse-reactive camera
-function CameraRig() {
-  const { camera } = useThree();
-  const targetPos = useRef(new THREE.Vector3(0, 0, 6));
-  
-  useFrame((state) => {
-    const mouseX = state.pointer.x * 0.5;
-    const mouseY = state.pointer.y * 0.3;
-    
-    targetPos.current.set(mouseX, mouseY + 1, 6);
-    camera.position.lerp(targetPos.current, 0.02);
-    camera.lookAt(0, 0, 0);
-  });
-  
-  return null;
 }
 
 // The main Cavapendolo - a mystical orb that transforms
@@ -209,9 +192,6 @@ function Scene() {
       <fog attach="fog" args={["#f5f0e8", 8, 30]} />
       
       <DramaticLighting />
-      
-      {/* Camera responds to mouse */}
-      {!reduceMotion && <CameraRig />}
       
       {/* Floor */}
       <MysticalFloor />
