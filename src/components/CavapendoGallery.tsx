@@ -140,7 +140,7 @@ function ArtisticFrame({
 }
 
 // Renders the actual content inside a frame
-function FrameContent({ offering }: { offering: Offering }) {
+function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number; pxH: number }) {
   if (offering.media_type === "text" && offering.text_content) {
     return (
       <div style={{
