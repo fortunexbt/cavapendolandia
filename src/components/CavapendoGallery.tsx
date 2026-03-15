@@ -431,9 +431,10 @@ function ArtisticFrame({
           <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
         </mesh>
 
-        {/* Native texture for image/video — fits exactly within canvas bounds */}
+        {/* Native texture for image/video/pdf — fits exactly within canvas bounds */}
         {isImage && <ImageCanvas url={offering.file_url!} width={canvasW} height={canvasH} />}
         {isVideo && <VideoCanvas url={offering.file_url!} width={canvasW} height={canvasH} />}
+        {isPdf && <PdfCanvas url={(offering.file_url || offering.link_url)!} width={canvasW} height={canvasH} />}
 
         {/* Html for non-media types (text, audio, link, pdf) */}
         {!useNativeTexture && (
