@@ -257,7 +257,9 @@ function ArtisticFrame({
 
   return (
     <group position={position} rotation={rotation}>
-      <group
+      {/* Hit area — must be OUTSIDE the Html group to sit on top in the raycaster */}
+      <mesh
+        position={[0, 0, 0.25]}
         onPointerDown={(e) => {
           e.stopPropagation();
           onClick();
@@ -265,11 +267,11 @@ function ArtisticFrame({
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        {/* Hit area */}
-        <mesh position={[0, 0, 0.2]}>
-          <planeGeometry args={[w + 0.3, h + 0.3]} />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-        </mesh>
+        <planeGeometry args={[w + 0.4, h + 0.4]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      <group>
 
         {/* Outer frame */}
         <mesh>
@@ -298,6 +300,7 @@ function ArtisticFrame({
           position={[0, 0, 0.11]}
           transform
           distanceFactor={4}
+          pointerEvents="none"
           style={{
             width: `${pxW}px`,
             height: `${pxH}px`,
