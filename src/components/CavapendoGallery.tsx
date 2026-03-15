@@ -928,7 +928,7 @@ function GalleryRoom() {
       {/* Back wall */}
       <mesh position={[0, 4, -hd]}>
         <planeGeometry args={[ROOM_W, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
       {/* Left wall */}
       <mesh position={[-hw, 4, 0]} rotation={[0, Math.PI / 2, 0]}>
