@@ -35,40 +35,34 @@ interface Offering {
 }
 
 // ─── Audio System ───────────────────────────────────────────────────────────
-// Strategy: check Supabase Storage for cached .mp3 first → only call ElevenLabs
-// if not cached → upload result to storage → sequential loading with long gaps.
+// Strategy: 5 ambient music tracks rotate one at a time with crossfade.
+// Cached in Supabase Storage; generated via ElevenLabs Music API on first play.
 
-const SFX_PROMPTS: Record<string, string> = {
-  room: "warm cozy art gallery ambient loop, soft piano jazz background music, gentle double bass, relaxed bossa nova cafe atmosphere, lo-fi warm tones",
-  seahorse: "gentle soft harp arpeggios, warm and dreamy, slow tempo, calming classical music loop",
-  owl: "soft muted trumpet playing a slow jazz melody, warm brushed drums, intimate nightclub atmosphere",
-  cat: "soft acoustic guitar fingerpicking, gentle bossa nova rhythm, warm and soothing cafe music",
-  frog: "light pizzicato strings, playful and gentle classical music, whimsical and charming",
-  lizard: "soft vibraphone melody, warm jazz chords, gentle and relaxing lounge music",
-  snail: "gentle celeste and soft strings, slow waltz tempo, dreamy and enchanting classical music",
-  whisper: "very quiet ambient pad, warm analog synthesizer drone, peaceful and meditative",
-};
+const MUSIC_TRACKS: { key: string; prompt: string }[] = [
+  { key: "ambient-1", prompt: "deep atmospheric ambient music, Pink Floyd inspired, slow evolving synthesizer pads, reverberant guitar echoes, melancholic and spacious" },
+  { key: "ambient-2", prompt: "Blade Runner inspired ambient, warm analog synth drones, distant reverb, rainy night atmosphere, Vangelis style pads" },
+  { key: "ambient-3", prompt: "lofi ambient beats, soft dusty vinyl crackle, mellow Rhodes piano chords, warm tape saturation, slow downtempo" },
+  { key: "ambient-4", prompt: "Aphex Twin Selected Ambient Works style, gentle evolving synth textures, dreamy ethereal pads, soft granular synthesis" },
+  { key: "ambient-5", prompt: "deep space ambient, slow cinematic strings, warm sub bass drone, contemplative and immersive, sci-fi atmosphere" },
+];
 
-const AUDIO_BUCKET = "offerings"; // reuse existing public bucket
-const AUDIO_PREFIX = "gallery-sfx-v2"; // v2: warm jazz/classical prompts
+const AUDIO_BUCKET = "offerings";
+const AUDIO_PREFIX = "gallery-music-v1";
+const CROSSFADE_SEC = 2;
+const MASTER_VOLUME = 0.45;
 
 async function fetchCachedAudio(key: string): Promise<string | null> {
   const path = `${AUDIO_PREFIX}/${key}.mp3`;
   const { data } = supabase.storage.from(AUDIO_BUCKET).getPublicUrl(path);
   if (!data?.publicUrl) return null;
-
-  // Check if file actually exists with a HEAD request
   try {
     const resp = await fetch(data.publicUrl, { method: "HEAD" });
     if (resp.ok) return data.publicUrl;
-  } catch { /* not cached yet */ }
+  } catch { /* not cached */ }
   return null;
 }
 
-async function generateAndCache(key: string): Promise<string | null> {
-  const prompt = SFX_PROMPTS[key];
-  if (!prompt) return null;
-
+async function generateAndCache(key: string, prompt: string): Promise<string | null> {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ambient-sfx`;
   const response = await fetch(url, {
     method: "POST",
@@ -77,17 +71,15 @@ async function generateAndCache(key: string): Promise<string | null> {
       apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ prompt, duration: 10 }),
+    body: JSON.stringify({ prompt, duration: 22, mode: "music" }),
   });
 
   if (!response.ok) {
-    console.warn(`[SFX] Generation failed for "${key}": ${response.status}`);
+    console.warn(`[Music] Generation failed for "${key}": ${response.status}`);
     return null;
   }
 
   const blob = await response.blob();
-
-  // Upload to storage for future cache hits
   const path = `${AUDIO_PREFIX}/${key}.mp3`;
   await supabase.storage.from(AUDIO_BUCKET).upload(path, blob, {
     contentType: "audio/mpeg",
@@ -97,111 +89,116 @@ async function generateAndCache(key: string): Promise<string | null> {
   return URL.createObjectURL(blob);
 }
 
+async function getTrackUrl(key: string, prompt: string): Promise<string | null> {
+  const cached = await fetchCachedAudio(key);
+  if (cached) return cached;
+  return generateAndCache(key, prompt);
+}
+
 function useAmbientAudio(audioEnabled: boolean) {
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const masterGainRef = useRef<GainNode | null>(null);
-  const sourcesRef = useRef<Map<string, { audio: HTMLAudioElement; gain: GainNode }>>(new Map());
+  const currentRef = useRef<{ audio: HTMLAudioElement; gain: GainNode } | null>(null);
+  const nextRef = useRef<{ audio: HTMLAudioElement; gain: GainNode } | null>(null);
+  const ctxRef = useRef<AudioContext | null>(null);
+  const masterRef = useRef<GainNode | null>(null);
+  const trackIndexRef = useRef(0);
   const abortRef = useRef(false);
+  const timerRef = useRef<number | null>(null);
 
-  const getAudio = useCallback(async (key: string): Promise<string | null> => {
-    // 1. Try storage cache
-    const cached = await fetchCachedAudio(key);
-    if (cached) return cached;
-
-    // 2. Generate (only if not cached) — single attempt, fail gracefully
-    return generateAndCache(key);
+  const ensureContext = useCallback(() => {
+    if (!ctxRef.current) {
+      const ctx = new AudioContext();
+      ctxRef.current = ctx;
+      const master = ctx.createGain();
+      master.gain.value = MASTER_VOLUME;
+      master.connect(ctx.destination);
+      masterRef.current = master;
+    }
+    if (ctxRef.current.state === "suspended") {
+      ctxRef.current.resume();
+    }
+    return { ctx: ctxRef.current!, master: masterRef.current! };
   }, []);
 
-  const playSource = useCallback(async (key: string, volume: number) => {
-    if (!audioContextRef.current || !masterGainRef.current) return;
-    if (sourcesRef.current.has(key)) return;
+  const playTrack = useCallback(async (index: number) => {
+    if (abortRef.current) return;
+    const { ctx, master } = ensureContext();
+    const track = MUSIC_TRACKS[index % MUSIC_TRACKS.length];
 
-    const blobUrl = await getAudio(key);
+    const blobUrl = await getTrackUrl(track.key, track.prompt);
     if (!blobUrl || abortRef.current) return;
 
     const audio = new Audio(blobUrl);
-    audio.loop = true;
     audio.crossOrigin = "anonymous";
 
-    const ctx = audioContextRef.current;
     const source = ctx.createMediaElementSource(audio);
     const gain = ctx.createGain();
     gain.gain.value = 0;
-    source.connect(gain).connect(masterGainRef.current);
+    source.connect(gain).connect(master);
 
-    sourcesRef.current.set(key, { audio, gain });
+    const entry = { audio, gain };
 
+    // Crossfade: fade out current, fade in new
+    if (currentRef.current) {
+      const old = currentRef.current;
+      old.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + CROSSFADE_SEC);
+      setTimeout(() => {
+        old.audio.pause();
+        old.audio.src = "";
+      }, CROSSFADE_SEC * 1000 + 200);
+    }
+
+    nextRef.current = entry;
     try {
       await audio.play();
-      gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 2);
     } catch {
-      sourcesRef.current.delete(key);
+      return;
     }
-  }, [getAudio]);
+    if (abortRef.current) { audio.pause(); return; }
+
+    gain.gain.linearRampToValueAtTime(1, ctx.currentTime + CROSSFADE_SEC);
+    currentRef.current = entry;
+    nextRef.current = null;
+    trackIndexRef.current = index;
+
+    // Schedule next track when this one ends
+    audio.onended = () => {
+      if (!abortRef.current) {
+        playTrack((index + 1) % MUSIC_TRACKS.length);
+      }
+    };
+  }, [ensureContext]);
 
   useEffect(() => {
     if (audioEnabled) {
       abortRef.current = false;
-
-      if (!audioContextRef.current) {
-        const ctx = new AudioContext();
-        audioContextRef.current = ctx;
-        const master = ctx.createGain();
-        master.gain.value = 0.6;
-        master.connect(ctx.destination);
-        masterGainRef.current = master;
-      }
-
-      if (audioContextRef.current.state === "suspended") {
-        audioContextRef.current.resume();
-      }
-
-      // Load sequentially with long gaps to avoid rate limits.
-      // Cached sounds load instantly; only uncached ones hit the API.
-      const allSounds: { key: string; vol: number }[] = [
-        { key: "room", vol: 0.15 },
-        { key: "seahorse", vol: 0.08 },
-        { key: "owl", vol: 0.08 },
-        { key: "cat", vol: 0.08 },
-        { key: "frog", vol: 0.08 },
-        { key: "lizard", vol: 0.08 },
-        { key: "snail", vol: 0.08 },
-        { key: "whisper", vol: 0.05 },
-      ];
-
-      // Sequential loader — one at a time, 12s gap between API calls
-      (async () => {
-        for (const { key, vol } of allSounds) {
-          if (abortRef.current) break;
-          const wasCached = !!(await fetchCachedAudio(key));
-          await playSource(key, vol);
-          // Only wait between sounds if the previous one wasn't cached
-          // (meaning we likely hit the API)
-          if (!wasCached && !abortRef.current) {
-            await new Promise((r) => setTimeout(r, 12000));
-          }
-        }
-      })();
+      playTrack(trackIndexRef.current);
     } else {
       abortRef.current = true;
-      sourcesRef.current.forEach(({ audio, gain }) => {
-        if (audioContextRef.current) {
-          gain.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + 1);
+      if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+      [currentRef, nextRef].forEach((ref) => {
+        if (ref.current) {
+          const { audio, gain } = ref.current;
+          if (ctxRef.current) {
+            gain.gain.linearRampToValueAtTime(0, ctxRef.current.currentTime + 1);
+          }
+          setTimeout(() => { audio.pause(); audio.src = ""; }, 1200);
+          ref.current = null;
         }
-        setTimeout(() => audio.pause(), 1200);
       });
     }
-  }, [audioEnabled, playSource]);
+  }, [audioEnabled, playTrack]);
 
   useEffect(() => {
     return () => {
       abortRef.current = true;
-      sourcesRef.current.forEach(({ audio }) => {
-        audio.pause();
-        audio.src = "";
+      [currentRef, nextRef].forEach((ref) => {
+        if (ref.current) {
+          ref.current.audio.pause();
+          ref.current.audio.src = "";
+          ref.current = null;
+        }
       });
-      sourcesRef.current.clear();
-      audioContextRef.current?.close();
+      ctxRef.current?.close();
     };
   }, []);
 }

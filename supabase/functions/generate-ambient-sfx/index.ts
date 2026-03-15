@@ -17,7 +17,7 @@ serve(async (req) => {
       throw new Error("ELEVENLABS_API_KEY is not configured");
     }
 
-    const { prompt, duration } = await req.json();
+    const { prompt, duration, mode } = await req.json();
 
     if (!prompt || typeof prompt !== "string") {
       return new Response(JSON.stringify({ error: "prompt is required" }), {
@@ -26,25 +26,28 @@ serve(async (req) => {
       });
     }
 
-    const response = await fetch(
-      "https://api.elevenlabs.io/v1/sound-generation",
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": ELEVENLABS_API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: prompt,
-          duration_seconds: duration || 10,
-          prompt_influence: 0.3,
-        }),
+    // Use Music API for ambient tracks, SFX API for sound effects
+    const useMusic = mode === "music";
+    const url = useMusic
+      ? "https://api.elevenlabs.io/v1/music"
+      : "https://api.elevenlabs.io/v1/sound-generation";
+
+    const body = useMusic
+      ? { prompt, duration_seconds: duration || 22 }
+      : { text: prompt, duration_seconds: duration || 10, prompt_influence: 0.3 };
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "xi-api-key": ELEVENLABS_API_KEY,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify(body),
+    });
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`ElevenLabs SFX API error [${response.status}]: ${errText}`);
+      throw new Error(`ElevenLabs API error [${response.status}]: ${errText}`);
     }
 
     const audioBuffer = await response.arrayBuffer();
@@ -57,7 +60,7 @@ serve(async (req) => {
       },
     });
   } catch (error: unknown) {
-    console.error("SFX generation error:", error);
+    console.error("Audio generation error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
