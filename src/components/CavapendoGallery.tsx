@@ -1166,17 +1166,20 @@ function Scene({
   onSelectOffering,
   onSelectCreature,
   cameraTarget,
+  setCameraTarget,
   onCameraArrived,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
   onSelectCreature: (c: typeof CREATURES[number]) => void;
   cameraTarget: CameraTarget | null;
+  setCameraTarget: (t: CameraTarget | null) => void;
   onCameraArrived: () => void;
 }) {
   const controlsRef = useRef<any>(null);
+  const { camera } = useThree();
 
-  // Disable orbit controls when flying to a frame
+  // Disable orbit controls when flying to a target
   useEffect(() => {
     if (controlsRef.current) {
       controlsRef.current.enabled = !cameraTarget;
@@ -1200,6 +1203,7 @@ function Scene({
         return {
           position: [x, 1 + yJitter, -17.8] as [number, number, number],
           rotation: [0, 0, tilt] as [number, number, number],
+          normal: [0, 0, 1] as [number, number, number],
         };
       } else if (wall === 1) {
         const slot = leftSlots.count++;
@@ -1207,6 +1211,7 @@ function Scene({
         return {
           position: [-17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, Math.PI / 2, tilt] as [number, number, number],
+          normal: [1, 0, 0] as [number, number, number],
         };
       } else {
         const slot = rightSlots.count++;
@@ -1214,12 +1219,13 @@ function Scene({
         return {
           position: [17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, -Math.PI / 2, tilt] as [number, number, number],
+          normal: [-1, 0, 0] as [number, number, number],
         };
       }
     });
   }, [offerings]);
 
-  // Compute fly-to position for a frame
+  // Fly-to for frames: compute a viewpoint 3 units in front of the frame
   const handleFrameClick = useCallback(
     (offering: Offering, index: number) => {
       const pos = positions[index];
@@ -1227,9 +1233,40 @@ function Scene({
         onSelectOffering(offering);
         return;
       }
-      onSelectOffering(offering);
+      const framePos = new THREE.Vector3(...pos.position);
+      const normal = new THREE.Vector3(...pos.normal);
+      const viewPos = framePos.clone().add(normal.multiplyScalar(3));
+      viewPos.y = THREE.MathUtils.clamp(viewPos.y, CAM_Y_MIN, CAM_Y_MAX);
+      clampVec3(viewPos, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
+
+      setCameraTarget({
+        position: viewPos,
+        lookAt: new THREE.Vector3(...pos.position),
+      });
+      // Open modal after arrival
+      setTimeout(() => onSelectOffering(offering), 900);
     },
-    [positions, onSelectOffering],
+    [positions, onSelectOffering, setCameraTarget],
+  );
+
+  // Fly-to for creatures
+  const handleCreatureClick = useCallback(
+    (creature: typeof CREATURES[number]) => {
+      const creaturePos = new THREE.Vector3(...creature.position);
+      const dir = new THREE.Vector3().subVectors(camera.position, creaturePos).normalize();
+      dir.y = 0.2;
+      dir.normalize();
+      const viewPos = creaturePos.clone().add(dir.multiplyScalar(3));
+      viewPos.y = Math.max(viewPos.y, creaturePos.y + 0.5);
+      clampVec3(viewPos, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
+
+      setCameraTarget({
+        position: viewPos,
+        lookAt: creaturePos.clone().add(new THREE.Vector3(0, 0.5, 0)),
+      });
+      setTimeout(() => onSelectCreature(creature), 900);
+    },
+    [camera, onSelectCreature, setCameraTarget],
   );
 
   return (
@@ -1240,6 +1277,7 @@ function Scene({
       <GalleryRoom />
 
       <CameraController target={cameraTarget} onArrived={onCameraArrived} />
+      <BoundsGuard controlsRef={controlsRef} />
 
       {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
@@ -1255,7 +1293,7 @@ function Scene({
       })}
 
       {CREATURES.map((creature) => (
-        <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
+        <StoryCreature key={creature.name} creature={creature} onSelect={handleCreatureClick} />
       ))}
 
       {/* Creature shadows */}
@@ -1274,23 +1312,18 @@ function Scene({
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={2}
-        maxDistance={28}
-        maxPolarAngle={Math.PI * 0.8}
-        minPolarAngle={Math.PI * 0.15}
-        minAzimuthAngle={-Math.PI * 0.65}
-        maxAzimuthAngle={Math.PI * 0.65}
+        minDistance={0.8}
+        maxDistance={16}
+        maxPolarAngle={Math.PI * 0.85}
+        minPolarAngle={Math.PI * 0.1}
         target={[0, 1, 0]}
-        zoomSpeed={1.2}
-        panSpeed={0.8}
+        zoomSpeed={0.8}
+        panSpeed={0.6}
         rotateSpeed={0.7}
+        enableDamping={true}
+        dampingFactor={0.12}
         onChange={() => {
-          if (controlsRef.current) {
-            const t = controlsRef.current.target;
-            t.x = THREE.MathUtils.clamp(t.x, -14, 14);
-            t.y = THREE.MathUtils.clamp(t.y, -2, 8);
-            t.z = THREE.MathUtils.clamp(t.z, -14, 14);
-          }
+          clampInsideRoom(camera, controlsRef.current);
         }}
       />
     </>
