@@ -198,10 +198,9 @@ function useAmbientAudio(audioEnabled: boolean) {
 
 // ─── Room Boundary Constants ────────────────────────────────────────────────
 
-const ROOM_HALF = 18;
-const CAM_BOUND = 16;       // camera.position clamped here
+const CAM_BOUND = 15.5;     // camera.position clamped here
 const TARGET_BOUND = 14;    // orbit target clamped here
-const CAM_Y_MIN = -2;
+const CAM_Y_MIN = 0.5;
 const CAM_Y_MAX = 8;
 const TARGET_Y_MIN = -2;
 const TARGET_Y_MAX = 7;
@@ -212,29 +211,11 @@ function clampVec3(v: THREE.Vector3, xBound: number, yMin: number, yMax: number,
   v.z = THREE.MathUtils.clamp(v.z, -xBound, zBound);
 }
 
-function clampInsideRoom(camera: THREE.Camera, controls: any) {
-  if (controls?.target) {
-    clampVec3(controls.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
-  }
-  clampVec3(camera.position, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
-}
-
-// useFrame guard that runs every frame to enforce boundaries
-function BoundsGuard({ controlsRef }: { controlsRef: React.RefObject<any> }) {
-  const { camera } = useThree();
-  useFrame(() => {
-    clampInsideRoom(camera, controlsRef.current);
-  });
-  return null;
-}
-
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const FRAME_COLORS = [
   "#6b5b4b", "#8b7355", "#7a6250", "#5b4b3b", "#9b8365", "#4b3b2b",
 ];
-
-// (fly-to system removed — pure free navigation)
 
 // ─── Frame sizing ───────────────────────────────────────────────────────────
 
