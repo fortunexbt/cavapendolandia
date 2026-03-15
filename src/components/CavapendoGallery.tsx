@@ -727,6 +727,22 @@ function GalleryRoom() {
         <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
       </mesh>
 
+      {/* Exit hint text above archway */}
+      <Html position={[0, 6.5, hd - 0.2]} center distanceFactor={12} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
+        <div style={{
+          fontFamily: "Georgia, serif",
+          fontSize: "14px",
+          color: "rgba(120, 100, 80, 0.6)",
+          letterSpacing: "4px",
+          textTransform: "uppercase",
+        }}>
+          Uscita
+        </div>
+      </Html>
+
+      {/* Soft glow at archway */}
+      <pointLight position={[0, 2, hd - 1]} intensity={0.5} color="#fff8e0" distance={8} />
+
       <WoodenRoof woodTex={woodTex} />
       <StonePillars />
       <WallDetails />
