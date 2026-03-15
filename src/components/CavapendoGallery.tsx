@@ -1437,6 +1437,93 @@ const DEMO_OFFERINGS: Offering[] = [
   { id: "demo-6", title: "Colore B", media_type: "image", file_url: "/cavapendoli/models-bw.png", link_url: null, author_name: "Luca", author_type: "name", created_at: "2024-01-20" },
 ];
 
+// ─── Virtual Joystick ───────────────────────────────────────────────────────
+
+function VirtualJoystick({
+  side,
+  onInput,
+}: {
+  side: "left" | "right";
+  onInput: (x: number, y: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchIdRef = useRef<number | null>(null);
+  const centerRef = useRef({ x: 0, y: 0 });
+  const RADIUS = 50;
+
+  const [stickPos, setStickPos] = useState({ x: 0, y: 0 });
+
+  const handleStart = useCallback((e: React.TouchEvent) => {
+    if (touchIdRef.current !== null) return;
+    const touch = e.changedTouches[0];
+    touchIdRef.current = touch.identifier;
+    const rect = containerRef.current!.getBoundingClientRect();
+    centerRef.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  }, []);
+
+  const handleMove = useCallback((e: React.TouchEvent) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      if (touch.identifier !== touchIdRef.current) continue;
+      const dx = touch.clientX - centerRef.current.x;
+      const dy = touch.clientY - centerRef.current.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const clampedDist = Math.min(dist, RADIUS);
+      const angle = Math.atan2(dy, dx);
+      const nx = (Math.cos(angle) * clampedDist) / RADIUS;
+      const ny = (Math.sin(angle) * clampedDist) / RADIUS;
+      setStickPos({ x: nx * RADIUS * 0.6, y: ny * RADIUS * 0.6 });
+      onInput(nx, ny);
+    }
+  }, [onInput]);
+
+  const handleEnd = useCallback((e: React.TouchEvent) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === touchIdRef.current) {
+        touchIdRef.current = null;
+        setStickPos({ x: 0, y: 0 });
+        onInput(0, 0);
+      }
+    }
+  }, [onInput]);
+
+  return (
+    <div
+      ref={containerRef}
+      onTouchStart={handleStart}
+      onTouchMove={handleMove}
+      onTouchEnd={handleEnd}
+      onTouchCancel={handleEnd}
+      className={`absolute bottom-8 ${side === "left" ? "left-8" : "right-8"} pointer-events-auto touch-none`}
+      style={{
+        width: RADIUS * 2 + 20,
+        height: RADIUS * 2 + 20,
+      }}
+    >
+      {/* Base ring */}
+      <div
+        className="absolute inset-0 rounded-full border-2 border-foreground/20 bg-background/20 backdrop-blur-sm"
+      />
+      {/* Stick */}
+      <div
+        className="absolute rounded-full bg-foreground/40 backdrop-blur-sm"
+        style={{
+          width: 40,
+          height: 40,
+          left: "50%",
+          top: "50%",
+          transform: `translate(calc(-50% + ${stickPos.x}px), calc(-50% + ${stickPos.y}px))`,
+          transition: touchIdRef.current !== null ? "none" : "transform 0.15s ease-out",
+        }}
+      />
+      {/* Label */}
+      <div className="absolute -top-5 left-0 right-0 text-center text-[10px] text-foreground/40 font-mono-light">
+        {side === "left" ? "MUOVI" : "GUARDA"}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ─────────────────────────────────────────────────────────
 
 function CavapendoGallery({ className = "" }: { className?: string }) {
@@ -1444,10 +1531,17 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
+  const isMobile = useIsMobile();
+  const [controlMode, setControlMode] = useState<"fps" | "orbit">(isMobile ? "fps" : "fps");
+  const [enterPromptVisible, setEnterPromptVisible] = useState(!isMobile);
+
+  const joystickRef = useRef<JoystickInput>({ moveX: 0, moveZ: 0, lookX: 0, lookY: 0 });
+
+  const modalOpen = !!(selectedOffering || selectedCreature);
 
   // Auto-hide hint
   useEffect(() => {
-    const timer = setTimeout(() => setHintVisible(false), 6000);
+    const timer = setTimeout(() => setHintVisible(false), 8000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -1473,22 +1567,46 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
 
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
-  // ESC to close modals
+  // ESC to close modals (but don't override pointer lock ESC behavior)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setSelectedOffering(null);
-        setSelectedCreature(null);
+        if (selectedOffering || selectedCreature) {
+          setSelectedOffering(null);
+          setSelectedCreature(null);
+        }
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedOffering, selectedCreature]);
+
+  // Hide enter prompt when pointer lock is acquired
+  useEffect(() => {
+    const onLockChange = () => {
+      if (document.pointerLockElement) {
+        setEnterPromptVisible(false);
+      }
+    };
+    document.addEventListener("pointerlockchange", onLockChange);
+    return () => document.removeEventListener("pointerlockchange", onLockChange);
+  }, []);
+
+  // Joystick callbacks
+  const handleLeftJoystick = useCallback((x: number, y: number) => {
+    joystickRef.current.moveX = x;
+    joystickRef.current.moveZ = y;
+  }, []);
+
+  const handleRightJoystick = useCallback((x: number, y: number) => {
+    joystickRef.current.lookX = x;
+    joystickRef.current.lookY = y;
   }, []);
 
   return (
     <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px", isolation: "isolate" }}>
       <Canvas
-        camera={{ position: [0, 1, 12], fov: 45 }}
+        camera={{ position: [0, 0, 12], fov: 50 }}
         gl={{
           antialias: true,
           alpha: true,
@@ -1503,9 +1621,47 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             offerings={offerings}
             onSelectOffering={setSelectedOffering}
             onSelectCreature={setSelectedCreature}
+            controlMode={controlMode}
+            modalOpen={modalOpen}
+            joystickRef={joystickRef}
           />
         </Suspense>
       </Canvas>
+
+      {/* FPS Crosshair (desktop only, when in FPS mode and no modal) */}
+      {controlMode === "fps" && !isMobile && !modalOpen && !enterPromptVisible && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 5 }}>
+          <div className="w-1 h-1 rounded-full bg-foreground/40" />
+        </div>
+      )}
+
+      {/* Enter prompt (desktop FPS — click to lock pointer) */}
+      <AnimatePresence>
+        {enterPromptVisible && controlMode === "fps" && !isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ zIndex: 15 }}
+          >
+            <div className="bg-background/80 backdrop-blur-sm px-8 py-5 rounded-lg border border-border/30 text-center">
+              <p className="font-serif text-lg text-foreground mb-1">🏛️ La Galleria</p>
+              <p className="font-mono-light text-sm text-muted-foreground">
+                Clicca per entrare • WASD per muoverti • Mouse per guardarti intorno
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile joysticks */}
+      {isMobile && controlMode === "fps" && !modalOpen && (
+        <>
+          <VirtualJoystick side="left" onInput={handleLeftJoystick} />
+          <VirtualJoystick side="right" onInput={handleRightJoystick} />
+        </>
+      )}
 
       {/* UI Overlay */}
       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none" style={{ zIndex: 10 }}>
@@ -1519,6 +1675,17 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             {audioEnabled ? "🔊" : "🔇"}
           </button>
 
+          {/* Mode toggle (desktop only) */}
+          {!isMobile && (
+            <button
+              onClick={() => setControlMode((m) => m === "fps" ? "orbit" : "fps")}
+              className="pointer-events-auto bg-background/80 backdrop-blur-sm px-3 py-2 rounded-md border border-border/30 text-lg hover:bg-background/95 transition-colors"
+              title={controlMode === "fps" ? "Passa a Orbita" : "Passa a Prima persona"}
+            >
+              {controlMode === "fps" ? "🖱️" : "🎮"}
+            </button>
+          )}
+
           {/* Hint text */}
           <AnimatePresence>
             {hintVisible && (
@@ -1530,7 +1697,12 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
                 className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20"
               >
                 <p className="font-mono-light text-xs text-muted-foreground">
-                  🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura
+                  {isMobile
+                    ? "👆 Joystick sinistro: muoviti • Destro: guardati intorno • Tocca un quadro"
+                    : controlMode === "fps"
+                      ? "⌨️ WASD per muoverti • Mouse per guardare • Clicca un quadro o una creatura"
+                      : "🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura"
+                  }
                 </p>
               </motion.div>
             )}
