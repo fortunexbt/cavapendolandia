@@ -21,6 +21,7 @@ interface Offering {
   author_name: string | null;
   author_type: string;
   created_at: string;
+  approved_at?: string | null;
 }
 
 interface GalleryRoomProps {
