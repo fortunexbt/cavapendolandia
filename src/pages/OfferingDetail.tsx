@@ -90,6 +90,12 @@ const OfferingDetail = () => {
             />
 
             <div className="mt-14 flex flex-wrap items-center justify-center gap-6">
+              <button
+                onClick={handleCopyLink}
+                className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
+              >
+                {copied ? "copiato ✓" : "copia link"}
+              </button>
               {randomOffering && (
                 <Link
                   to={`/o/${randomOffering.id}`}

@@ -1876,7 +1876,15 @@ function OfferingModal({ offering, onClose }: { offering: Offering | null; onClo
               <p className="mt-1 text-xs">In galleria dal: {new Date(offering.approved_at).toLocaleDateString("it-IT")}</p>
             )}
             <p className="mt-1 text-xs uppercase tracking-wide">Tipo: {offering.media_type}</p>
-            <p className="mt-1 text-[10px] opacity-80">ID: {offering.id}</p>
+            {!offering.id.startsWith("demo-") && (
+              <Link
+                to={`/o/${offering.id}`}
+                className="mt-3 inline-block font-mono-light text-[0.6rem] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground border border-border/40 px-4 py-1.5 hover:border-foreground/30 transition-colors"
+                onClick={onClose}
+              >
+                Apri dettaglio →
+              </Link>
+            )}
           </div>
         </motion.div>
       </motion.div>

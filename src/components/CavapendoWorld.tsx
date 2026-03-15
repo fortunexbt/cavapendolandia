@@ -210,11 +210,11 @@ function Scene() {
       <FloatingCrystal position={[1, -0.5, -3]} scale={0.25} color="#6a5545" rotationSpeed={0.9} />
       
       {/* Swarm of tiny cavapendoli particles */}
-      <CavapendoliSwarm />
+      <CavapendoliSwarm count={isMobile ? 12 : 40} />
       
       {/* Ambient sparkles */}
       <Sparkles
-        count={120}
+        count={isMobile ? 40 : 120}
         scale={15}
         size={1.5}
         speed={0.3}
@@ -226,7 +226,7 @@ function Scene() {
       <Stars
         radius={50}
         depth={50}
-        count={1000}
+        count={isMobile ? 300 : 1000}
         factor={2}
         saturation={0}
         fade

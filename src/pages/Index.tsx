@@ -105,14 +105,8 @@ const Index = () => {
 
         <motion.div
           variants={itemVariants}
-          className="mt-16 grid grid-cols-4 gap-4 w-full max-w-md"
+          className="mt-16 grid grid-cols-3 gap-4 w-full max-w-sm"
         >
-          <Link
-            to="/che-cose"
-            className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
-          >
-            <span className="font-mono-light text-sm">Che cos'è</span>
-          </Link>
           <Link
             to="/galleria"
             className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
@@ -120,16 +114,16 @@ const Index = () => {
             <span className="font-mono-light text-sm">Galleria</span>
           </Link>
           <Link
+            to="/offri"
+            className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
+          >
+            <span className="font-mono-light text-sm">Offri</span>
+          </Link>
+          <Link
             to="/regole"
             className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
           >
             <span className="font-mono-light text-sm">Regole</span>
-          </Link>
-          <Link
-            to="/rimozione"
-            className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
-          >
-            <span className="font-mono-light text-sm">Rimozione</span>
           </Link>
         </motion.div>
 

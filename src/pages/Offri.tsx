@@ -487,7 +487,7 @@ const Offri = () => {
 
           {/* Navigation */}
           <div className="mt-4 flex items-center justify-between">
-            {step > 1 && step !== 2 ? (
+            {step > 1 ? (
               <button
                 onClick={() => setStep((s) => s - 1)}
                 className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -498,27 +498,7 @@ const Offri = () => {
               <div />
             )}
 
-            {step === 2 && (
-              <button
-                onClick={() => canProceed() && setStep((s) => s + 1)}
-                disabled={!canProceed()}
-                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                avanti
-              </button>
-            )}
-
-            {step === 3 && (
-              <button
-                onClick={() => canProceed() && setStep((s) => s + 1)}
-                disabled={!canProceed()}
-                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                avanti
-              </button>
-            )}
-
-            {step === 4 && (
+            {step >= 2 && step <= 4 && (
               <button
                 onClick={() => canProceed() && setStep((s) => s + 1)}
                 disabled={!canProceed()}

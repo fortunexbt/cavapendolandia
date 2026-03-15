@@ -12,6 +12,14 @@ const SEAHORSE_SVG = (
   </svg>
 );
 
+const NAV_LINKS = [
+  { to: "/che-cose", label: "Che cos'è" },
+  { to: "/galleria", label: "Galleria" },
+  { to: "/offri", label: "Offri" },
+  { to: "/regole", label: "Regole" },
+  { to: "/rimozione", label: "Rimozione" },
+];
+
 const MinimalHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -34,51 +42,26 @@ const MinimalHeader = () => {
           </button>
 
           <nav className="hidden md:flex items-center gap-6 font-mono-light text-base">
-            <Link to="/che-cose" className="text-foreground/80 hover:text-foreground transition-colors">
-              Che cos'è
-            </Link>
-            <Link to="/galleria" className="text-foreground/80 hover:text-foreground transition-colors">
-              Galleria
-            </Link>
-            <Link to="/regole" className="text-foreground/80 hover:text-foreground transition-colors">
-              Regole
-            </Link>
-            <Link to="/rimozione" className="text-foreground/80 hover:text-foreground transition-colors">
-              Rimozione
-            </Link>
+            {NAV_LINKS.map((link) => (
+              <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-foreground transition-colors">
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
 
         {menuOpen && (
           <nav className="mt-4 pb-4 flex flex-col gap-4 font-mono-light text-lg md:hidden border-t border-border/30 pt-4">
-            <Link 
-              to="/che-cose" 
-              className="text-foreground/80 hover:text-foreground transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              Che cos'è
-            </Link>
-            <Link 
-              to="/galleria" 
-              className="text-foreground/80 hover:text-foreground transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              Galleria
-            </Link>
-            <Link 
-              to="/regole" 
-              className="text-foreground/80 hover:text-foreground transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              Regole
-            </Link>
-            <Link 
-              to="/rimozione" 
-              className="text-foreground/80 hover:text-foreground transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              Rimozione
-            </Link>
+            {NAV_LINKS.map((link) => (
+              <Link 
+                key={link.to}
+                to={link.to} 
+                className="text-foreground/80 hover:text-foreground transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
         )}
       </div>
