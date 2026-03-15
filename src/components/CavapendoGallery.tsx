@@ -427,6 +427,22 @@ function ArtisticFrame({
       </mesh>
 
       <group>
+        {/* Shadow plane behind frame (fake contact shadow) */}
+        <mesh position={[0, -0.05, -0.08]}>
+          <planeGeometry args={[w + 0.3, h + 0.3]} />
+          <meshBasicMaterial color="#000" transparent opacity={0.15} depthWrite={false} />
+        </mesh>
+
+        {/* Outer frame bevel (slightly larger, darker) */}
+        <mesh position={[0, 0, -0.02]}>
+          <boxGeometry args={[w + 0.06, h + 0.06, 0.08]} />
+          <meshStandardMaterial
+            color="#3a2a1a"
+            roughness={0.7}
+            metalness={0.15}
+          />
+        </mesh>
+
         {/* Outer frame */}
         <mesh>
           <boxGeometry args={[w, h, 0.12]} />
@@ -577,23 +593,43 @@ function useStuccoTexture() {
     // Base warm plaster
     ctx.fillStyle = "#e8ddd0";
     ctx.fillRect(0, 0, size, size);
-    // Noise grain
-    for (let i = 0; i < 40000; i++) {
+    // Warm color variation patches (subtle plaster irregularities)
+    for (let i = 0; i < 60; i++) {
       const x = Math.random() * size;
       const y = Math.random() * size;
-      const brightness = 180 + Math.random() * 60;
-      const alpha = 0.15 + Math.random() * 0.15;
+      const r = 30 + Math.random() * 60;
+      const hue = 25 + Math.random() * 15;
+      const sat = 15 + Math.random() * 20;
+      const light = 80 + Math.random() * 10;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, 0.08)`;
+      ctx.fill();
+    }
+    // Dense noise grain
+    for (let i = 0; i < 80000; i++) {
+      const x = Math.random() * size;
+      const y = Math.random() * size;
+      const brightness = 170 + Math.random() * 70;
+      const alpha = 0.1 + Math.random() * 0.2;
       ctx.fillStyle = `rgba(${brightness}, ${brightness - 10}, ${brightness - 25}, ${alpha})`;
       ctx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
     }
     // Subtle cracks / veins
-    ctx.strokeStyle = "rgba(160, 140, 120, 0.08)";
+    ctx.strokeStyle = "rgba(150, 130, 110, 0.1)";
     ctx.lineWidth = 0.5;
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 50; i++) {
       ctx.beginPath();
       ctx.moveTo(Math.random() * size, Math.random() * size);
       ctx.lineTo(Math.random() * size, Math.random() * size);
       ctx.stroke();
+    }
+    // Stain marks
+    for (let i = 0; i < 8; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * size, Math.random() * size, 5 + Math.random() * 15, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(140, 120, 100, ${0.03 + Math.random() * 0.04})`;
+      ctx.fill();
     }
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -614,20 +650,45 @@ function useTileTexture() {
     const rows = size / tileSize;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const hue = 18 + Math.random() * 8;
-        const sat = 30 + Math.random() * 15;
-        const light = 55 + Math.random() * 12;
+        const hue = 16 + Math.random() * 12;
+        const sat = 28 + Math.random() * 20;
+        const light = 50 + Math.random() * 16;
+        // Slight rotation/offset per tile for imperfection
+        const offsetX = (Math.random() - 0.5) * 1.5;
+        const offsetY = (Math.random() - 0.5) * 1.5;
         ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light}%)`;
-        ctx.fillRect(c * tileSize + 1, r * tileSize + 1, tileSize - 2, tileSize - 2);
+        ctx.fillRect(c * tileSize + 1 + offsetX, r * tileSize + 1 + offsetY, tileSize - 2, tileSize - 2);
+        // Per-tile wear marks
+        if (Math.random() > 0.6) {
+          ctx.fillStyle = `rgba(80, 60, 40, ${0.03 + Math.random() * 0.05})`;
+          ctx.fillRect(c * tileSize + 8, r * tileSize + 8, tileSize - 16, tileSize - 16);
+        }
+        // Tiny chip/scratch
+        if (Math.random() > 0.8) {
+          ctx.fillStyle = `rgba(60, 40, 20, 0.12)`;
+          ctx.fillRect(c * tileSize + Math.random() * tileSize, r * tileSize + Math.random() * tileSize, 2, 2);
+        }
       }
     }
     // Grout lines
-    ctx.fillStyle = "#b0a89a";
+    ctx.fillStyle = "#a89a8a";
     for (let r = 0; r <= rows; r++) {
       ctx.fillRect(0, r * tileSize - 1, size, 2);
     }
     for (let c = 0; c <= cols; c++) {
       ctx.fillRect(c * tileSize - 1, 0, 2, size);
+    }
+    // Grout discoloration
+    for (let i = 0; i < 200; i++) {
+      const isHoriz = Math.random() > 0.5;
+      const row = Math.floor(Math.random() * (rows + 1));
+      const col = Math.floor(Math.random() * (cols + 1));
+      ctx.fillStyle = `rgba(70, 55, 40, ${0.05 + Math.random() * 0.08})`;
+      if (isHoriz) {
+        ctx.fillRect(Math.random() * size, row * tileSize - 1, 8 + Math.random() * 12, 2);
+      } else {
+        ctx.fillRect(col * tileSize - 1, Math.random() * size, 2, 8 + Math.random() * 12);
+      }
     }
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -823,7 +884,7 @@ function GalleryRoom() {
       {/* Floor — terracotta tiles */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.3} roughness={0.85} />
+        <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.5} roughness={0.85} />
       </mesh>
       {/* Center medallion */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.99, 0]}>
@@ -831,35 +892,68 @@ function GalleryRoom() {
         <meshStandardMaterial color="#c8b090" transparent opacity={0.35} roughness={0.9} />
       </mesh>
 
+      {/* Floor edge darkening (ambient occlusion ring) */}
+      {[hw, hd].length && (
+        <>
+          {/* Back edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.98, -hd + 2]}>
+            <planeGeometry args={[ROOM_W, 4]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.08} depthWrite={false} />
+          </mesh>
+          {/* Front edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.98, hd - 2]}>
+            <planeGeometry args={[ROOM_W, 4]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.06} depthWrite={false} />
+          </mesh>
+          {/* Left edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-hw + 2, -2.98, 0]}>
+            <planeGeometry args={[4, ROOM_D]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.08} depthWrite={false} />
+          </mesh>
+          {/* Right edge */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[hw - 2, -2.98, 0]}>
+            <planeGeometry args={[4, ROOM_D]} />
+            <meshBasicMaterial color="#000" transparent opacity={0.08} depthWrite={false} />
+          </mesh>
+          {/* Corner patches (darker) */}
+          {[[-hw+2, -hd+2], [hw-2, -hd+2], [-hw+2, hd-2], [hw-2, hd-2]].map(([cx, cz], i) => (
+            <mesh key={`corner-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[cx, -2.97, cz]}>
+              <circleGeometry args={[3, 16]} />
+              <meshBasicMaterial color="#000" transparent opacity={0.06} depthWrite={false} />
+            </mesh>
+          ))}
+        </>
+      )}
+
       {/* Back wall */}
       <mesh position={[0, 4, -hd]} receiveShadow>
         <planeGeometry args={[ROOM_W, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Left wall */}
       <mesh position={[-hw, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[ROOM_D, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Right wall */}
       <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[ROOM_D, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
 
       {/* Front wall — archway: two side panels + lintel */}
       <mesh position={[-hw / 2 - 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       <mesh position={[hw / 2 + 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
       {/* Archway lintel */}
       <mesh position={[0, 8, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
 
       {/* Exit hint text above archway */}
@@ -935,18 +1029,69 @@ function CreatureShadow({ position }: { position: [number, number, number] }) {
   );
 }
 
+// ─── Track Light Fixture ─────────────────────────────────────────────────────
+
+function TrackLight({ position, targetY = -0.5 }: { position: [number, number, number]; targetY?: number }) {
+  const spotRef = useRef<THREE.SpotLight>(null);
+  const targetRef = useRef<THREE.Object3D>(null);
+
+  useEffect(() => {
+    if (spotRef.current && targetRef.current) {
+      spotRef.current.target = targetRef.current;
+    }
+  }, []);
+
+  return (
+    <group>
+      {/* Ceiling fixture body */}
+      <mesh position={position}>
+        <cylinderGeometry args={[0.08, 0.12, 0.25, 8]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
+      </mesh>
+      {/* Fixture arm */}
+      <mesh position={[position[0], position[1] - 0.2, position[2]]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.15, 6]} />
+        <meshStandardMaterial color="#333" roughness={0.5} metalness={0.6} />
+      </mesh>
+      {/* Light housing (cone) */}
+      <mesh position={[position[0], position[1] - 0.32, position[2]]} rotation={[Math.PI, 0, 0]}>
+        <coneGeometry args={[0.1, 0.15, 8]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.7} />
+      </mesh>
+      {/* Bulb glow */}
+      <mesh position={[position[0], position[1] - 0.35, position[2]]}>
+        <sphereGeometry args={[0.04, 8, 8]} />
+        <meshBasicMaterial color="#fff8e0" />
+      </mesh>
+      {/* Spotlight */}
+      <spotLight
+        ref={spotRef}
+        position={position}
+        angle={0.45}
+        penumbra={0.8}
+        intensity={1.8}
+        color="#fff0d0"
+        distance={14}
+        castShadow={false}
+      />
+      {/* Target for spotlight direction */}
+      <object3D ref={targetRef} position={[position[0], targetY, position[2]]} />
+    </group>
+  );
+}
+
 // ─── Lighting ───────────────────────────────────────────────────────────────
 
-function GalleryLighting() {
+function GalleryLighting({ framePositions }: { framePositions?: { position: [number, number, number]; rotation: [number, number, number] }[] }) {
   return (
     <>
-      {/* Higher ambient for consistent visibility */}
-      <ambientLight intensity={0.25} color="#f0e8d8" />
+      {/* Low ambient — track lights provide primary illumination */}
+      <ambientLight intensity={0.12} color="#e8ddd0" />
 
       {/* Main directional for shadows */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.45}
+        intensity={0.35}
         color="#fff5e6"
         castShadow
         shadow-mapSize={[1024, 1024]}
@@ -957,15 +1102,32 @@ function GalleryLighting() {
         position={[0, 9, -14]}
         angle={0.5}
         penumbra={0.9}
-        intensity={1.0}
+        intensity={0.8}
         color="#ffe8c0"
         castShadow
         target-position={[0, 0, -17]}
       />
 
-      {/* Fill — left and right */}
-      <pointLight position={[-12, 4, 0]} intensity={0.3} color="#e6d6c6" distance={20} />
-      <pointLight position={[12, 4, 0]} intensity={0.3} color="#e6d6c6" distance={20} />
+      {/* Subtle fill — left and right (dimmer now) */}
+      <pointLight position={[-12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
+      <pointLight position={[12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
+
+      {/* Per-frame track lights */}
+      {framePositions?.map((fp, i) => {
+        // Place light on ceiling above the frame, offset slightly from wall
+        const [fx, _fy, fz] = fp.position;
+        const ry = fp.rotation[1];
+        // Offset away from wall so light shines down at an angle
+        const offsetX = Math.sin(ry) * 1.5;
+        const offsetZ = -Math.cos(ry) * 1.5;
+        return (
+          <TrackLight
+            key={`track-${i}`}
+            position={[fx + offsetX, 9.2, fz + offsetZ]}
+            targetY={fp.position[1]}
+          />
+        );
+      })}
     </>
   );
 }
@@ -1252,6 +1414,7 @@ function StoryCreature({
 const EYE_HEIGHT = -1.8; // floor at y=-3, eyes ~1.2m above
 const JUMP_VELOCITY = 6;
 const GRAVITY = -15;
+const STEP_INTERVAL = 0.38; // seconds between footsteps
 
 function FPSController({
   enabled,
@@ -1277,6 +1440,42 @@ function FPSController({
   const velocityY = useRef(0);
   const isGrounded = useRef(true);
   const exitFired = useRef(false);
+
+  // Footstep audio synthesis
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const stepTimerRef = useRef(0);
+
+  const playFootstep = useCallback(() => {
+    if (!audioCtxRef.current) {
+      try { audioCtxRef.current = new AudioContext(); } catch { return; }
+    }
+    const ctx = audioCtxRef.current;
+    if (ctx.state === "suspended") ctx.resume();
+    const now = ctx.currentTime;
+
+    // Short noise burst for tap sound
+    const bufferSize = ctx.sampleRate * 0.06;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+
+    // Low-pass filter for soft tap
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 800 + Math.random() * 400;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.08 + Math.random() * 0.04, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    source.connect(filter).connect(gain).connect(ctx.destination);
+    source.start(now);
+    source.stop(now + 0.08);
+  }, []);
 
   // Pointer lock + keyboard + mouse look
   useEffect(() => {
@@ -1304,13 +1503,10 @@ function FPSController({
         raycaster.setFromCamera({ x: 0, y: 0 } as THREE.Vector2, camera);
         const intersects = raycaster.intersectObjects(scene.children, true);
         for (const hit of intersects) {
-          // Walk up to find a group/mesh with onPointerDown handler
           let obj: THREE.Object3D | null = hit.object;
           while (obj) {
-            // R3F stores event handlers on __r3f
             const r3f = (obj as any).__r3f;
             if (r3f?.handlers?.onPointerDown) {
-              // Release pointer lock so user can interact with modal
               document.exitPointerLock();
               r3f.handlers.onPointerDown({ stopPropagation: () => {} });
               return;
@@ -1337,7 +1533,6 @@ function FPSController({
         e.preventDefault();
         keysDown.current.add(e.code);
       }
-      // Jump
       if (e.code === "Space" && isGrounded.current) {
         velocityY.current = JUMP_VELOCITY;
         isGrounded.current = false;
@@ -1364,6 +1559,11 @@ function FPSController({
     }
   }, [modalOpen]);
 
+  // Cleanup audio context
+  useEffect(() => {
+    return () => { audioCtxRef.current?.close(); };
+  }, []);
+
   useFrame((_, delta) => {
     if (!enabled) return;
 
@@ -1371,18 +1571,15 @@ function FPSController({
     const joy = joystickRef.current;
     direction.current.set(0, 0, 0);
 
-    // Keyboard input
     if (keys.has("KeyW") || keys.has("ArrowUp")) direction.current.z -= 1;
     if (keys.has("KeyS") || keys.has("ArrowDown")) direction.current.z += 1;
-    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x += 1;   // fixed: was inverted
-    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x -= 1;  // fixed: was inverted
+    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x += 1;
+    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x -= 1;
 
-    // Joystick input (mobile)
     if (joy) {
-      direction.current.x -= joy.moveX;  // fixed: match corrected convention
+      direction.current.x -= joy.moveX;
       direction.current.z += joy.moveZ;
 
-      // Apply look from right joystick
       if (Math.abs(joy.lookX) > 0.01 || Math.abs(joy.lookY) > 0.01) {
         euler.current.setFromQuaternion(camera.quaternion);
         euler.current.y -= joy.lookX * 3 * delta;
@@ -1392,12 +1589,9 @@ function FPSController({
       }
     }
 
-    // Horizontal movement
     const hasHorizontal = Math.abs(direction.current.x) > 0.001 || Math.abs(direction.current.z) > 0.001;
     if (hasHorizontal) {
       const hDir = new THREE.Vector3(direction.current.x, 0, direction.current.z).normalize();
-
-      // Build movement vectors from camera orientation
       camera.getWorldDirection(forward.current);
       forward.current.y = 0;
       forward.current.normalize();
@@ -1408,9 +1602,20 @@ function FPSController({
       move.addScaledVector(forward.current, -hDir.z);
 
       camera.position.addScaledVector(move, FPS_SPEED * delta);
+
+      // Footstep timing
+      if (isGrounded.current) {
+        stepTimerRef.current += delta;
+        if (stepTimerRef.current >= STEP_INTERVAL) {
+          stepTimerRef.current -= STEP_INTERVAL;
+          playFootstep();
+        }
+      }
+    } else {
+      stepTimerRef.current = STEP_INTERVAL * 0.8; // reset so first step plays quickly on move start
     }
 
-    // Gravity + jump (fixed to floor)
+    // Gravity + jump
     velocityY.current += GRAVITY * delta;
     camera.position.y += velocityY.current * delta;
     if (camera.position.y <= EYE_HEIGHT) {
@@ -1419,16 +1624,14 @@ function FPSController({
       isGrounded.current = true;
     }
 
-    // Clamp horizontal bounds
     camera.position.x = THREE.MathUtils.clamp(camera.position.x, -CAM_BOUND, CAM_BOUND);
     camera.position.z = THREE.MathUtils.clamp(camera.position.z, -CAM_BOUND, CAM_BOUND);
-    // Cap max height (e.g. jump near ceiling)
     if (camera.position.y > CAM_Y_MAX) {
       camera.position.y = CAM_Y_MAX;
       velocityY.current = 0;
     }
 
-    // Exit zone detection (archway at z=18, opening ~6 units wide centered at x=0)
+    // Exit zone detection
     if (!exitFired.current && onExit && camera.position.z > 16.5 && Math.abs(camera.position.x) < 3) {
       exitFired.current = true;
       onExit();
@@ -1529,8 +1732,8 @@ function Scene({
 
   return (
     <>
-      <fog attach="fog" args={["#f5f0e8", 15, 50]} />
-      <GalleryLighting />
+      <fog attach="fog" args={["#e8e0d8", 12, 45]} />
+      <GalleryLighting framePositions={positions} />
       <VolumetricLights />
       <GalleryRoom />
 
