@@ -606,12 +606,12 @@ function useStuccoTexture() {
       ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, 0.08)`;
       ctx.fill();
     }
-    // Dense noise grain
-    for (let i = 0; i < 80000; i++) {
+    // Dense noise grain (reduced for performance)
+    for (let i = 0; i < 15000; i++) {
       const x = Math.random() * size;
       const y = Math.random() * size;
       const brightness = 170 + Math.random() * 70;
-      const alpha = 0.1 + Math.random() * 0.2;
+      const alpha = 0.12 + Math.random() * 0.25;
       ctx.fillStyle = `rgba(${brightness}, ${brightness - 10}, ${brightness - 25}, ${alpha})`;
       ctx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
     }
