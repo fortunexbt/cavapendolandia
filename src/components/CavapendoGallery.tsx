@@ -1098,7 +1098,7 @@ function GalleryLighting({ framePositions }: { framePositions?: { position: [num
 
 function GalleryDust() {
   return (
-    <Sparkles count={200} scale={40} size={1} speed={0.15} color="#c9b896" opacity={0.25} />
+    <Sparkles count={60} scale={40} size={1.2} speed={0.15} color="#c9b896" opacity={0.2} />
   );
 }
 
