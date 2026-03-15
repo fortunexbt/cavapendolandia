@@ -25,6 +25,8 @@ interface Offering {
 }
 
 // ─── Audio System ───────────────────────────────────────────────────────────
+// Strategy: check Supabase Storage for cached .mp3 first → only call ElevenLabs
+// if not cached → upload result to storage → sequential loading with long gaps.
 
 const SFX_PROMPTS: Record<string, string> = {
   seahorse: "gentle underwater bubbling ambient loop, soft water currents, calming aquatic atmosphere",
@@ -37,51 +39,75 @@ const SFX_PROMPTS: Record<string, string> = {
   whisper: "very quiet page turning sounds, paper rustling, hushed library whispers",
 };
 
+const AUDIO_BUCKET = "offerings"; // reuse existing public bucket
+const AUDIO_PREFIX = "gallery-sfx";
+
+async function fetchCachedAudio(key: string): Promise<string | null> {
+  const path = `${AUDIO_PREFIX}/${key}.mp3`;
+  const { data } = supabase.storage.from(AUDIO_BUCKET).getPublicUrl(path);
+  if (!data?.publicUrl) return null;
+
+  // Check if file actually exists with a HEAD request
+  try {
+    const resp = await fetch(data.publicUrl, { method: "HEAD" });
+    if (resp.ok) return data.publicUrl;
+  } catch { /* not cached yet */ }
+  return null;
+}
+
+async function generateAndCache(key: string): Promise<string | null> {
+  const prompt = SFX_PROMPTS[key];
+  if (!prompt) return null;
+
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ambient-sfx`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+    },
+    body: JSON.stringify({ prompt, duration: 10 }),
+  });
+
+  if (!response.ok) {
+    console.warn(`[SFX] Generation failed for "${key}": ${response.status}`);
+    return null;
+  }
+
+  const blob = await response.blob();
+
+  // Upload to storage for future cache hits
+  const path = `${AUDIO_PREFIX}/${key}.mp3`;
+  await supabase.storage.from(AUDIO_BUCKET).upload(path, blob, {
+    contentType: "audio/mpeg",
+    upsert: true,
+  });
+
+  return URL.createObjectURL(blob);
+}
+
 function useAmbientAudio(audioEnabled: boolean) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const sourcesRef = useRef<Map<string, { audio: HTMLAudioElement; gain: GainNode }>>(new Map());
-  const cacheRef = useRef<Map<string, string>>(new Map());
-  const loadingRef = useRef<Set<string>>(new Set());
+  const abortRef = useRef(false);
 
-  const getOrFetchAudio = useCallback(async (key: string): Promise<string | null> => {
-    if (cacheRef.current.has(key)) return cacheRef.current.get(key)!;
-    if (loadingRef.current.has(key)) return null;
-    loadingRef.current.add(key);
+  const getAudio = useCallback(async (key: string): Promise<string | null> => {
+    // 1. Try storage cache
+    const cached = await fetchCachedAudio(key);
+    if (cached) return cached;
 
-    try {
-      const prompt = SFX_PROMPTS[key];
-      if (!prompt) return null;
-
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ambient-sfx`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ prompt, duration: 10 }),
-      });
-
-      if (!response.ok) return null;
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      cacheRef.current.set(key, blobUrl);
-      return blobUrl;
-    } catch {
-      return null;
-    } finally {
-      loadingRef.current.delete(key);
-    }
+    // 2. Generate (only if not cached) — single attempt, fail gracefully
+    return generateAndCache(key);
   }, []);
 
   const playSource = useCallback(async (key: string, volume: number) => {
     if (!audioContextRef.current || !masterGainRef.current) return;
     if (sourcesRef.current.has(key)) return;
 
-    const blobUrl = await getOrFetchAudio(key);
-    if (!blobUrl) return;
+    const blobUrl = await getAudio(key);
+    if (!blobUrl || abortRef.current) return;
 
     const audio = new Audio(blobUrl);
     audio.loop = true;
@@ -97,15 +123,16 @@ function useAmbientAudio(audioEnabled: boolean) {
 
     try {
       await audio.play();
-      // Fade in
       gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 2);
     } catch {
       sourcesRef.current.delete(key);
     }
-  }, [getOrFetchAudio]);
+  }, [getAudio]);
 
   useEffect(() => {
     if (audioEnabled) {
+      abortRef.current = false;
+
       if (!audioContextRef.current) {
         const ctx = new AudioContext();
         audioContextRef.current = ctx;
@@ -119,30 +146,46 @@ function useAmbientAudio(audioEnabled: boolean) {
         audioContextRef.current.resume();
       }
 
-      // Start loading/playing sounds progressively
-      playSource("room", 0.15);
-      // Stagger creature sounds
-      const creatureKeys = ["seahorse", "owl", "cat", "frog", "lizard", "snail"];
-      creatureKeys.forEach((key, i) => {
-        setTimeout(() => playSource(key, 0.08), 2000 + i * 3000);
-      });
-      setTimeout(() => playSource("whisper", 0.05), 8000);
+      // Load sequentially with long gaps to avoid rate limits.
+      // Cached sounds load instantly; only uncached ones hit the API.
+      const allSounds: { key: string; vol: number }[] = [
+        { key: "room", vol: 0.15 },
+        { key: "seahorse", vol: 0.08 },
+        { key: "owl", vol: 0.08 },
+        { key: "cat", vol: 0.08 },
+        { key: "frog", vol: 0.08 },
+        { key: "lizard", vol: 0.08 },
+        { key: "snail", vol: 0.08 },
+        { key: "whisper", vol: 0.05 },
+      ];
+
+      // Sequential loader — one at a time, 12s gap between API calls
+      (async () => {
+        for (const { key, vol } of allSounds) {
+          if (abortRef.current) break;
+          const wasCached = !!(await fetchCachedAudio(key));
+          await playSource(key, vol);
+          // Only wait between sounds if the previous one wasn't cached
+          // (meaning we likely hit the API)
+          if (!wasCached && !abortRef.current) {
+            await new Promise((r) => setTimeout(r, 12000));
+          }
+        }
+      })();
     } else {
-      // Fade out and pause all
+      abortRef.current = true;
       sourcesRef.current.forEach(({ audio, gain }) => {
         if (audioContextRef.current) {
           gain.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + 1);
         }
-        setTimeout(() => {
-          audio.pause();
-        }, 1200);
+        setTimeout(() => audio.pause(), 1200);
       });
     }
   }, [audioEnabled, playSource]);
 
-  // Cleanup
   useEffect(() => {
     return () => {
+      abortRef.current = true;
       sourcesRef.current.forEach(({ audio }) => {
         audio.pause();
         audio.src = "";
