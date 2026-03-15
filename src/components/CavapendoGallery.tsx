@@ -7,6 +7,16 @@ import { useQuery } from "@tanstack/react-query";
 import * as THREE from "three";
 import { supabase } from "@/integrations/supabase/client";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+// ─── Shared Input State (for mobile joysticks → scene) ──────────────────────
+
+interface JoystickInput {
+  moveX: number;
+  moveZ: number;
+  lookX: number;
+  lookY: number;
+}
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
