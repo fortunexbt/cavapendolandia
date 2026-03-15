@@ -12,7 +12,7 @@ interface CavapendoWorldProps {
 // Floating Cavapendolo orb
 function CavapendoOrb({ position = [0, 0, 0] }: { position?: [number, number, number] }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const materialRef = useRef<THREE.MeshDistortMaterial>(null);
+  const materialRef = useRef<any>(null);
 
   useFrame((state) => {
     if (materialRef.current) {
