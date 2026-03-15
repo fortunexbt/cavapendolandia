@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Float, Sparkles, Environment, Stars } from "@react-three/drei";
+import { OrbitControls, Sparkles, Environment, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -34,7 +34,7 @@ const FRAME_COLORS = [
   "#4b3b2b",
 ];
 
-// Artistic frame with ornate border
+// Artistic frame pinned to wall
 function ArtisticFrame({ 
   offering, 
   position, 
@@ -47,92 +47,77 @@ function ArtisticFrame({
   onClick: () => void;
 }) {
   const colorIndex = offering.id.charCodeAt(0) % FRAME_COLORS.length;
-  const frameRef = useRef<THREE.Group>(null);
   
   return (
     <group position={position} rotation={rotation}>
-      <Float speed={1} rotationIntensity={0.1} floatIntensity={0.3}>
-        <group 
-          ref={frameRef}
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick();
-          }}
-        >
-          {/* Outer frame - ornate border */}
-          <mesh>
-            <boxGeometry args={[1.4, 1.7, 0.12]} />
-            <meshStandardMaterial 
-              color={FRAME_COLORS[colorIndex]}
-              roughness={0.6}
-              metalness={0.1}
-            />
+      <group 
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+      >
+        {/* Outer frame */}
+        <mesh>
+          <boxGeometry args={[1.4, 1.7, 0.12]} />
+          <meshStandardMaterial 
+            color={FRAME_COLORS[colorIndex]}
+            roughness={0.6}
+            metalness={0.1}
+          />
+        </mesh>
+        
+        {/* Inner frame detail */}
+        <mesh position={[0, 0, 0.07]}>
+          <boxGeometry args={[1.2, 1.5, 0.02]} />
+          <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
+        </mesh>
+        
+        {/* Canvas/white space */}
+        <mesh position={[0, 0, 0.09]}>
+          <boxGeometry args={[1.05, 1.35, 0.01]} />
+          <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
+        </mesh>
+        
+        {/* Content representation */}
+        {offering.media_type === "text" && (
+          <mesh position={[0, 0.1, 0.1]}>
+            <boxGeometry args={[0.7, 0.8, 0.005]} />
+            <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
           </mesh>
-          
-          {/* Inner frame detail */}
-          <mesh position={[0, 0, 0.07]}>
-            <boxGeometry args={[1.2, 1.5, 0.02]} />
-            <meshStandardMaterial 
-              color="#4a3a2a"
-              roughness={0.8}
-            />
+        )}
+        {offering.media_type === "image" && (
+          <mesh position={[0, 0, 0.1]}>
+            <boxGeometry args={[0.9, 0.9, 0.005]} />
+            <meshStandardMaterial color="#d4c4b0" roughness={0.85} />
           </mesh>
-          
-          {/* Canvas/white space */}
-          <mesh position={[0, 0, 0.09]}>
-            <boxGeometry args={[1.05, 1.35, 0.01]} />
-            <meshStandardMaterial 
-              color="#f5f0e8"
-              roughness={0.95}
-            />
+        )}
+        {offering.media_type === "link" && (
+          <mesh position={[0, 0, 0.1]}>
+            <boxGeometry args={[0.75, 0.5, 0.005]} />
+            <meshStandardMaterial color="#c4b4a0" roughness={0.85} />
           </mesh>
-          
-          {/* Content representation */}
-          {offering.media_type === "text" && (
-            <mesh position={[0, 0.1, 0.1]}>
-              <boxGeometry args={[0.7, 0.8, 0.005]} />
-              <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
-            </mesh>
-          )}
-          {offering.media_type === "image" && (
-            <mesh position={[0, 0, 0.1]}>
-              <boxGeometry args={[0.9, 0.9, 0.005]} />
-              <meshStandardMaterial color="#d4c4b0" roughness={0.85} />
-            </mesh>
-          )}
-          {offering.media_type === "link" && (
-            <mesh position={[0, 0, 0.1]}>
-              <boxGeometry args={[0.75, 0.5, 0.005]} />
-              <meshStandardMaterial color="#c4b4a0" roughness={0.85} />
-            </mesh>
-          )}
-          {offering.media_type === "video" && (
-            <mesh position={[0, 0, 0.1]}>
-              <boxGeometry args={[0.85, 0.6, 0.005]} />
-              <meshStandardMaterial color="#b4a490" roughness={0.85} />
-            </mesh>
-          )}
-        </group>
-      </Float>
+        )}
+        {offering.media_type === "video" && (
+          <mesh position={[0, 0, 0.1]}>
+            <boxGeometry args={[0.85, 0.6, 0.005]} />
+            <meshStandardMaterial color="#b4a490" roughness={0.85} />
+          </mesh>
+        )}
+        
+        {/* Pin/nail at top */}
+        <mesh position={[0, 0.85, 0.08]}>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
+        </mesh>
+      </group>
     </group>
   );
 }
 
-// Mouse-reactive camera for gallery
-function GalleryCameraRig() {
-  const { camera } = useThree();
-  const targetPos = useRef(new THREE.Vector3(0, 1, 12));
-  
-  useFrame((state) => {
-    const mouseX = state.pointer.x * 2;
-    const mouseY = state.pointer.y * 1;
-    
-    targetPos.current.set(mouseX, 1 + mouseY, 12);
-    camera.position.lerp(targetPos.current, 0.015);
-    camera.lookAt(0, 1, 0);
-  });
-  
-  return null;
+// Seeded random for deterministic layout
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
 }
 
 // Gallery room with better atmosphere
@@ -220,39 +205,38 @@ function GalleryDust() {
 function Scene({ offerings, onSelectOffering }: GalleryRoomProps) {
   const reduceMotion = useReducedMotion();
   
-  // Calculate positions for offerings
+  // Pin frames to walls with random tilt and placement
   const positions = useMemo(() => {
-    return offerings.map((_, i) => {
-      const wall = i % 4;
-      const posOnWall = Math.floor(i / 4);
+    const backSlots = { count: 0 };
+    const leftSlots = { count: 0 };
+    const rightSlots = { count: 0 };
+    
+    return offerings.map((o, i) => {
+      const wall = i % 3; // cycle across 3 walls
+      const seed = o.id.charCodeAt(0) * 100 + i;
+      const tilt = (seededRandom(seed) - 0.5) * 0.2; // ±0.1 rad (~6°)
+      const yJitter = (seededRandom(seed + 1) - 0.5) * 1.2;
       
       if (wall === 0) { // Back wall
+        const slot = backSlots.count++;
+        const x = (slot - 2) * 3.5 + (seededRandom(seed + 2) - 0.5) * 0.8;
         return {
-          position: [(posOnWall - 2.5) * 4, 0.8 + (i % 2) * 0.4, -15] as [number, number, number],
-          rotation: [0, 0, 0] as [number, number, number]
+          position: [x, 1 + yJitter, -17.8] as [number, number, number],
+          rotation: [0, 0, tilt] as [number, number, number]
         };
       } else if (wall === 1) { // Left wall
+        const slot = leftSlots.count++;
+        const z = (slot - 1) * 3.5 + (seededRandom(seed + 3) - 0.5) * 0.8;
         return {
-          position: [-15, 0.8 + (posOnWall % 2) * 0.4, (posOnWall - 1.5) * 3.5] as [number, number, number],
-          rotation: [0, Math.PI / 2, 0] as [number, number, number]
+          position: [-17.8, 1 + yJitter, z] as [number, number, number],
+          rotation: [0, Math.PI / 2, tilt] as [number, number, number]
         };
-      } else if (wall === 2) { // Right wall  
+      } else { // Right wall
+        const slot = rightSlots.count++;
+        const z = (slot - 1) * 3.5 + (seededRandom(seed + 4) - 0.5) * 0.8;
         return {
-          position: [15, 0.8 + (posOnWall % 2) * 0.4, (posOnWall - 1.5) * 3.5] as [number, number, number],
-          rotation: [0, -Math.PI / 2, 0] as [number, number, number]
-        };
-      } else { // Floating in center
-        return {
-          position: [
-            (Math.random() - 0.5) * 10,
-            Math.random() * 2.5 - 0.5,
-            (Math.random() - 0.5) * 8 - 3
-          ] as [number, number, number],
-          rotation: [
-            Math.random() * 0.2,
-            Math.random() * Math.PI,
-            Math.random() * 0.2
-          ] as [number, number, number]
+          position: [17.8, 1 + yJitter, z] as [number, number, number],
+          rotation: [0, -Math.PI / 2, tilt] as [number, number, number]
         };
       }
     });
