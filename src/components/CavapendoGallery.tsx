@@ -1096,26 +1096,164 @@ function StoryCreature({
   );
 }
 
+// ─── FPS Camera Controller ──────────────────────────────────────────────────
+
+function FPSController({
+  enabled,
+  modalOpen,
+  joystickRef,
+}: {
+  enabled: boolean;
+  modalOpen: boolean;
+  joystickRef: React.RefObject<JoystickInput>;
+}) {
+  const { camera, gl } = useThree();
+  const keysDown = useRef(new Set<string>());
+  const euler = useRef(new THREE.Euler(0, 0, 0, "YXZ"));
+  const isLocked = useRef(false);
+  const direction = useRef(new THREE.Vector3());
+  const forward = useRef(new THREE.Vector3());
+  const right = useRef(new THREE.Vector3());
+  const upVec = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+
+  // Pointer lock + keyboard + mouse look
+  useEffect(() => {
+    if (!enabled) {
+      keysDown.current.clear();
+      if (document.pointerLockElement === gl.domElement) document.exitPointerLock();
+      return;
+    }
+
+    const canvas = gl.domElement;
+
+    const onLockChange = () => {
+      isLocked.current = document.pointerLockElement === canvas;
+    };
+    document.addEventListener("pointerlockchange", onLockChange);
+
+    const onClick = () => {
+      if (!modalOpen && enabled && !isLocked.current) {
+        canvas.requestPointerLock();
+      }
+    };
+    canvas.addEventListener("click", onClick);
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isLocked.current) return;
+      euler.current.setFromQuaternion(camera.quaternion);
+      euler.current.y -= e.movementX * LOOK_SENSITIVITY;
+      euler.current.x -= e.movementY * LOOK_SENSITIVITY;
+      euler.current.x = THREE.MathUtils.clamp(euler.current.x, -Math.PI / 2 + 0.1, Math.PI / 2 - 0.1);
+      camera.quaternion.setFromEuler(euler.current);
+    };
+    document.addEventListener("mousemove", onMouseMove);
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyQ", "KeyE", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+        e.preventDefault();
+        keysDown.current.add(e.code);
+      }
+    };
+    const onKeyUp = (e: KeyboardEvent) => keysDown.current.delete(e.code);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+
+    return () => {
+      document.removeEventListener("pointerlockchange", onLockChange);
+      canvas.removeEventListener("click", onClick);
+      document.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      if (document.pointerLockElement === canvas) document.exitPointerLock();
+    };
+  }, [enabled, modalOpen, camera, gl]);
+
+  // Release pointer lock on modal open
+  useEffect(() => {
+    if (modalOpen && document.pointerLockElement) {
+      document.exitPointerLock();
+    }
+  }, [modalOpen]);
+
+  useFrame((_, delta) => {
+    if (!enabled) return;
+
+    const keys = keysDown.current;
+    const joy = joystickRef.current;
+    direction.current.set(0, 0, 0);
+
+    // Keyboard input
+    if (keys.has("KeyW") || keys.has("ArrowUp")) direction.current.z -= 1;
+    if (keys.has("KeyS") || keys.has("ArrowDown")) direction.current.z += 1;
+    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x -= 1;
+    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x += 1;
+    if (keys.has("KeyQ")) direction.current.y -= 1;
+    if (keys.has("KeyE")) direction.current.y += 1;
+
+    // Joystick input (mobile)
+    if (joy) {
+      direction.current.x += joy.moveX;
+      direction.current.z += joy.moveZ;
+
+      // Apply look from right joystick
+      if (Math.abs(joy.lookX) > 0.01 || Math.abs(joy.lookY) > 0.01) {
+        euler.current.setFromQuaternion(camera.quaternion);
+        euler.current.y -= joy.lookX * 3 * delta;
+        euler.current.x -= joy.lookY * 3 * delta;
+        euler.current.x = THREE.MathUtils.clamp(euler.current.x, -Math.PI / 2 + 0.1, Math.PI / 2 - 0.1);
+        camera.quaternion.setFromEuler(euler.current);
+      }
+    }
+
+    if (direction.current.lengthSq() < 0.001) return;
+    direction.current.normalize();
+
+    // Build movement vectors from camera orientation
+    camera.getWorldDirection(forward.current);
+    forward.current.y = 0;
+    forward.current.normalize();
+    right.current.crossVectors(forward.current, upVec).negate();
+
+    const move = new THREE.Vector3();
+    move.addScaledVector(right.current, direction.current.x);
+    move.addScaledVector(upVec, direction.current.y);
+    move.addScaledVector(forward.current, -direction.current.z);
+
+    camera.position.addScaledVector(move, FPS_SPEED * delta);
+    clampCamera(camera.position);
+  });
+
+  return null;
+}
+
 // ─── Scene ──────────────────────────────────────────────────────────────────
 
 function Scene({
   offerings,
   onSelectOffering,
   onSelectCreature,
+  controlMode,
+  modalOpen,
+  joystickRef,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
   onSelectCreature: (c: typeof CREATURES[number]) => void;
+  controlMode: "fps" | "orbit";
+  modalOpen: boolean;
+  joystickRef: React.RefObject<JoystickInput>;
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
 
-  // Single useFrame clamp — enforces boundaries every frame
+  // Boundary clamp every frame (orbit mode)
   useFrame(() => {
-    if (controlsRef.current?.target) {
-      clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
+    if (controlMode === "orbit") {
+      if (controlsRef.current?.target) {
+        clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
+      }
+      clampVec3(camera.position, CAM_BOUND, 0.35, CAM_Y_MAX, CAM_BOUND);
     }
-    clampVec3(camera.position, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
   });
 
   const positions = useMemo(() => {
@@ -1178,33 +1316,40 @@ function Scene({
         <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
 
-      {/* Creature shadows */}
       {CREATURES.map((creature) => (
         <CreatureShadow key={`shadow-${creature.name}`} position={creature.position} />
       ))}
 
       <GalleryDust />
-
       <Stars radius={80} depth={60} count={500} factor={1.5} saturation={0} fade speed={0.1} />
-
       <Environment preset="apartment" />
 
-      <OrbitControls
-        ref={controlsRef}
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        minDistance={0.2}
-        maxDistance={18}
-        maxPolarAngle={Math.PI * 0.88}
-        minPolarAngle={Math.PI * 0.08}
-        target={[0, 1, 0]}
-        zoomSpeed={0.9}
-        panSpeed={0.55}
-        rotateSpeed={0.6}
-        enableDamping={true}
-        dampingFactor={0.1}
+      {/* FPS Controller */}
+      <FPSController
+        enabled={controlMode === "fps"}
+        modalOpen={modalOpen}
+        joystickRef={joystickRef}
       />
+
+      {/* Orbit Controls (fallback mode) */}
+      {controlMode === "orbit" && (
+        <OrbitControls
+          ref={controlsRef}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={0.2}
+          maxDistance={18}
+          maxPolarAngle={Math.PI * 0.88}
+          minPolarAngle={Math.PI * 0.08}
+          target={[0, 1, 0]}
+          zoomSpeed={0.9}
+          panSpeed={0.55}
+          rotateSpeed={0.6}
+          enableDamping={true}
+          dampingFactor={0.1}
+        />
+      )}
     </>
   );
 }
