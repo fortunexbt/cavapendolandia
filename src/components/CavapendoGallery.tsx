@@ -345,8 +345,8 @@ function ArtisticFrame({
   const isVideo = offering.media_type === "video" && offering.file_url;
   const useNativeTexture = isImage || isVideo;
   // For non-texture content (text, audio, link, pdf), use corrected Html scaling
-  const pxW = Math.round(canvasW * 50);
-  const pxH = Math.round(canvasH * 50);
+  const pxW = Math.round(canvasW * 100);
+  const pxH = Math.round(canvasH * 100);
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -397,7 +397,7 @@ function ArtisticFrame({
           <Html
             position={[0, 0, 0.11]}
             transform
-            distanceFactor={1.4}
+            distanceFactor={2.8}
             pointerEvents="none"
             style={{
               width: `${pxW}px`,
@@ -1436,17 +1436,17 @@ function Scene({
 
         if (wall === 0) { // back wall
           result[idx] = {
-            position: [clampedCoord, 1.2 + yJitter, -WALL_OFFSET],
+            position: [clampedCoord, -0.5 + yJitter, -WALL_OFFSET],
             rotation: [0, 0, tilt],
           };
         } else if (wall === 1) { // left wall
           result[idx] = {
-            position: [-WALL_OFFSET, 1.2 + yJitter, clampedCoord],
+            position: [-WALL_OFFSET, -0.5 + yJitter, clampedCoord],
             rotation: [0, Math.PI / 2, tilt],
           };
         } else { // right wall
           result[idx] = {
-            position: [WALL_OFFSET, 1.2 + yJitter, clampedCoord],
+            position: [WALL_OFFSET, -0.5 + yJitter, clampedCoord],
             rotation: [0, -Math.PI / 2, tilt],
           };
         }
