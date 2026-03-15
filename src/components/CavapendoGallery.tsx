@@ -1046,39 +1046,35 @@ function TrackLight({ position, targetY: _targetY = -0.5 }: { position: [number,
 // ─── Lighting ───────────────────────────────────────────────────────────────
 
 function GalleryLighting({ framePositions }: { framePositions?: { position: [number, number, number]; rotation: [number, number, number] }[] }) {
-  // Only render track lights for the first 8 frames (perf budget)
-  const limitedFrames = useMemo(() => framePositions?.slice(0, 8) ?? [], [framePositions]);
+  const allFrames = useMemo(() => framePositions ?? [], [framePositions]);
 
   return (
     <>
-      {/* Ambient — slightly higher to compensate for fewer spotlights */}
-      <ambientLight intensity={0.18} color="#e8ddd0" />
+      {/* Ambient — warm and bright enough to see the room */}
+      <ambientLight intensity={0.30} color="#e8ddd0" />
 
       {/* Main directional (no shadow for perf) */}
       <directionalLight
         position={[10, 15, 10]}
-        intensity={0.4}
+        intensity={0.55}
         color="#fff5e6"
       />
 
       {/* Warm pool — back wall */}
-      <pointLight position={[0, 8, -15]} intensity={0.7} color="#ffe8c0" distance={20} />
+      <pointLight position={[0, 8, -15]} intensity={0.9} color="#ffe8c0" distance={20} />
 
-      {/* Subtle fill */}
-      <pointLight position={[-12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
-      <pointLight position={[12, 4, 0]} intensity={0.15} color="#e6d6c6" distance={20} />
+      {/* Subtle fill — left and right */}
+      <pointLight position={[-12, 4, 0]} intensity={0.25} color="#e6d6c6" distance={20} />
+      <pointLight position={[12, 4, 0]} intensity={0.25} color="#e6d6c6" distance={20} />
 
-      {/* Per-frame track lights (limited) */}
-      {limitedFrames.map((fp, i) => {
-        const [fx, _fy, fz] = fp.position;
-        const ry = fp.rotation[1];
-        const offsetX = Math.sin(ry) * 1.5;
-        const offsetZ = -Math.cos(ry) * 1.5;
+      {/* Per-frame track lights — directly above each frame on the wall */}
+      {allFrames.map((fp, i) => {
+        const [fx, fy, fz] = fp.position;
         return (
           <TrackLight
             key={`track-${i}`}
-            position={[fx + offsetX, 9.2, fz + offsetZ]}
-            targetY={fp.position[1]}
+            position={[fx, fy + 2.5, fz]}
+            targetY={fy}
           />
         );
       })}
