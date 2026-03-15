@@ -944,7 +944,7 @@ function GalleryRoom() {
       {/* Front wall — archway: two side panels + lintel */}
       <mesh position={[-hw / 2 - 1.5, 4, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[hw - 3, 14]} />
-        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
+        <meshStandardMaterial map={stuccoTex} roughness={0.95} />
       </mesh>
       <mesh position={[hw / 2 + 1.5, 4, hd]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[hw - 3, 14]} />
