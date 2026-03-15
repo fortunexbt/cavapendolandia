@@ -1234,14 +1234,24 @@ function Scene({
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={0.25}
-        maxDistance={45}
-        maxPolarAngle={Math.PI * 0.85}
+        minDistance={2}
+        maxDistance={28}
+        maxPolarAngle={Math.PI * 0.8}
+        minPolarAngle={Math.PI * 0.15}
+        minAzimuthAngle={-Math.PI * 0.65}
+        maxAzimuthAngle={Math.PI * 0.65}
         target={[0, 1, 0]}
-        zoomSpeed={2}
-        panSpeed={1.2}
-        rotateSpeed={0.9}
-        zoomToCursor={true}
+        zoomSpeed={1.2}
+        panSpeed={0.8}
+        rotateSpeed={0.7}
+        onChange={() => {
+          if (controlsRef.current) {
+            const t = controlsRef.current.target;
+            t.x = THREE.MathUtils.clamp(t.x, -14, 14);
+            t.y = THREE.MathUtils.clamp(t.y, -2, 8);
+            t.z = THREE.MathUtils.clamp(t.z, -14, 14);
+          }
+        }}
       />
     </>
   );
