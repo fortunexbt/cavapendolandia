@@ -921,6 +921,7 @@ function StoryCreature({
         center
         distanceFactor={8}
         style={{ pointerEvents: "none" }}
+        zIndexRange={[0, 0]}
       >
         <div style={{
           background: "rgba(0,0,0,0.55)",
@@ -1247,7 +1248,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
   return (
-    <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px" }}>
+    <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px", isolation: "isolate" }}>
       <Canvas
         camera={{ position: [0, 1, 12], fov: 45 }}
         gl={{ 
@@ -1256,7 +1257,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
           powerPreference: "high-performance",
           failIfMajorPerformanceCaveat: false
         }}
-        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%" }}
+        style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%", position: "relative", zIndex: 0 }}
         shadows
       >
         <Suspense fallback={<LoadingFallback />}>
