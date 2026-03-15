@@ -449,20 +449,7 @@ function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number;
       </div>
     );
   }
-  if (offering.media_type === "image" && offering.file_url) {
-    return (
-      <img src={offering.file_url} alt={offering.title || "Immagine"}
-        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "2px" }}
-        crossOrigin="anonymous" />
-    );
-  }
-  if (offering.media_type === "video" && offering.file_url) {
-    return (
-      <video src={offering.file_url} autoPlay muted loop playsInline
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        crossOrigin="anonymous" />
-    );
-  }
+  // image and video types are rendered as native Three.js textures in ArtisticFrame
   if (offering.media_type === "audio" && offering.file_url) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
