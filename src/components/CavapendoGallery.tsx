@@ -1882,7 +1882,7 @@ function VirtualJoystick({
   const containerRef = useRef<HTMLDivElement>(null);
   const touchIdRef = useRef<number | null>(null);
   const centerRef = useRef({ x: 0, y: 0 });
-  const RADIUS = 50;
+  const RADIUS = 40;
 
   const [stickPos, setStickPos] = useState({ x: 0, y: 0 });
 
