@@ -1697,7 +1697,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             <div className="bg-background/80 backdrop-blur-sm px-8 py-5 rounded-lg border border-border/30 text-center">
               <p className="font-serif text-lg text-foreground mb-1">🏛️ La Galleria</p>
               <p className="font-mono-light text-sm text-muted-foreground">
-                Clicca per entrare • WASD per muoverti • Mouse per guardarti intorno
+                Clicca per entrare • WASD per muoverti • Spazio per saltare • Mouse per guardarti intorno
               </p>
             </div>
           </motion.div>
