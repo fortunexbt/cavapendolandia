@@ -96,7 +96,7 @@ const Index = () => {
 
         <motion.div variants={itemVariants} className="mt-12">
           <Link
-            to="/che-cose"
+            to="/galleria"
             className="inline-block border-2 border-foreground/20 bg-background/80 px-10 py-4 text-lg uppercase tracking-[0.25em] font-mono-light hover:bg-foreground hover:text-primary-foreground transition-all duration-300"
           >
             Entra
