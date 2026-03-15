@@ -52,10 +52,10 @@ function CavapendoloOrb({ position = [0, 0, 0] }: { position?: [number, number, 
 }
 
 // Floating cavapendoli - small magical creatures/spirits
-function CavapendoliSwarm() {
+function CavapendoliSwarm({ count = 40 }: { count?: number }) {
   const particles = useMemo(() => {
     const temp = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < count; i++) {
       temp.push({
         position: [
           (Math.random() - 0.5) * 15,
