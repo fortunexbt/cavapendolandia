@@ -11,6 +11,14 @@ import EntraComingSoon from "@/components/EntraComingSoon";
 
 const OfferingDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const { data: offering, isLoading } = useQuery({
     queryKey: ["offering", id],
