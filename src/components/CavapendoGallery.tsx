@@ -345,8 +345,8 @@ function ArtisticFrame({
   const isVideo = offering.media_type === "video" && offering.file_url;
   const useNativeTexture = isImage || isVideo;
   // For non-texture content (text, audio, link, pdf), use corrected Html scaling
-  const pxW = Math.round(canvasW * 50);
-  const pxH = Math.round(canvasH * 50);
+  const pxW = Math.round(canvasW * 100);
+  const pxH = Math.round(canvasH * 100);
   const [hovered, setHovered] = useState(false);
 
   return (
