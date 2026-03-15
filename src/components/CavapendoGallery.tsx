@@ -94,8 +94,9 @@ function ArtisticFrame({
         </mesh>
 
         {/* Outer frame */}
+        <mesh>
           <boxGeometry args={[w, h, 0.12]} />
-          <meshStandardMaterial 
+          <meshStandardMaterial
             color={FRAME_COLORS[colorIndex]}
             roughness={0.6}
             metalness={0.1}
