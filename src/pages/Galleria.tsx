@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import CavapendoGallery from "@/components/CavapendoGallery";
 import MinimalHeader from "@/components/MinimalHeader";
