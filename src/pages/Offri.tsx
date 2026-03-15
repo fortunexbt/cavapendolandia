@@ -222,8 +222,13 @@ const Offri = () => {
             <p className="text-lg italic text-muted-foreground mb-12">
               Ora è in attesa di entrare.
             </p>
-            <div className="flex items-center justify-center gap-8">
-              <EntraComingSoon className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground/45 underline underline-offset-4" />
+            <div className="flex flex-col items-center gap-4">
+              <Link
+                to="/galleria"
+                className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500"
+              >
+                Vai alla Galleria →
+              </Link>
               <button
                 onClick={resetForm}
                 className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
