@@ -1,9 +1,14 @@
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import CavapendoGallery from "@/components/CavapendoGallery";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 
 const Galleria = () => {
+  const navigate = useNavigate();
+  const handleExit = useCallback(() => navigate("/grazie"), [navigate]);
+
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
       <MinimalHeader />
@@ -36,7 +41,7 @@ const Galleria = () => {
             className="border border-border/30 rounded-lg overflow-hidden"
             style={{ height: "70vh", minHeight: "500px" }}
           >
-            <CavapendoGallery className="h-full w-full" />
+            <CavapendoGallery className="h-full w-full" onExit={handleExit} />
           </motion.div>
         </div>
       </motion.main>

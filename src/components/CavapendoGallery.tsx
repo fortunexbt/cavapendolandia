@@ -727,6 +727,22 @@ function GalleryRoom() {
         <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
       </mesh>
 
+      {/* Exit hint text above archway */}
+      <Html position={[0, 6.5, hd - 0.2]} center distanceFactor={12} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
+        <div style={{
+          fontFamily: "Georgia, serif",
+          fontSize: "14px",
+          color: "rgba(120, 100, 80, 0.6)",
+          letterSpacing: "4px",
+          textTransform: "uppercase",
+        }}>
+          Uscita
+        </div>
+      </Html>
+
+      {/* Soft glow at archway */}
+      <pointLight position={[0, 2, hd - 1]} intensity={0.5} color="#fff8e0" distance={8} />
+
       <WoodenRoof woodTex={woodTex} />
       <StonePillars />
       <WallDetails />
@@ -1104,11 +1120,13 @@ function FPSController({
   modalOpen,
   joystickRef,
   onFrameClick,
+  onExit,
 }: {
   enabled: boolean;
   modalOpen: boolean;
   joystickRef: React.RefObject<JoystickInput>;
   onFrameClick?: () => void;
+  onExit?: () => void;
 }) {
   const { camera, gl, raycaster, scene } = useThree();
   const keysDown = useRef(new Set<string>());
@@ -1120,6 +1138,7 @@ function FPSController({
   const upVec = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const velocityY = useRef(0);
   const isGrounded = useRef(true);
+  const exitFired = useRef(false);
 
   // Pointer lock + keyboard + mouse look
   useEffect(() => {
@@ -1270,6 +1289,12 @@ function FPSController({
       camera.position.y = CAM_Y_MAX;
       velocityY.current = 0;
     }
+
+    // Exit zone detection (archway at z=18, opening ~6 units wide centered at x=0)
+    if (!exitFired.current && onExit && camera.position.z > 16.5 && Math.abs(camera.position.x) < 3) {
+      exitFired.current = true;
+      onExit();
+    }
   });
 
   return null;
@@ -1284,6 +1309,7 @@ function Scene({
   controlMode,
   modalOpen,
   joystickRef,
+  onExit,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
@@ -1291,9 +1317,11 @@ function Scene({
   controlMode: "fps" | "orbit";
   modalOpen: boolean;
   joystickRef: React.RefObject<JoystickInput>;
+  onExit?: () => void;
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
+  const exitFiredOrbit = useRef(false);
 
   // Boundary clamp every frame (orbit mode)
   useFrame(() => {
@@ -1302,6 +1330,12 @@ function Scene({
         clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
       }
       clampVec3(camera.position, CAM_BOUND, 0.35, CAM_Y_MAX, CAM_BOUND);
+
+      // Exit zone detection (orbit mode)
+      if (!exitFiredOrbit.current && onExit && camera.position.z > 16.5 && Math.abs(camera.position.x) < 3) {
+        exitFiredOrbit.current = true;
+        onExit();
+      }
     }
   });
 
@@ -1392,6 +1426,7 @@ function Scene({
         enabled={controlMode === "fps"}
         modalOpen={modalOpen}
         joystickRef={joystickRef}
+        onExit={onExit}
       />
 
       {/* Orbit Controls (fallback mode) */}
@@ -1589,7 +1624,7 @@ function VirtualJoystick({
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
-function CavapendoGallery({ className = "" }: { className?: string }) {
+function CavapendoGallery({ className = "", onExit }: { className?: string; onExit?: () => void }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
@@ -1687,6 +1722,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             controlMode={controlMode}
             modalOpen={modalOpen}
             joystickRef={joystickRef}
+            onExit={onExit}
           />
         </Suspense>
       </Canvas>
