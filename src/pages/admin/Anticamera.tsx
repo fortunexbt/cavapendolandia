@@ -96,6 +96,27 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     enabled: isAdmin,
   });
 
+  // Fetch counts for all status tabs
+  const { data: statusCounts } = useQuery({
+    queryKey: ["admin-status-counts"],
+    queryFn: async () => {
+      const counts: Record<StatusFilter, number> = { pending: 0, approved: 0, rejected: 0, hidden: 0 };
+      const results = await Promise.all(
+        (["pending", "approved", "rejected", "hidden"] as StatusFilter[]).map(async (s) => {
+          const { count, error } = await supabase
+            .from("offerings")
+            .select("*", { count: "exact", head: true })
+            .eq("status", s);
+          return { status: s, count: error ? 0 : (count ?? 0) };
+        })
+      );
+      results.forEach((r) => { counts[r.status] = r.count; });
+      return counts;
+    },
+    enabled: isAdmin,
+    staleTime: 30_000,
+  });
+
   const { data: initiatives = [], isLoading: initiativesLoading } = useQuery({
     queryKey: ["admin-initiatives"],
     queryFn: async () => {
