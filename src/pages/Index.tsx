@@ -4,6 +4,7 @@ import AbstractShadow from "@/components/AbstractShadow";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import InitiativeHint from "@/components/InitiativeHint";
+import CavapendoWorld from "@/components/CavapendoWorld";
 
 const MYSTICAL_OPENING = `I Cavapendoli scendono a spirale, quasi veloci.
 Prima erano ovunque, nei magazzini del mondo impalpabile.
@@ -62,6 +63,7 @@ const itemVariants: Variants = {
 const Index = () => {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
+      <CavapendoWorld className="opacity-60" />
       <MinimalHeader />
       <AbstractShadow className="pointer-events-none absolute right-0 top-1/4 h-[22rem] w-28 opacity-45 md:right-6 md:h-[30rem] md:w-40" />
       <AbstractShadow className="pointer-events-none absolute bottom-8 left-0 h-48 w-20 -scale-x-100 opacity-20 md:h-72 md:w-28" />
@@ -103,13 +105,19 @@ const Index = () => {
 
         <motion.div
           variants={itemVariants}
-          className="mt-16 grid grid-cols-3 gap-4 w-full max-w-md"
+          className="mt-16 grid grid-cols-4 gap-4 w-full max-w-md"
         >
           <Link
             to="/che-cose"
             className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
           >
             <span className="font-mono-light text-sm">Che cos'è</span>
+          </Link>
+          <Link
+            to="/galleria"
+            className="py-3 text-center border border-border/50 hover:border-foreground/30 hover:bg-foreground/5 transition-colors"
+          >
+            <span className="font-mono-light text-sm">Galleria</span>
           </Link>
           <Link
             to="/regole"

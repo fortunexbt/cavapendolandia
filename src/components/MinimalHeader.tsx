@@ -37,6 +37,9 @@ const MinimalHeader = () => {
             <Link to="/che-cose" className="text-foreground/80 hover:text-foreground transition-colors">
               Che cos'è
             </Link>
+            <Link to="/galleria" className="text-foreground/80 hover:text-foreground transition-colors">
+              Galleria
+            </Link>
             <Link to="/regole" className="text-foreground/80 hover:text-foreground transition-colors">
               Regole
             </Link>
@@ -54,6 +57,13 @@ const MinimalHeader = () => {
               onClick={() => setMenuOpen(false)}
             >
               Che cos'è
+            </Link>
+            <Link 
+              to="/galleria" 
+              className="text-foreground/80 hover:text-foreground transition-colors"
+              onClick={() => setMenuOpen(false)}
+            >
+              Galleria
             </Link>
             <Link 
               to="/regole" 
