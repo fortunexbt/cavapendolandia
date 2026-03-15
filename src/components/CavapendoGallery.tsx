@@ -1176,19 +1176,16 @@ function Scene({
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={0.8}
-        maxDistance={16}
+        minDistance={0.5}
+        maxDistance={14}
         maxPolarAngle={Math.PI * 0.85}
         minPolarAngle={Math.PI * 0.1}
         target={[0, 1, 0]}
-        zoomSpeed={0.8}
-        panSpeed={0.6}
-        rotateSpeed={0.7}
+        zoomSpeed={0.7}
+        panSpeed={0.4}
+        rotateSpeed={0.6}
         enableDamping={true}
-        dampingFactor={0.12}
-        onChange={() => {
-          clampInsideRoom(camera, controlsRef.current);
-        }}
+        dampingFactor={0.1}
       />
     </>
   );
