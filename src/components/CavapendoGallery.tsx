@@ -853,6 +853,8 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
     },
   ], []);
 
+  const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
+
   return (
     <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px" }}>
       <Canvas
@@ -870,6 +872,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
           <Scene 
             offerings={demoOfferings}
             onSelectOffering={setSelectedOffering}
+            onSelectCreature={setSelectedCreature}
           />
         </Suspense>
       </Canvas>
@@ -878,7 +881,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none">
         <div className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20">
           <p className="font-mono-light text-xs text-muted-foreground">
-            🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro
+            🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura
           </p>
         </div>
         <Link 
@@ -893,6 +896,45 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
         offering={selectedOffering}
         onClose={() => setSelectedOffering(null)}
       />
+      
+      {/* Creature story modal */}
+      <AnimatePresence>
+        {selectedCreature && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setSelectedCreature(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.85, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.85, y: 20 }}
+              transition={{ type: "spring", damping: 20 }}
+              className="relative max-w-sm w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setSelectedCreature(null)}
+                className="absolute top-3 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none"
+              >
+                ×
+              </button>
+              <div 
+                className="w-4 h-4 rounded-full mx-auto mb-3" 
+                style={{ backgroundColor: selectedCreature.color, boxShadow: `0 0 12px ${selectedCreature.color}` }}
+              />
+              <h3 className="text-xl font-serif text-foreground mb-3">
+                {selectedCreature.name}
+              </h3>
+              <p className="text-base italic text-foreground/80 font-serif leading-relaxed">
+                {selectedCreature.story}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
