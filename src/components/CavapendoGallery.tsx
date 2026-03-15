@@ -982,7 +982,7 @@ function GalleryRoom() {
   );
 }
 
-// ─── Volumetric Light Shafts ────────────────────────────────────────────────
+// ─── Volumetric Light Shafts (static, no useFrame) ──────────────────────────
 
 function LightShaft({ position, targetY = -3, color = "#fff8e8" }: {
   position: [number, number, number];
@@ -990,20 +990,11 @@ function LightShaft({ position, targetY = -3, color = "#fff8e8" }: {
   color?: string;
 }) {
   const height = position[1] - targetY;
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      const t = state.clock.elapsedTime;
-      const mat = meshRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.04 + Math.sin(t * 0.3 + position[0]) * 0.015;
-    }
-  });
 
   return (
-    <mesh ref={meshRef} position={[position[0], position[1] - height / 2, position[2]]}>
-      <coneGeometry args={[2.5, height, 16, 1, true]} />
-      <meshBasicMaterial color={color} transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} />
+    <mesh position={[position[0], position[1] - height / 2, position[2]]}>
+      <coneGeometry args={[2.5, height, 8, 1, true]} />
+      <meshBasicMaterial color={color} transparent opacity={0.04} side={THREE.DoubleSide} depthWrite={false} />
     </mesh>
   );
 }
@@ -1013,7 +1004,6 @@ function VolumetricLights() {
     <group>
       <LightShaft position={[-6, 10, -16]} />
       <LightShaft position={[4, 10, -16]} />
-      <LightShaft position={[0, 10, -16]} color="#f8f0e0" />
     </group>
   );
 }
