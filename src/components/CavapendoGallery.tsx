@@ -1414,6 +1414,7 @@ function StoryCreature({
 const EYE_HEIGHT = -1.8; // floor at y=-3, eyes ~1.2m above
 const JUMP_VELOCITY = 6;
 const GRAVITY = -15;
+const STEP_INTERVAL = 0.38; // seconds between footsteps
 
 function FPSController({
   enabled,
@@ -1439,6 +1440,42 @@ function FPSController({
   const velocityY = useRef(0);
   const isGrounded = useRef(true);
   const exitFired = useRef(false);
+
+  // Footstep audio synthesis
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const stepTimerRef = useRef(0);
+
+  const playFootstep = useCallback(() => {
+    if (!audioCtxRef.current) {
+      try { audioCtxRef.current = new AudioContext(); } catch { return; }
+    }
+    const ctx = audioCtxRef.current;
+    if (ctx.state === "suspended") ctx.resume();
+    const now = ctx.currentTime;
+
+    // Short noise burst for tap sound
+    const bufferSize = ctx.sampleRate * 0.06;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+
+    // Low-pass filter for soft tap
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 800 + Math.random() * 400;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.08 + Math.random() * 0.04, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    source.connect(filter).connect(gain).connect(ctx.destination);
+    source.start(now);
+    source.stop(now + 0.08);
+  }, []);
 
   // Pointer lock + keyboard + mouse look
   useEffect(() => {
@@ -1466,13 +1503,10 @@ function FPSController({
         raycaster.setFromCamera({ x: 0, y: 0 } as THREE.Vector2, camera);
         const intersects = raycaster.intersectObjects(scene.children, true);
         for (const hit of intersects) {
-          // Walk up to find a group/mesh with onPointerDown handler
           let obj: THREE.Object3D | null = hit.object;
           while (obj) {
-            // R3F stores event handlers on __r3f
             const r3f = (obj as any).__r3f;
             if (r3f?.handlers?.onPointerDown) {
-              // Release pointer lock so user can interact with modal
               document.exitPointerLock();
               r3f.handlers.onPointerDown({ stopPropagation: () => {} });
               return;
@@ -1499,7 +1533,6 @@ function FPSController({
         e.preventDefault();
         keysDown.current.add(e.code);
       }
-      // Jump
       if (e.code === "Space" && isGrounded.current) {
         velocityY.current = JUMP_VELOCITY;
         isGrounded.current = false;
@@ -1526,6 +1559,11 @@ function FPSController({
     }
   }, [modalOpen]);
 
+  // Cleanup audio context
+  useEffect(() => {
+    return () => { audioCtxRef.current?.close(); };
+  }, []);
+
   useFrame((_, delta) => {
     if (!enabled) return;
 
@@ -1533,18 +1571,15 @@ function FPSController({
     const joy = joystickRef.current;
     direction.current.set(0, 0, 0);
 
-    // Keyboard input
     if (keys.has("KeyW") || keys.has("ArrowUp")) direction.current.z -= 1;
     if (keys.has("KeyS") || keys.has("ArrowDown")) direction.current.z += 1;
-    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x += 1;   // fixed: was inverted
-    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x -= 1;  // fixed: was inverted
+    if (keys.has("KeyA") || keys.has("ArrowLeft")) direction.current.x += 1;
+    if (keys.has("KeyD") || keys.has("ArrowRight")) direction.current.x -= 1;
 
-    // Joystick input (mobile)
     if (joy) {
-      direction.current.x -= joy.moveX;  // fixed: match corrected convention
+      direction.current.x -= joy.moveX;
       direction.current.z += joy.moveZ;
 
-      // Apply look from right joystick
       if (Math.abs(joy.lookX) > 0.01 || Math.abs(joy.lookY) > 0.01) {
         euler.current.setFromQuaternion(camera.quaternion);
         euler.current.y -= joy.lookX * 3 * delta;
@@ -1554,12 +1589,9 @@ function FPSController({
       }
     }
 
-    // Horizontal movement
     const hasHorizontal = Math.abs(direction.current.x) > 0.001 || Math.abs(direction.current.z) > 0.001;
     if (hasHorizontal) {
       const hDir = new THREE.Vector3(direction.current.x, 0, direction.current.z).normalize();
-
-      // Build movement vectors from camera orientation
       camera.getWorldDirection(forward.current);
       forward.current.y = 0;
       forward.current.normalize();
@@ -1570,9 +1602,20 @@ function FPSController({
       move.addScaledVector(forward.current, -hDir.z);
 
       camera.position.addScaledVector(move, FPS_SPEED * delta);
+
+      // Footstep timing
+      if (isGrounded.current) {
+        stepTimerRef.current += delta;
+        if (stepTimerRef.current >= STEP_INTERVAL) {
+          stepTimerRef.current -= STEP_INTERVAL;
+          playFootstep();
+        }
+      }
+    } else {
+      stepTimerRef.current = STEP_INTERVAL * 0.8; // reset so first step plays quickly on move start
     }
 
-    // Gravity + jump (fixed to floor)
+    // Gravity + jump
     velocityY.current += GRAVITY * delta;
     camera.position.y += velocityY.current * delta;
     if (camera.position.y <= EYE_HEIGHT) {
@@ -1581,16 +1624,14 @@ function FPSController({
       isGrounded.current = true;
     }
 
-    // Clamp horizontal bounds
     camera.position.x = THREE.MathUtils.clamp(camera.position.x, -CAM_BOUND, CAM_BOUND);
     camera.position.z = THREE.MathUtils.clamp(camera.position.z, -CAM_BOUND, CAM_BOUND);
-    // Cap max height (e.g. jump near ceiling)
     if (camera.position.y > CAM_Y_MAX) {
       camera.position.y = CAM_Y_MAX;
       velocityY.current = 0;
     }
 
-    // Exit zone detection (archway at z=18, opening ~6 units wide centered at x=0)
+    // Exit zone detection
     if (!exitFired.current && onExit && camera.position.z > 16.5 && Math.abs(camera.position.x) < 3) {
       exitFired.current = true;
       onExit();
