@@ -1622,9 +1622,28 @@ function OfferingModal({ offering, onClose }: { offering: Offering | null; onClo
           {offering.media_type === "audio" && offering.file_url && (
             <div className="mb-4"><audio src={offering.file_url} controls className="w-full" /></div>
           )}
+          {offering.media_type === "pdf" && (offering.file_url || offering.link_url) && (
+            <div className="mb-4 bg-muted rounded overflow-hidden" style={{ height: "400px" }}>
+              <iframe
+                src={(offering.file_url || offering.link_url)!}
+                className="w-full h-full border-0"
+                title={offering.title || "PDF"}
+              />
+            </div>
+          )}
           {offering.media_type === "link" && offering.link_url && (
-            <a href={offering.link_url} target="_blank" rel="noopener noreferrer"
-              className="block mb-4 text-accent-foreground hover:underline">🔗 Apri link →</a>
+            <div className="mb-4">
+              <div className="bg-muted rounded overflow-hidden mb-2" style={{ height: "300px" }}>
+                <iframe
+                  src={offering.link_url}
+                  className="w-full h-full border-0"
+                  title={offering.title || "Link"}
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              </div>
+              <a href={offering.link_url} target="_blank" rel="noopener noreferrer"
+                className="block text-accent-foreground hover:underline text-sm">🔗 Apri in una nuova scheda →</a>
+            </div>
           )}
           <div className="mt-6 pt-4 border-t border-border/30 text-sm text-muted-foreground">
             <p>Di <span className="font-medium text-foreground">{authorDisplay}</span></p>
