@@ -198,9 +198,9 @@ function useAmbientAudio(audioEnabled: boolean) {
 
 // ─── Room Boundary Constants ────────────────────────────────────────────────
 
-const CAM_BOUND = 15.5;     // camera.position clamped here
-const TARGET_BOUND = 14;    // orbit target clamped here
-const CAM_Y_MIN = 0.5;
+const CAM_BOUND = 17.3;     // camera can approach walls closely while staying inside
+const TARGET_BOUND = 17.2;  // allow panning target almost up to the walls
+const CAM_Y_MIN = 0.35;
 const CAM_Y_MAX = 8;
 const TARGET_Y_MIN = -2;
 const TARGET_Y_MAX = 7;
