@@ -39,6 +39,23 @@ const FRAME_COLORS = [
 
 // ─── Artistic Frame with inline media ───────────────────────────────────────
 
+function getFrameSize(offering: Offering): { w: number; h: number } {
+  const type = offering.media_type;
+  const textLen = offering.text_content?.length || 0;
+
+  if (type === "text") {
+    if (textLen > 200) return { w: 2.0, h: 2.4 };
+    if (textLen > 100) return { w: 1.6, h: 2.0 };
+    return { w: 1.4, h: 1.6 };
+  }
+  if (type === "image") return { w: 1.8, h: 2.2 };
+  if (type === "video") return { w: 2.2, h: 1.6 }; // landscape
+  if (type === "audio") return { w: 1.6, h: 1.2 };
+  if (type === "link") return { w: 1.2, h: 1.0 };
+  if (type === "pdf") return { w: 1.4, h: 1.8 };
+  return { w: 1.4, h: 1.7 };
+}
+
 function ArtisticFrame({ 
   offering, 
   position, 
@@ -51,6 +68,15 @@ function ArtisticFrame({
   onClick: () => void;
 }) {
   const colorIndex = offering.id.charCodeAt(0) % FRAME_COLORS.length;
+  const { w, h } = getFrameSize(offering);
+  const border = 0.12;
+  const innerW = w - border * 2;
+  const innerH = h - border * 2;
+  const canvasW = innerW - 0.1;
+  const canvasH = innerH - 0.1;
+  // Html pixel dimensions scaled to match 3D canvas size
+  const pxW = Math.round(canvasW * 140);
+  const pxH = Math.round(canvasH * 140);
   
   return (
     <group position={position} rotation={rotation}>
@@ -62,7 +88,7 @@ function ArtisticFrame({
       >
         {/* Outer frame */}
         <mesh>
-          <boxGeometry args={[1.4, 1.7, 0.12]} />
+          <boxGeometry args={[w, h, 0.12]} />
           <meshStandardMaterial 
             color={FRAME_COLORS[colorIndex]}
             roughness={0.6}
@@ -72,13 +98,13 @@ function ArtisticFrame({
         
         {/* Inner frame detail */}
         <mesh position={[0, 0, 0.07]}>
-          <boxGeometry args={[1.2, 1.5, 0.02]} />
+          <boxGeometry args={[innerW, innerH, 0.02]} />
           <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
         </mesh>
         
         {/* Canvas/white space */}
         <mesh position={[0, 0, 0.09]}>
-          <boxGeometry args={[1.05, 1.35, 0.01]} />
+          <boxGeometry args={[canvasW, canvasH, 0.01]} />
           <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
         </mesh>
         
@@ -88,8 +114,8 @@ function ArtisticFrame({
           transform
           distanceFactor={4}
           style={{
-            width: "180px",
-            height: "220px",
+            width: `${pxW}px`,
+            height: `${pxH}px`,
             overflow: "hidden",
             pointerEvents: "none",
             display: "flex",
@@ -100,11 +126,11 @@ function ArtisticFrame({
           }}
           zIndexRange={[0, 0]}
         >
-          <FrameContent offering={offering} />
+          <FrameContent offering={offering} pxW={pxW} pxH={pxH} />
         </Html>
         
         {/* Pin/nail at top */}
-        <mesh position={[0, 0.85, 0.08]}>
+        <mesh position={[0, h / 2, 0.08]}>
           <sphereGeometry args={[0.04, 8, 8]} />
           <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
         </mesh>
@@ -114,21 +140,28 @@ function ArtisticFrame({
 }
 
 // Renders the actual content inside a frame
-function FrameContent({ offering }: { offering: Offering }) {
+function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number; pxH: number }) {
   if (offering.media_type === "text" && offering.text_content) {
+    const fontSize = Math.max(9, Math.min(13, pxH / 18));
     return (
       <div style={{
-        padding: "12px",
+        padding: "10px",
         fontFamily: "Georgia, serif",
-        fontSize: "11px",
+        fontSize: `${fontSize}px`,
         lineHeight: "1.5",
         color: "#2a2a2a",
         textAlign: "center",
         fontStyle: "italic",
         wordBreak: "break-word",
+        width: `${pxW}px`,
+        height: `${pxH}px`,
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}>
-        {offering.text_content.length > 160
-          ? offering.text_content.slice(0, 160) + "…"
+        {offering.text_content.length > Math.floor(pxW * pxH / 80)
+          ? offering.text_content.slice(0, Math.floor(pxW * pxH / 80)) + "…"
           : offering.text_content}
       </div>
     );
