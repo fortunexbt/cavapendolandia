@@ -300,6 +300,7 @@ function ArtisticFrame({
           position={[0, 0, 0.11]}
           transform
           distanceFactor={4}
+          pointerEvents="none"
           style={{
             width: `${pxW}px`,
             height: `${pxH}px`,
