@@ -114,21 +114,10 @@ function ArtisticFrame({
   );
 }
 
-// Mouse-reactive camera for gallery
-function GalleryCameraRig() {
-  const { camera } = useThree();
-  const targetPos = useRef(new THREE.Vector3(0, 1, 12));
-  
-  useFrame((state) => {
-    const mouseX = state.pointer.x * 2;
-    const mouseY = state.pointer.y * 1;
-    
-    targetPos.current.set(mouseX, 1 + mouseY, 12);
-    camera.position.lerp(targetPos.current, 0.015);
-    camera.lookAt(0, 1, 0);
-  });
-  
-  return null;
+// Seeded random for deterministic layout
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
 }
 
 // Gallery room with better atmosphere
