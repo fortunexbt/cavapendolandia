@@ -1978,8 +1978,8 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
     return () => clearTimeout(timer);
   }, []);
 
-  // Ambient audio system
-  useAmbientAudio(audioEnabled);
+  // Ambient audio system — startAudio must be called on user gesture
+  const { startAudio } = useAmbientAudio(audioEnabled);
 
   // Fetch approved offerings
   const { data: liveOfferings } = useQuery({
