@@ -1066,11 +1066,14 @@ function Scene({ offerings, onSelectOffering, onSelectCreature }: GalleryRoomPro
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={1}
-        maxDistance={30}
-        maxPolarAngle={Math.PI * 0.75}
+        minDistance={0.25}
+        maxDistance={45}
+        maxPolarAngle={Math.PI * 0.85}
         target={[0, 1, 0]}
-        zoomSpeed={1.5}
+        zoomSpeed={2}
+        panSpeed={1.2}
+        rotateSpeed={0.9}
+        zoomToCursor={true}
       />
     </>
   );
