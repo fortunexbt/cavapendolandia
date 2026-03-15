@@ -1732,8 +1732,8 @@ function Scene({
 
   return (
     <>
-      <fog attach="fog" args={["#f5f0e8", 15, 50]} />
-      <GalleryLighting />
+      <fog attach="fog" args={["#e8e0d8", 12, 45]} />
+      <GalleryLighting framePositions={positions} />
       <VolumetricLights />
       <GalleryRoom />
 
