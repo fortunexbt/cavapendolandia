@@ -1273,6 +1273,12 @@ function FPSController({
       camera.position.y = CAM_Y_MAX;
       velocityY.current = 0;
     }
+
+    // Exit zone detection (archway at z=18, opening ~6 units wide centered at x=0)
+    if (!exitFired.current && onExit && camera.position.z > 16.5 && Math.abs(camera.position.x) < 3) {
+      exitFired.current = true;
+      onExit();
+    }
   });
 
   return null;
