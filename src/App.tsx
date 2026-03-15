@@ -24,6 +24,7 @@ const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  useThemeMode(); // apply dark/light class globally on mount
   const showPrelude = !location.pathname.startsWith("/admin");
 
   const handlePreludeComplete = () => {
