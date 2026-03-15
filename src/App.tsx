@@ -17,6 +17,7 @@ import Anticamera from "./pages/admin/Anticamera";
 import AdminOfferingDetail from "./pages/admin/AdminOfferingDetail";
 import NotFound from "./pages/NotFound";
 import Galleria from "./pages/Galleria";
+import Grazie from "./pages/Grazie";
 
 const queryClient = new QueryClient();
 
