@@ -397,7 +397,7 @@ function ArtisticFrame({
           <Html
             position={[0, 0, 0.11]}
             transform
-            distanceFactor={1.4}
+            distanceFactor={2.8}
             pointerEvents="none"
             style={{
               width: `${pxW}px`,
