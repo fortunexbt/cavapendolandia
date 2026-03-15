@@ -926,7 +926,7 @@ function GalleryRoom() {
       )}
 
       {/* Back wall */}
-      <mesh position={[0, 4, -hd]} receiveShadow>
+      <mesh position={[0, 4, -hd]}>
         <planeGeometry args={[ROOM_W, 14]} />
         <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.25} roughness={0.95} />
       </mesh>
