@@ -1103,26 +1103,21 @@ function Scene({
   offerings,
   onSelectOffering,
   onSelectCreature,
-  cameraTarget,
-  setCameraTarget,
-  onCameraArrived,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
   onSelectCreature: (c: typeof CREATURES[number]) => void;
-  cameraTarget: CameraTarget | null;
-  setCameraTarget: (t: CameraTarget | null) => void;
-  onCameraArrived: () => void;
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
 
-  // Disable orbit controls when flying to a target
-  useEffect(() => {
-    if (controlsRef.current) {
-      controlsRef.current.enabled = !cameraTarget;
+  // Single useFrame clamp — enforces boundaries every frame
+  useFrame(() => {
+    if (controlsRef.current?.target) {
+      clampVec3(controlsRef.current.target, TARGET_BOUND, TARGET_Y_MIN, TARGET_Y_MAX, TARGET_BOUND);
     }
-  }, [cameraTarget]);
+    clampVec3(camera.position, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
+  });
 
   const positions = useMemo(() => {
     const backSlots = { count: 0 };
@@ -1141,7 +1136,6 @@ function Scene({
         return {
           position: [x, 1 + yJitter, -17.8] as [number, number, number],
           rotation: [0, 0, tilt] as [number, number, number],
-          normal: [0, 0, 1] as [number, number, number],
         };
       } else if (wall === 1) {
         const slot = leftSlots.count++;
@@ -1149,7 +1143,6 @@ function Scene({
         return {
           position: [-17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, Math.PI / 2, tilt] as [number, number, number],
-          normal: [1, 0, 0] as [number, number, number],
         };
       } else {
         const slot = rightSlots.count++;
@@ -1157,7 +1150,6 @@ function Scene({
         return {
           position: [17.8, 1 + yJitter, z] as [number, number, number],
           rotation: [0, -Math.PI / 2, tilt] as [number, number, number],
-          normal: [-1, 0, 0] as [number, number, number],
         };
       }
     });
