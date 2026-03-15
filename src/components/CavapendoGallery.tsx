@@ -1134,9 +1134,17 @@ function StoryCreature({
       position={creature.position}
       rotation={creature.rotation}
       scale={creature.scale}
-      onClick={(e) => { e.stopPropagation(); onSelect(creature); }}
     >
       <CreatureBody type={creature.geometry} color={creature.color} emissive={creature.emissive} />
+
+      {/* Invisible collider sphere — much larger than visual mesh for reliable clicks */}
+      <mesh
+        onPointerDown={(e) => { e.stopPropagation(); onSelect(creature); }}
+      >
+        <sphereGeometry args={[1.2, 8, 8]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
       <Html position={[0, 1.4, 0]} center distanceFactor={8} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
         <div style={{
           background: "rgba(0,0,0,0.55)", color: "#fff", padding: "3px 10px",
