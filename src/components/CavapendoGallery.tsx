@@ -921,6 +921,7 @@ function StoryCreature({
         center
         distanceFactor={8}
         style={{ pointerEvents: "none" }}
+        zIndexRange={[0, 0]}
       >
         <div style={{
           background: "rgba(0,0,0,0.55)",
