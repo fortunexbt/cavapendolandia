@@ -1247,7 +1247,7 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
   return (
-    <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px" }}>
+    <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px", isolation: "isolate" }}>
       <Canvas
         camera={{ position: [0, 1, 12], fov: 45 }}
         gl={{ 
