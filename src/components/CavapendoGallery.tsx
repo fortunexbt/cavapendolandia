@@ -208,17 +208,25 @@ function useAmbientAudio(audioEnabled: boolean) {
 
 // ─── Room Boundary Constants ────────────────────────────────────────────────
 
-const CAM_BOUND = 17.3;     // camera can approach walls closely while staying inside
-const TARGET_BOUND = 17.2;  // allow panning target almost up to the walls
-const CAM_Y_MIN = 0.35;
+const CAM_BOUND = 17.7;     // ~10cm from walls at ±18
+const TARGET_BOUND = 17.2;  // orbit target bound (orbit mode only)
+const CAM_Y_MIN = -1.8;     // eye level (floor at y=-3)
 const CAM_Y_MAX = 8;
 const TARGET_Y_MIN = -2;
 const TARGET_Y_MAX = 7;
+const FPS_SPEED = 6;        // units/sec
+const LOOK_SENSITIVITY = 0.002;
 
 function clampVec3(v: THREE.Vector3, xBound: number, yMin: number, yMax: number, zBound: number) {
   v.x = THREE.MathUtils.clamp(v.x, -xBound, xBound);
   v.y = THREE.MathUtils.clamp(v.y, yMin, yMax);
   v.z = THREE.MathUtils.clamp(v.z, -xBound, zBound);
+}
+
+function clampCamera(pos: THREE.Vector3) {
+  pos.x = THREE.MathUtils.clamp(pos.x, -CAM_BOUND, CAM_BOUND);
+  pos.y = THREE.MathUtils.clamp(pos.y, CAM_Y_MIN, CAM_Y_MAX);
+  pos.z = THREE.MathUtils.clamp(pos.z, -CAM_BOUND, CAM_BOUND);
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
