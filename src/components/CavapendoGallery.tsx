@@ -289,10 +289,28 @@ function PdfCanvas({ url, width, height }: { url: string; width: number; height:
 
   useEffect(() => {
     let cancelled = false;
+    const PDFJS_VERSION = "4.0.379";
+    const CDN = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}`;
+
+    const loadPdfJs = (): Promise<any> => {
+      if ((window as any).pdfjsLib) return Promise.resolve((window as any).pdfjsLib);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = `${CDN}/pdf.min.mjs`;
+        script.type = "module";
+        script.onload = () => {
+          const lib = (window as any).pdfjsLib;
+          if (lib) { lib.GlobalWorkerOptions.workerSrc = `${CDN}/pdf.worker.min.mjs`; resolve(lib); }
+          else reject(new Error("pdfjsLib not found on window"));
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    };
+
     (async () => {
       try {
-        const pdfjsLib = await import("pdfjs-dist");
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        const pdfjsLib = await loadPdfJs();
         const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
         const page = await pdf.getPage(1);
         const scale = 2;
