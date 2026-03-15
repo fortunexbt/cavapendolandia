@@ -2104,7 +2104,39 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
       )}
 
       {/* UI Overlay */}
-      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none" style={{ zIndex: 10 }}>
+      {/* Mobile CTA — top right floating pill */}
+      {isMobile && (
+        <Link
+          to="/offri"
+          className="absolute top-3 right-3 pointer-events-auto bg-primary text-primary-foreground px-3 py-1.5 rounded-full font-mono-light text-xs shadow-lg hover:bg-primary/90 transition-colors"
+          style={{ zIndex: 10 }}
+        >
+          + Offri
+        </Link>
+      )}
+
+      {/* Mobile hint — top center, compact */}
+      {isMobile && (
+        <AnimatePresence>
+          {hintVisible && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none bg-background/70 backdrop-blur-sm px-3 py-1.5 rounded-md border border-border/20 max-w-[220px]"
+              style={{ zIndex: 10 }}
+            >
+              <p className="font-mono-light text-[10px] text-muted-foreground text-center leading-tight">
+                Muovi · Guarda · Tocca un quadro
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+
+      {/* Desktop UI overlay */}
+      <div className={`absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none ${isMobile ? "hidden" : ""}`} style={{ zIndex: 10 }}>
         <div className="flex items-end gap-3">
           {/* Audio toggle */}
           <button
@@ -2116,15 +2148,13 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
           </button>
 
           {/* Mode toggle (desktop only) */}
-          {!isMobile && (
-            <button
-              onClick={() => setControlMode((m) => m === "fps" ? "orbit" : "fps")}
-              className="pointer-events-auto bg-background/80 backdrop-blur-sm px-3 py-2 rounded-md border border-border/30 text-lg hover:bg-background/95 transition-colors"
-              title={controlMode === "fps" ? "Passa a Orbita" : "Passa a Prima persona"}
-            >
-              {controlMode === "fps" ? "🖱️" : "🎮"}
-            </button>
-          )}
+          <button
+            onClick={() => setControlMode((m) => m === "fps" ? "orbit" : "fps")}
+            className="pointer-events-auto bg-background/80 backdrop-blur-sm px-3 py-2 rounded-md border border-border/30 text-lg hover:bg-background/95 transition-colors"
+            title={controlMode === "fps" ? "Passa a Orbita" : "Passa a Prima persona"}
+          >
+            {controlMode === "fps" ? "🖱️" : "🎮"}
+          </button>
 
           {/* Hint text */}
           <AnimatePresence>
@@ -2137,11 +2167,9 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
                 className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20"
               >
                 <p className="font-mono-light text-xs text-muted-foreground">
-                  {isMobile
-                    ? "👆 Joystick sinistro: muoviti • Destro: guardati intorno • Tocca un quadro"
-                    : controlMode === "fps"
-                      ? "⌨️ WASD per muoverti • Spazio per saltare • Mouse per guardare • Clicca un quadro"
-                      : "🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura"
+                  {controlMode === "fps"
+                    ? "⌨️ WASD per muoverti • Spazio per saltare • Mouse per guardare • Clicca un quadro"
+                    : "🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura"
                   }
                 </p>
               </motion.div>
@@ -2156,6 +2184,18 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
           + Lascia una cavapendolata
         </Link>
       </div>
+
+      {/* Mobile audio toggle — small, bottom center */}
+      {isMobile && (
+        <button
+          onClick={() => setAudioEnabled((v) => !v)}
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-auto bg-background/60 backdrop-blur-sm w-9 h-9 rounded-full border border-border/20 flex items-center justify-center text-sm"
+          style={{ zIndex: 10 }}
+          title={audioEnabled ? "Disattiva audio" : "Attiva audio"}
+        >
+          {audioEnabled ? "🔊" : "🔇"}
+        </button>
+      )}
 
       <OfferingModal offering={selectedOffering} onClose={() => setSelectedOffering(null)} />
 
