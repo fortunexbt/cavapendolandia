@@ -507,16 +507,22 @@ function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number;
     );
   }
   if (offering.media_type === "link" && offering.link_url) {
+    const domain = offering.link_url.replace(/^https?:\/\//, "").split("/")[0];
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", gap: "6px", padding: "16px", fontFamily: "Georgia, serif", textAlign: "center" }}>
-        <div style={{ fontSize: "24px" }}>🔗</div>
-        <div style={{ fontSize: "10px", color: "#5a5a5a", wordBreak: "break-all" }}>
-          {offering.link_url.replace(/^https?:\/\//, "").slice(0, 40)}
+        justifyContent: "center", gap: "6px", padding: "12px", fontFamily: "Georgia, serif", textAlign: "center",
+        width: `${pxW}px`, height: `${pxH}px`, overflow: "hidden" }}>
+        <div style={{ fontSize: "20px" }}>🔗</div>
+        <div style={{ fontSize: "11px", color: "#3a3a3a", fontWeight: "bold" }}>
+          {offering.title || domain}
+        </div>
+        <div style={{ fontSize: "8px", color: "#8a8a8a", wordBreak: "break-all" }}>
+          {domain}
         </div>
       </div>
     );
   }
+  // pdf type with texture rendered via PdfCanvas — fallback label
   if (offering.media_type === "pdf") {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
