@@ -1284,6 +1284,7 @@ function Scene({
   controlMode,
   modalOpen,
   joystickRef,
+  onExit,
 }: {
   offerings: Offering[];
   onSelectOffering: (o: Offering) => void;
@@ -1291,6 +1292,7 @@ function Scene({
   controlMode: "fps" | "orbit";
   modalOpen: boolean;
   joystickRef: React.RefObject<JoystickInput>;
+  onExit?: () => void;
 }) {
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
