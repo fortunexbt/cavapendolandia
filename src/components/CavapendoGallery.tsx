@@ -1513,7 +1513,7 @@ function Scene({
       <VolumetricLights />
       <GalleryRoom />
 
-      {offerings.slice(0, 16).map((offering, i) => {
+      {offerings.slice(0, 24).map((offering, i) => {
         const pos = positions[i];
         return (
           <ArtisticFrame
