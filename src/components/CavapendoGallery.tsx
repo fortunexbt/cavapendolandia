@@ -289,10 +289,28 @@ function PdfCanvas({ url, width, height }: { url: string; width: number; height:
 
   useEffect(() => {
     let cancelled = false;
+    const PDFJS_VERSION = "4.0.379";
+    const CDN = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}`;
+
+    const loadPdfJs = (): Promise<any> => {
+      if ((window as any).pdfjsLib) return Promise.resolve((window as any).pdfjsLib);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = `${CDN}/pdf.min.mjs`;
+        script.type = "module";
+        script.onload = () => {
+          const lib = (window as any).pdfjsLib;
+          if (lib) { lib.GlobalWorkerOptions.workerSrc = `${CDN}/pdf.worker.min.mjs`; resolve(lib); }
+          else reject(new Error("pdfjsLib not found on window"));
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    };
+
     (async () => {
       try {
-        const pdfjsLib = await import("pdfjs-dist");
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        const pdfjsLib = await loadPdfJs();
         const pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
         const page = await pdf.getPage(1);
         const scale = 2;
@@ -845,15 +863,18 @@ function GalleryRoom() {
       </mesh>
 
       {/* Exit hint text above archway */}
-      <Html position={[0, 6.5, hd - 0.2]} center distanceFactor={12} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
+      <pointLight position={[0, 5.5, hd - 0.5]} intensity={1.2} color="#fffbe8" distance={5} />
+      <Html position={[0, 5.2, hd - 0.15]} center distanceFactor={6} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
         <div style={{
           fontFamily: "Georgia, serif",
-          fontSize: "14px",
-          color: "rgba(120, 100, 80, 0.6)",
-          letterSpacing: "4px",
+          fontSize: "36px",
+          fontWeight: "bold",
+          color: "#fff",
+          letterSpacing: "8px",
           textTransform: "uppercase",
+          textShadow: "0 0 8px rgba(255,255,255,0.9), 0 0 20px rgba(255,248,220,0.7), 0 0 40px rgba(255,240,200,0.5), 0 0 60px rgba(255,230,180,0.3)",
         }}>
-          Uscita
+          USCITA
         </div>
       </Html>
 
