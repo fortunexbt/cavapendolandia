@@ -1680,7 +1680,7 @@ function Scene({
       <VolumetricLights />
       <GalleryRoom />
 
-      {offerings.slice(0, 24).map((offering, i) => {
+      {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
         return (
           <ArtisticFrame
@@ -1697,13 +1697,7 @@ function Scene({
         <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
 
-      {CREATURES.map((creature) => (
-        <CreatureShadow key={`shadow-${creature.name}`} position={creature.position} />
-      ))}
-
       <GalleryDust />
-      <Stars radius={80} depth={60} count={500} factor={1.5} saturation={0} fade speed={0.1} />
-      <Environment preset="apartment" />
 
       {/* FPS Controller */}
       <FPSController
