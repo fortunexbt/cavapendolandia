@@ -1034,9 +1034,9 @@ function TrackLight({ position, targetY: _targetY = -0.5 }: { position: [number,
       {/* Warm point light (much cheaper than spotLight) */}
       <pointLight
         position={position}
-        intensity={0.6}
+        intensity={0.8}
         color="#fff0d0"
-        distance={10}
+        distance={8}
         decay={2}
       />
     </group>
