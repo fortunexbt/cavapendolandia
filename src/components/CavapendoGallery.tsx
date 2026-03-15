@@ -454,41 +454,306 @@ function seededRandom(seed: number) {
   return x - Math.floor(x);
 }
 
+// ─── Procedural Textures ────────────────────────────────────────────────────
+
+function useStuccoTexture() {
+  return useMemo(() => {
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    // Base warm plaster
+    ctx.fillStyle = "#e8ddd0";
+    ctx.fillRect(0, 0, size, size);
+    // Noise grain
+    for (let i = 0; i < 40000; i++) {
+      const x = Math.random() * size;
+      const y = Math.random() * size;
+      const brightness = 180 + Math.random() * 60;
+      const alpha = 0.15 + Math.random() * 0.15;
+      ctx.fillStyle = `rgba(${brightness}, ${brightness - 10}, ${brightness - 25}, ${alpha})`;
+      ctx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
+    }
+    // Subtle cracks / veins
+    ctx.strokeStyle = "rgba(160, 140, 120, 0.08)";
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < 30; i++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * size, Math.random() * size);
+      ctx.lineTo(Math.random() * size, Math.random() * size);
+      ctx.stroke();
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(4, 2);
+    return tex;
+  }, []);
+}
+
+function useTileTexture() {
+  return useMemo(() => {
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const tileSize = 64;
+    const cols = size / tileSize;
+    const rows = size / tileSize;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const hue = 18 + Math.random() * 8;
+        const sat = 30 + Math.random() * 15;
+        const light = 55 + Math.random() * 12;
+        ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light}%)`;
+        ctx.fillRect(c * tileSize + 1, r * tileSize + 1, tileSize - 2, tileSize - 2);
+      }
+    }
+    // Grout lines
+    ctx.fillStyle = "#b0a89a";
+    for (let r = 0; r <= rows; r++) {
+      ctx.fillRect(0, r * tileSize - 1, size, 2);
+    }
+    for (let c = 0; c <= cols; c++) {
+      ctx.fillRect(c * tileSize - 1, 0, 2, size);
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(6, 6);
+    return tex;
+  }, []);
+}
+
+function useWoodTexture() {
+  return useMemo(() => {
+    const w = 256, h = 64;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = "#5a3a1a";
+    ctx.fillRect(0, 0, w, h);
+    for (let y = 0; y < h; y++) {
+      const alpha = 0.05 + Math.random() * 0.1;
+      const bright = Math.random() > 0.5 ? 255 : 0;
+      ctx.fillStyle = `rgba(${bright}, ${bright}, ${bright}, ${alpha})`;
+      ctx.fillRect(0, y, w, 1);
+    }
+    // Knots
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * w, Math.random() * h, 4 + Math.random() * 6, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(40, 20, 5, 0.3)";
+      ctx.fill();
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(1, 1);
+    return tex;
+  }, []);
+}
+
+// ─── Architectural Components ───────────────────────────────────────────────
+
+function WoodenRoof({ woodTex }: { woodTex: THREE.Texture }) {
+  const ROOM_W = 36;
+  const ROOM_D = 36;
+  const beamCount = 6;
+  const beamSpacing = ROOM_D / (beamCount + 1);
+
+  return (
+    <group>
+      {/* Ceiling plane — warm terracotta */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 10, 0]}>
+        <planeGeometry args={[ROOM_W, ROOM_D]} />
+        <meshStandardMaterial color="#d4b896" roughness={0.95} />
+      </mesh>
+
+      {/* Main beams spanning left-right */}
+      {Array.from({ length: beamCount }).map((_, i) => {
+        const z = -ROOM_D / 2 + beamSpacing * (i + 1);
+        return (
+          <mesh key={`beam-${i}`} position={[0, 9.6, z]}>
+            <boxGeometry args={[ROOM_W, 0.5, 0.4]} />
+            <meshStandardMaterial map={woodTex} color="#5a3a1a" roughness={0.9} metalness={0.05} />
+          </mesh>
+        );
+      })}
+
+      {/* Two ridge beams (front-back) */}
+      {[-ROOM_W / 4, ROOM_W / 4].map((x, i) => (
+        <mesh key={`ridge-${i}`} position={[x, 9.3, 0]}>
+          <boxGeometry args={[0.35, 0.4, ROOM_D]} />
+          <meshStandardMaterial map={woodTex} color="#4a2a10" roughness={0.9} metalness={0.05} />
+        </mesh>
+      ))}
+
+      {/* Bracket wedges where beams meet walls */}
+      {Array.from({ length: beamCount }).map((_, i) => {
+        const z = -ROOM_D / 2 + beamSpacing * (i + 1);
+        return [-1, 1].map((side) => (
+          <mesh
+            key={`bracket-${i}-${side}`}
+            position={[side * (ROOM_W / 2 - 0.6), 9.1, z]}
+            rotation={[0, 0, side * 0.3]}
+          >
+            <boxGeometry args={[0.6, 0.3, 0.35]} />
+            <meshStandardMaterial map={woodTex} color="#4a2a10" roughness={0.85} />
+          </mesh>
+        ));
+      })}
+    </group>
+  );
+}
+
+function StonePillars() {
+  const ROOM_W = 36;
+  const ROOM_D = 36;
+  const hw = ROOM_W / 2 - 0.5;
+  const hd = ROOM_D / 2 - 0.5;
+  const pillarPositions: [number, number, number][] = [
+    [-hw, 3.5, -hd],
+    [hw, 3.5, -hd],
+    [-hw, 3.5, hd],
+    [hw, 3.5, hd],
+  ];
+
+  return (
+    <group>
+      {pillarPositions.map((pos, i) => (
+        <group key={`pillar-${i}`}>
+          {/* Main column */}
+          <mesh position={pos}>
+            <cylinderGeometry args={[0.5, 0.6, 13, 8]} />
+            <meshStandardMaterial color="#c4b8a8" roughness={0.85} metalness={0.05} />
+          </mesh>
+          {/* Base */}
+          <mesh position={[pos[0], -2.8, pos[2]]}>
+            <boxGeometry args={[1.4, 0.5, 1.4]} />
+            <meshStandardMaterial color="#b0a490" roughness={0.9} />
+          </mesh>
+          {/* Capital */}
+          <mesh position={[pos[0], 9.5, pos[2]]}>
+            <boxGeometry args={[1.2, 0.6, 1.2]} />
+            <meshStandardMaterial color="#b8ac9c" roughness={0.85} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function WallDetails() {
+  const ROOM_W = 36;
+  const ROOM_D = 36;
+  const hw = ROOM_W / 2;
+  const hd = ROOM_D / 2;
+  const woodColor = "#4a3020";
+  const railY = 4;
+
+  return (
+    <group>
+      {/* Baseboards */}
+      {/* Back */}
+      <mesh position={[0, -2.7, -hd + 0.06]}>
+        <boxGeometry args={[ROOM_W, 0.3, 0.12]} />
+        <meshStandardMaterial color={woodColor} roughness={0.8} />
+      </mesh>
+      {/* Left */}
+      <mesh position={[-hw + 0.06, -2.7, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[ROOM_D, 0.3, 0.12]} />
+        <meshStandardMaterial color={woodColor} roughness={0.8} />
+      </mesh>
+      {/* Right */}
+      <mesh position={[hw - 0.06, -2.7, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[ROOM_D, 0.3, 0.12]} />
+        <meshStandardMaterial color={woodColor} roughness={0.8} />
+      </mesh>
+      {/* Front */}
+      <mesh position={[0, -2.7, hd - 0.06]}>
+        <boxGeometry args={[ROOM_W, 0.3, 0.12]} />
+        <meshStandardMaterial color={woodColor} roughness={0.8} />
+      </mesh>
+
+      {/* Picture rails */}
+      {/* Back */}
+      <mesh position={[0, railY, -hd + 0.06]}>
+        <boxGeometry args={[ROOM_W, 0.08, 0.06]} />
+        <meshStandardMaterial color={woodColor} roughness={0.7} />
+      </mesh>
+      {/* Left */}
+      <mesh position={[-hw + 0.06, railY, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[ROOM_D, 0.08, 0.06]} />
+        <meshStandardMaterial color={woodColor} roughness={0.7} />
+      </mesh>
+      {/* Right */}
+      <mesh position={[hw - 0.06, railY, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[ROOM_D, 0.08, 0.06]} />
+        <meshStandardMaterial color={woodColor} roughness={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
 // ─── Gallery Room ───────────────────────────────────────────────────────────
 
 function GalleryRoom() {
+  const stuccoTex = useStuccoTexture();
+  const tileTex = useTileTexture();
+  const woodTex = useWoodTexture();
+  const ROOM_W = 36;
+  const ROOM_D = 36;
+  const hw = ROOM_W / 2;
+  const hd = ROOM_D / 2;
+
   return (
     <group>
-      {/* Floor */}
+      {/* Floor — terracotta tiles */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
-        <planeGeometry args={[60, 60]} />
-        <meshStandardMaterial color="#d8d0c5" roughness={0.85} />
+        <planeGeometry args={[ROOM_W, ROOM_D]} />
+        <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.3} roughness={0.85} />
       </mesh>
-      {/* Center circle */}
+      {/* Center medallion */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.99, 0]}>
-        <circleGeometry args={[8, 32]} />
-        <meshStandardMaterial color="#e8e0d5" transparent opacity={0.4} />
+        <circleGeometry args={[5, 32]} />
+        <meshStandardMaterial color="#c8b090" transparent opacity={0.35} roughness={0.9} />
       </mesh>
+
       {/* Back wall */}
-      <mesh position={[0, 4, -18]} receiveShadow>
-        <planeGeometry args={[60, 20]} />
-        <meshStandardMaterial color="#f0ebe3" roughness={0.95} />
+      <mesh position={[0, 4, -hd]} receiveShadow>
+        <planeGeometry args={[ROOM_W, 14]} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
       </mesh>
       {/* Left wall */}
-      <mesh position={[-18, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[60, 20]} />
-        <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
+      <mesh position={[-hw, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[ROOM_D, 14]} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
       </mesh>
       {/* Right wall */}
-      <mesh position={[18, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[60, 20]} />
-        <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
+      <mesh position={[hw, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[ROOM_D, 14]} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
       </mesh>
-      {/* Ceiling (faint) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 10, 0]}>
-        <planeGeometry args={[60, 60]} />
-        <meshStandardMaterial color="#f5f0e8" roughness={1} transparent opacity={0.3} />
+
+      {/* Front wall — archway: two side panels + lintel */}
+      <mesh position={[-hw / 2 - 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
+        <planeGeometry args={[hw - 3, 14]} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
       </mesh>
+      <mesh position={[hw / 2 + 1.5, 4, hd]} rotation={[0, Math.PI, 0]} receiveShadow>
+        <planeGeometry args={[hw - 3, 14]} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+      </mesh>
+      {/* Archway lintel */}
+      <mesh position={[0, 8, hd]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[6, 6]} />
+        <meshStandardMaterial map={stuccoTex} bumpMap={stuccoTex} bumpScale={0.15} roughness={0.95} />
+      </mesh>
+
+      <WoodenRoof woodTex={woodTex} />
+      <StonePillars />
+      <WallDetails />
     </group>
   );
 }
