@@ -577,23 +577,43 @@ function useStuccoTexture() {
     // Base warm plaster
     ctx.fillStyle = "#e8ddd0";
     ctx.fillRect(0, 0, size, size);
-    // Noise grain
-    for (let i = 0; i < 40000; i++) {
+    // Warm color variation patches (subtle plaster irregularities)
+    for (let i = 0; i < 60; i++) {
       const x = Math.random() * size;
       const y = Math.random() * size;
-      const brightness = 180 + Math.random() * 60;
-      const alpha = 0.15 + Math.random() * 0.15;
+      const r = 30 + Math.random() * 60;
+      const hue = 25 + Math.random() * 15;
+      const sat = 15 + Math.random() * 20;
+      const light = 80 + Math.random() * 10;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, 0.08)`;
+      ctx.fill();
+    }
+    // Dense noise grain
+    for (let i = 0; i < 80000; i++) {
+      const x = Math.random() * size;
+      const y = Math.random() * size;
+      const brightness = 170 + Math.random() * 70;
+      const alpha = 0.1 + Math.random() * 0.2;
       ctx.fillStyle = `rgba(${brightness}, ${brightness - 10}, ${brightness - 25}, ${alpha})`;
       ctx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
     }
     // Subtle cracks / veins
-    ctx.strokeStyle = "rgba(160, 140, 120, 0.08)";
+    ctx.strokeStyle = "rgba(150, 130, 110, 0.1)";
     ctx.lineWidth = 0.5;
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 50; i++) {
       ctx.beginPath();
       ctx.moveTo(Math.random() * size, Math.random() * size);
       ctx.lineTo(Math.random() * size, Math.random() * size);
       ctx.stroke();
+    }
+    // Stain marks
+    for (let i = 0; i < 8; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * size, Math.random() * size, 5 + Math.random() * 15, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(140, 120, 100, ${0.03 + Math.random() * 0.04})`;
+      ctx.fill();
     }
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
