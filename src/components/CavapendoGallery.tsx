@@ -1306,39 +1306,53 @@ function Scene({
   });
 
   const positions = useMemo(() => {
-    const backSlots = { count: 0 };
-    const leftSlots = { count: 0 };
-    const rightSlots = { count: 0 };
+    const ROOM_HALF = 18;
+    const WALL_OFFSET = 17.85; // frames sit just in front of walls
+    const MARGIN = 2.5; // keep frames away from corners
+    const MIN_COORD = -ROOM_HALF + MARGIN;
+    const MAX_COORD = ROOM_HALF - MARGIN;
 
-    return offerings.map((o, i) => {
-      const wall = i % 3;
-      const seed = o.id.charCodeAt(0) * 100 + i;
-      const tilt = (seededRandom(seed) - 0.5) * 0.2;
-      const yJitter = (seededRandom(seed + 1) - 0.5) * 1.2;
+    // Distribute offerings across 3 walls evenly
+    const walls: number[][] = [[], [], []]; // back, left, right
+    offerings.forEach((_, i) => walls[i % 3].push(i));
 
-      if (wall === 0) {
-        const slot = backSlots.count++;
-        const x = (slot - 2) * 3.5 + (seededRandom(seed + 2) - 0.5) * 0.8;
-        return {
-          position: [x, 1 + yJitter, -17.8] as [number, number, number],
-          rotation: [0, 0, tilt] as [number, number, number],
-        };
-      } else if (wall === 1) {
-        const slot = leftSlots.count++;
-        const z = (slot - 1) * 3.5 + (seededRandom(seed + 3) - 0.5) * 0.8;
-        return {
-          position: [-17.8, 1 + yJitter, z] as [number, number, number],
-          rotation: [0, Math.PI / 2, tilt] as [number, number, number],
-        };
-      } else {
-        const slot = rightSlots.count++;
-        const z = (slot - 1) * 3.5 + (seededRandom(seed + 4) - 0.5) * 0.8;
-        return {
-          position: [17.8, 1 + yJitter, z] as [number, number, number],
-          rotation: [0, -Math.PI / 2, tilt] as [number, number, number],
-        };
-      }
+    const result: { position: [number, number, number]; rotation: [number, number, number] }[] = new Array(offerings.length);
+
+    walls.forEach((indices, wall) => {
+      const count = indices.length;
+      if (count === 0) return;
+      const span = MAX_COORD - MIN_COORD;
+      const spacing = count === 1 ? 0 : span / (count - 1);
+
+      indices.forEach((idx, slot) => {
+        const o = offerings[idx];
+        const seed = o.id.charCodeAt(0) * 100 + idx;
+        const tilt = (seededRandom(seed) - 0.5) * 0.15;
+        const yJitter = (seededRandom(seed + 1) - 0.5) * 1.0;
+        const posJitter = (seededRandom(seed + 2) - 0.5) * Math.min(1.0, spacing * 0.3);
+        const coord = count === 1 ? 0 : MIN_COORD + slot * spacing + posJitter;
+        const clampedCoord = THREE.MathUtils.clamp(coord, MIN_COORD, MAX_COORD);
+
+        if (wall === 0) { // back wall
+          result[idx] = {
+            position: [clampedCoord, 1.2 + yJitter, -WALL_OFFSET],
+            rotation: [0, 0, tilt],
+          };
+        } else if (wall === 1) { // left wall
+          result[idx] = {
+            position: [-WALL_OFFSET, 1.2 + yJitter, clampedCoord],
+            rotation: [0, Math.PI / 2, tilt],
+          };
+        } else { // right wall
+          result[idx] = {
+            position: [WALL_OFFSET, 1.2 + yJitter, clampedCoord],
+            rotation: [0, -Math.PI / 2, tilt],
+          };
+        }
+      });
     });
+
+    return result;
   }, [offerings]);
 
   return (
