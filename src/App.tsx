@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
+import { useThemeMode } from "@/hooks/useThemeMode";
 import Index from "./pages/Index";
 import Entra from "./pages/Entra";
 import OfferingDetail from "./pages/OfferingDetail";

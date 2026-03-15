@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Sun, Moon } from "lucide-react";
+import { useThemeMode } from "@/hooks/useThemeMode";
 
 const SEAHORSE_SVG = (
   <svg viewBox="0 0 280 240" className="h-8 w-8">
@@ -22,6 +24,11 @@ const NAV_LINKS = [
 
 const MinimalHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { resolvedMode, setThemeMode } = useThemeMode();
+
+  const toggleTheme = () => {
+    setThemeMode(resolvedMode === "dark" ? "light" : "dark");
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/30">
@@ -31,23 +38,33 @@ const MinimalHeader = () => {
             {SEAHORSE_SVG}
           </Link>
           
-          <button 
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="flex flex-col gap-1.5 p-2 md:hidden"
-            aria-label="Menu"
-          >
-            <span className={`block h-0.5 w-6 bg-foreground/70 transition-transform ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block h-0.5 w-6 bg-foreground/70 ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block h-0.5 w-6 bg-foreground/70 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-          </button>
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-6 font-mono-light text-base">
+              {NAV_LINKS.map((link) => (
+                <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-foreground transition-colors">
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
 
-          <nav className="hidden md:flex items-center gap-6 font-mono-light text-base">
-            {NAV_LINKS.map((link) => (
-              <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-foreground transition-colors">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={resolvedMode === "dark" ? "Passa al tema chiaro" : "Passa al tema scuro"}
+            >
+              {resolvedMode === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
+            <button 
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex flex-col gap-1.5 p-2 md:hidden"
+              aria-label="Menu"
+            >
+              <span className={`block h-0.5 w-6 bg-foreground/70 transition-transform ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`block h-0.5 w-6 bg-foreground/70 ${menuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block h-0.5 w-6 bg-foreground/70 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {menuOpen && (
