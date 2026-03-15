@@ -1302,7 +1302,6 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
-  const [cameraTarget, setCameraTarget] = useState<CameraTarget | null>(null);
   const [hintVisible, setHintVisible] = useState(true);
 
   // Auto-hide hint
