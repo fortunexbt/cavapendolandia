@@ -634,20 +634,45 @@ function useTileTexture() {
     const rows = size / tileSize;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        const hue = 18 + Math.random() * 8;
-        const sat = 30 + Math.random() * 15;
-        const light = 55 + Math.random() * 12;
+        const hue = 16 + Math.random() * 12;
+        const sat = 28 + Math.random() * 20;
+        const light = 50 + Math.random() * 16;
+        // Slight rotation/offset per tile for imperfection
+        const offsetX = (Math.random() - 0.5) * 1.5;
+        const offsetY = (Math.random() - 0.5) * 1.5;
         ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light}%)`;
-        ctx.fillRect(c * tileSize + 1, r * tileSize + 1, tileSize - 2, tileSize - 2);
+        ctx.fillRect(c * tileSize + 1 + offsetX, r * tileSize + 1 + offsetY, tileSize - 2, tileSize - 2);
+        // Per-tile wear marks
+        if (Math.random() > 0.6) {
+          ctx.fillStyle = `rgba(80, 60, 40, ${0.03 + Math.random() * 0.05})`;
+          ctx.fillRect(c * tileSize + 8, r * tileSize + 8, tileSize - 16, tileSize - 16);
+        }
+        // Tiny chip/scratch
+        if (Math.random() > 0.8) {
+          ctx.fillStyle = `rgba(60, 40, 20, 0.12)`;
+          ctx.fillRect(c * tileSize + Math.random() * tileSize, r * tileSize + Math.random() * tileSize, 2, 2);
+        }
       }
     }
     // Grout lines
-    ctx.fillStyle = "#b0a89a";
+    ctx.fillStyle = "#a89a8a";
     for (let r = 0; r <= rows; r++) {
       ctx.fillRect(0, r * tileSize - 1, size, 2);
     }
     for (let c = 0; c <= cols; c++) {
       ctx.fillRect(c * tileSize - 1, 0, 2, size);
+    }
+    // Grout discoloration
+    for (let i = 0; i < 200; i++) {
+      const isHoriz = Math.random() > 0.5;
+      const row = Math.floor(Math.random() * (rows + 1));
+      const col = Math.floor(Math.random() * (cols + 1));
+      ctx.fillStyle = `rgba(70, 55, 40, ${0.05 + Math.random() * 0.08})`;
+      if (isHoriz) {
+        ctx.fillRect(Math.random() * size, row * tileSize - 1, 8 + Math.random() * 12, 2);
+      } else {
+        ctx.fillRect(col * tileSize - 1, Math.random() * size, 2, 8 + Math.random() * 12);
+      }
     }
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
