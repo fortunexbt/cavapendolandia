@@ -1694,7 +1694,7 @@ function VirtualJoystick({
 function CavapendoGallery({ className = "", onExit }: { className?: string; onExit?: () => void }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
   const [hintVisible, setHintVisible] = useState(true);
   const isMobile = useIsMobile();
   const [controlMode, setControlMode] = useState<"fps" | "orbit">(isMobile ? "fps" : "fps");
