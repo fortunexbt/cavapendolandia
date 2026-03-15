@@ -882,7 +882,7 @@ function GalleryRoom() {
   return (
     <group>
       {/* Floor — terracotta tiles */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
         <meshStandardMaterial map={tileTex} bumpMap={tileTex} bumpScale={0.5} roughness={0.85} />
       </mesh>
