@@ -1155,59 +1155,12 @@ function Scene({
     });
   }, [offerings]);
 
-  // Fly-to for frames: compute a viewpoint 3 units in front of the frame
-  const handleFrameClick = useCallback(
-    (offering: Offering, index: number) => {
-      const pos = positions[index];
-      if (!pos) {
-        onSelectOffering(offering);
-        return;
-      }
-      const framePos = new THREE.Vector3(...pos.position);
-      const normal = new THREE.Vector3(...pos.normal);
-      const viewPos = framePos.clone().add(normal.multiplyScalar(3));
-      viewPos.y = THREE.MathUtils.clamp(viewPos.y, CAM_Y_MIN, CAM_Y_MAX);
-      clampVec3(viewPos, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
-
-      setCameraTarget({
-        position: viewPos,
-        lookAt: new THREE.Vector3(...pos.position),
-      });
-      // Open modal after arrival
-      setTimeout(() => onSelectOffering(offering), 900);
-    },
-    [positions, onSelectOffering, setCameraTarget],
-  );
-
-  // Fly-to for creatures
-  const handleCreatureClick = useCallback(
-    (creature: typeof CREATURES[number]) => {
-      const creaturePos = new THREE.Vector3(...creature.position);
-      const dir = new THREE.Vector3().subVectors(camera.position, creaturePos).normalize();
-      dir.y = 0.2;
-      dir.normalize();
-      const viewPos = creaturePos.clone().add(dir.multiplyScalar(3));
-      viewPos.y = Math.max(viewPos.y, creaturePos.y + 0.5);
-      clampVec3(viewPos, CAM_BOUND, CAM_Y_MIN, CAM_Y_MAX, CAM_BOUND);
-
-      setCameraTarget({
-        position: viewPos,
-        lookAt: creaturePos.clone().add(new THREE.Vector3(0, 0.5, 0)),
-      });
-      setTimeout(() => onSelectCreature(creature), 900);
-    },
-    [camera, onSelectCreature, setCameraTarget],
-  );
-
   return (
     <>
       <fog attach="fog" args={["#f5f0e8", 15, 50]} />
       <GalleryLighting />
       <VolumetricLights />
       <GalleryRoom />
-
-      <CameraController target={cameraTarget} onArrived={onCameraArrived} />
-      <BoundsGuard controlsRef={controlsRef} />
 
       {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
@@ -1217,13 +1170,13 @@ function Scene({
             offering={offering}
             position={pos.position}
             rotation={pos.rotation}
-            onClick={() => handleFrameClick(offering, i)}
+            onClick={() => onSelectOffering(offering)}
           />
         );
       })}
 
       {CREATURES.map((creature) => (
-        <StoryCreature key={creature.name} creature={creature} onSelect={handleCreatureClick} />
+        <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
 
       {/* Creature shadows */}
