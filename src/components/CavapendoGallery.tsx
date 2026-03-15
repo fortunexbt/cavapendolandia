@@ -86,7 +86,6 @@ function ArtisticFrame({
         <Html
           position={[0, 0, 0.11]}
           transform
-          occlude
           distanceFactor={4}
           style={{
             width: "180px",
@@ -97,7 +96,9 @@ function ArtisticFrame({
             alignItems: "center",
             justifyContent: "center",
             background: "transparent",
+            userSelect: "none",
           }}
+          zIndexRange={[0, 0]}
         >
           <FrameContent offering={offering} />
         </Html>
