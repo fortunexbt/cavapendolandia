@@ -1772,26 +1772,27 @@ function LoadingFallback() {
 // ─── Modals ─────────────────────────────────────────────────────────────────
 
 function OfferingModal({ offering, onClose }: { offering: Offering | null; onClose: () => void }) {
-  if (!offering) return null;
-  const authorDisplay = offering.author_type === "anonymous" ? "Anonimo" : offering.author_name || "Artista";
+  const authorDisplay = offering?.author_type === "anonymous" ? "Anonimo" : offering?.author_name || "Artista";
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-        onClick={onClose}
-      >
+      {offering && (
         <motion.div
-          initial={{ scale: 0.9, y: 20 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.9, y: 20 }}
-          transition={{ type: "spring", damping: 20 }}
-          className="relative max-w-lg w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30"
-          onClick={(e) => e.stopPropagation()}
+          key={offering.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={onClose}
         >
+          <motion.div
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            transition={{ type: "spring", damping: 20 }}
+            className="relative max-w-lg w-full max-h-[80vh] overflow-y-auto bg-background p-8 rounded-lg shadow-2xl border border-border/30"
+            onClick={(e) => e.stopPropagation()}
+          >
           <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none">×</button>
           <h2 className="text-2xl font-serif text-foreground mb-4">{offering.title || "Senza titolo"}</h2>
           {offering.text_content && (
