@@ -1974,7 +1974,7 @@ function CavapendoGallery({ className = "", onExit }: { className?: string; onEx
 
   // Auto-hide hint
   useEffect(() => {
-    const timer = setTimeout(() => setHintVisible(false), 8000);
+    const timer = setTimeout(() => setHintVisible(false), isMobile ? 4000 : 8000);
     return () => clearTimeout(timer);
   }, []);
 
