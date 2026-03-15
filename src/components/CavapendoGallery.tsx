@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Float, Sparkles, Environment, Stars } from "@react-three/drei";
+import { OrbitControls, Sparkles, Environment, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
