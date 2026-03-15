@@ -1941,8 +1941,8 @@ function VirtualJoystick({
       <div
         className="absolute rounded-full bg-foreground/40 backdrop-blur-sm"
         style={{
-          width: 40,
-          height: 40,
+          width: 32,
+          height: 32,
           left: "50%",
           top: "50%",
           transform: `translate(calc(-50% + ${stickPos.x}px), calc(-50% + ${stickPos.y}px))`,
