@@ -1,7 +1,6 @@
-import { Suspense, useMemo, useState, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Sparkles, Environment, Stars, Float, Html } from "@react-three/drei";
-import { useReducedMotion } from "framer-motion";
+import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, Sparkles, Environment, Stars, Html } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +8,8 @@ import * as THREE from "three";
 import { supabase } from "@/integrations/supabase/client";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 
-// Types
+// ─── Types ──────────────────────────────────────────────────────────────────
+
 interface Offering {
   id: string;
   title: string | null;
@@ -24,45 +24,221 @@ interface Offering {
   approved_at?: string | null;
 }
 
-interface GalleryRoomProps {
-  offerings: Offering[];
-  onSelectOffering: (offering: Offering) => void;
+// ─── Audio System ───────────────────────────────────────────────────────────
+
+const SFX_PROMPTS: Record<string, string> = {
+  seahorse: "gentle underwater bubbling ambient loop, soft water currents, calming aquatic atmosphere",
+  owl: "quiet nighttime crickets and distant owl hooting, peaceful nocturnal forest ambience",
+  cat: "soft cat purring ambient loop, gentle and soothing, rhythmic breathing",
+  frog: "gentle frog croaking near a pond, water dripping, quiet swamp ambience at dusk",
+  lizard: "rustling dry leaves and twigs, warm sun on rocks, gentle desert wind",
+  snail: "soft wind through grass, very quiet rain drops on leaves, dewy morning atmosphere",
+  room: "large empty museum hall reverberant drone, distant footsteps echo, hushed quiet space",
+  whisper: "very quiet page turning sounds, paper rustling, hushed library whispers",
+};
+
+function useAmbientAudio(audioEnabled: boolean) {
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const masterGainRef = useRef<GainNode | null>(null);
+  const sourcesRef = useRef<Map<string, { audio: HTMLAudioElement; gain: GainNode }>>(new Map());
+  const cacheRef = useRef<Map<string, string>>(new Map());
+  const loadingRef = useRef<Set<string>>(new Set());
+
+  const getOrFetchAudio = useCallback(async (key: string): Promise<string | null> => {
+    if (cacheRef.current.has(key)) return cacheRef.current.get(key)!;
+    if (loadingRef.current.has(key)) return null;
+    loadingRef.current.add(key);
+
+    try {
+      const prompt = SFX_PROMPTS[key];
+      if (!prompt) return null;
+
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ambient-sfx`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ prompt, duration: 10 }),
+      });
+
+      if (!response.ok) return null;
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      cacheRef.current.set(key, blobUrl);
+      return blobUrl;
+    } catch {
+      return null;
+    } finally {
+      loadingRef.current.delete(key);
+    }
+  }, []);
+
+  const playSource = useCallback(async (key: string, volume: number) => {
+    if (!audioContextRef.current || !masterGainRef.current) return;
+    if (sourcesRef.current.has(key)) return;
+
+    const blobUrl = await getOrFetchAudio(key);
+    if (!blobUrl) return;
+
+    const audio = new Audio(blobUrl);
+    audio.loop = true;
+    audio.crossOrigin = "anonymous";
+
+    const ctx = audioContextRef.current;
+    const source = ctx.createMediaElementSource(audio);
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    source.connect(gain).connect(masterGainRef.current);
+
+    sourcesRef.current.set(key, { audio, gain });
+
+    try {
+      await audio.play();
+      // Fade in
+      gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 2);
+    } catch {
+      sourcesRef.current.delete(key);
+    }
+  }, [getOrFetchAudio]);
+
+  useEffect(() => {
+    if (audioEnabled) {
+      if (!audioContextRef.current) {
+        const ctx = new AudioContext();
+        audioContextRef.current = ctx;
+        const master = ctx.createGain();
+        master.gain.value = 0.6;
+        master.connect(ctx.destination);
+        masterGainRef.current = master;
+      }
+
+      if (audioContextRef.current.state === "suspended") {
+        audioContextRef.current.resume();
+      }
+
+      // Start loading/playing sounds progressively
+      playSource("room", 0.15);
+      // Stagger creature sounds
+      const creatureKeys = ["seahorse", "owl", "cat", "frog", "lizard", "snail"];
+      creatureKeys.forEach((key, i) => {
+        setTimeout(() => playSource(key, 0.08), 2000 + i * 3000);
+      });
+      setTimeout(() => playSource("whisper", 0.05), 8000);
+    } else {
+      // Fade out and pause all
+      sourcesRef.current.forEach(({ audio, gain }) => {
+        if (audioContextRef.current) {
+          gain.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + 1);
+        }
+        setTimeout(() => {
+          audio.pause();
+        }, 1200);
+      });
+    }
+  }, [audioEnabled, playSource]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      sourcesRef.current.forEach(({ audio }) => {
+        audio.pause();
+        audio.src = "";
+      });
+      sourcesRef.current.clear();
+      audioContextRef.current?.close();
+    };
+  }, []);
 }
 
+// ─── Constants ──────────────────────────────────────────────────────────────
+
 const FRAME_COLORS = [
-  "#6b5b4b",
-  "#8b7355", 
-  "#7a6250",
-  "#5b4b3b",
-  "#9b8365",
-  "#4b3b2b",
+  "#6b5b4b", "#8b7355", "#7a6250", "#5b4b3b", "#9b8365", "#4b3b2b",
 ];
 
-// ─── Artistic Frame with inline media ───────────────────────────────────────
+// ─── Fly-to-frame camera controller ────────────────────────────────────────
+
+interface CameraTarget {
+  position: THREE.Vector3;
+  lookAt: THREE.Vector3;
+}
+
+function CameraController({
+  target,
+  onArrived,
+}: {
+  target: CameraTarget | null;
+  onArrived: () => void;
+}) {
+  const { camera } = useThree();
+  const arrivedRef = useRef(false);
+  const startPosRef = useRef(new THREE.Vector3());
+  const startLookRef = useRef(new THREE.Vector3());
+  const progressRef = useRef(0);
+  const currentLookAt = useRef(new THREE.Vector3(0, 1, 0));
+
+  useEffect(() => {
+    if (target) {
+      startPosRef.current.copy(camera.position);
+      startLookRef.current.copy(currentLookAt.current);
+      progressRef.current = 0;
+      arrivedRef.current = false;
+    }
+  }, [target, camera]);
+
+  useFrame((_, delta) => {
+    if (!target) return;
+    if (arrivedRef.current) return;
+
+    progressRef.current = Math.min(1, progressRef.current + delta * 1.2);
+    const t = easeInOutCubic(progressRef.current);
+
+    camera.position.lerpVectors(startPosRef.current, target.position, t);
+    currentLookAt.current.lerpVectors(startLookRef.current, target.lookAt, t);
+    camera.lookAt(currentLookAt.current);
+
+    if (progressRef.current >= 1 && !arrivedRef.current) {
+      arrivedRef.current = true;
+      onArrived();
+    }
+  });
+
+  return null;
+}
+
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// ─── Frame sizing ───────────────────────────────────────────────────────────
 
 function getFrameSize(offering: Offering): { w: number; h: number } {
   const type = offering.media_type;
   const textLen = offering.text_content?.length || 0;
-
   if (type === "text") {
     if (textLen > 200) return { w: 2.0, h: 2.4 };
     if (textLen > 100) return { w: 1.6, h: 2.0 };
     return { w: 1.4, h: 1.6 };
   }
   if (type === "image") return { w: 1.8, h: 2.2 };
-  if (type === "video") return { w: 2.2, h: 1.6 }; // landscape
+  if (type === "video") return { w: 2.2, h: 1.6 };
   if (type === "audio") return { w: 1.6, h: 1.2 };
   if (type === "link") return { w: 1.2, h: 1.0 };
   if (type === "pdf") return { w: 1.4, h: 1.8 };
   return { w: 1.4, h: 1.7 };
 }
 
-function ArtisticFrame({ 
-  offering, 
-  position, 
+// ─── Artistic Frame ─────────────────────────────────────────────────────────
+
+function ArtisticFrame({
+  offering,
+  position,
   rotation = [0, 0, 0],
-  onClick 
-}: { 
+  onClick,
+}: {
   offering: Offering;
   position: [number, number, number];
   rotation?: [number, number, number];
@@ -75,10 +251,10 @@ function ArtisticFrame({
   const innerH = h - border * 2;
   const canvasW = innerW - 0.1;
   const canvasH = innerH - 0.1;
-  // Html pixel dimensions scaled to match 3D canvas size
   const pxW = Math.round(canvasW * 140);
   const pxH = Math.round(canvasH * 140);
-  
+  const [hovered, setHovered] = useState(false);
+
   return (
     <group position={position} rotation={rotation}>
       <group
@@ -86,8 +262,10 @@ function ArtisticFrame({
           e.stopPropagation();
           onClick();
         }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
       >
-        {/* Invisible larger hit area for reliable clicks */}
+        {/* Hit area */}
         <mesh position={[0, 0, 0.2]}>
           <planeGeometry args={[w + 0.3, h + 0.3]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
@@ -102,20 +280,20 @@ function ArtisticFrame({
             metalness={0.1}
           />
         </mesh>
-        
-        {/* Inner frame detail */}
+
+        {/* Inner frame */}
         <mesh position={[0, 0, 0.07]}>
           <boxGeometry args={[innerW, innerH, 0.02]} />
           <meshStandardMaterial color="#4a3a2a" roughness={0.8} />
         </mesh>
-        
-        {/* Canvas/white space */}
+
+        {/* Canvas */}
         <mesh position={[0, 0, 0.09]}>
           <boxGeometry args={[canvasW, canvasH, 0.01]} />
           <meshStandardMaterial color="#f5f0e8" roughness={0.95} />
         </mesh>
-        
-        {/* Inline media rendered via Html */}
+
+        {/* Inline media */}
         <Html
           position={[0, 0, 0.11]}
           transform
@@ -135,37 +313,33 @@ function ArtisticFrame({
         >
           <FrameContent offering={offering} pxW={pxW} pxH={pxH} />
         </Html>
-        
-        {/* Pin/nail at top */}
+
+        {/* Pin */}
         <mesh position={[0, h / 2, 0.08]}>
           <sphereGeometry args={[0.04, 8, 8]} />
           <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
         </mesh>
+
+        {/* Hover glow */}
+        {hovered && (
+          <pointLight position={[0, 0, 1.5]} intensity={0.4} color="#fff5e0" distance={4} />
+        )}
       </group>
     </group>
   );
 }
 
-// Renders the actual content inside a frame
+// ─── Frame Content ──────────────────────────────────────────────────────────
+
 function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number; pxH: number }) {
   if (offering.media_type === "text" && offering.text_content) {
     const fontSize = Math.max(9, Math.min(13, pxH / 18));
     return (
       <div style={{
-        padding: "10px",
-        fontFamily: "Georgia, serif",
-        fontSize: `${fontSize}px`,
-        lineHeight: "1.5",
-        color: "#2a2a2a",
-        textAlign: "center",
-        fontStyle: "italic",
-        wordBreak: "break-word",
-        width: `${pxW}px`,
-        height: `${pxH}px`,
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        padding: "10px", fontFamily: "Georgia, serif", fontSize: `${fontSize}px`,
+        lineHeight: "1.5", color: "#2a2a2a", textAlign: "center", fontStyle: "italic",
+        wordBreak: "break-word", width: `${pxW}px`, height: `${pxH}px`, overflow: "hidden",
+        display: "flex", alignItems: "center", justifyContent: "center",
       }}>
         {offering.text_content.length > Math.floor(pxW * pxH / 80)
           ? offering.text_content.slice(0, Math.floor(pxW * pxH / 80)) + "…"
@@ -173,74 +347,36 @@ function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number;
       </div>
     );
   }
-
   if (offering.media_type === "image" && offering.file_url) {
     return (
-      <img
-        src={offering.file_url}
-        alt={offering.title || "Immagine"}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          borderRadius: "2px",
-        }}
-        crossOrigin="anonymous"
-      />
+      <img src={offering.file_url} alt={offering.title || "Immagine"}
+        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "2px" }}
+        crossOrigin="anonymous" />
     );
   }
-
   if (offering.media_type === "video" && offering.file_url) {
     return (
-      <video
-        src={offering.file_url}
-        autoPlay
-        muted
-        loop
-        playsInline
+      <video src={offering.file_url} autoPlay muted loop playsInline
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        crossOrigin="anonymous"
-      />
+        crossOrigin="anonymous" />
     );
   }
-
   if (offering.media_type === "audio" && offering.file_url) {
     return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "8px",
-        padding: "16px",
-        pointerEvents: "auto",
-      }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
+        justifyContent: "center", gap: "8px", padding: "16px", pointerEvents: "auto" }}>
         <div style={{ fontSize: "28px" }}>🎵</div>
         <div style={{ fontFamily: "Georgia, serif", fontSize: "10px", color: "#5a5a5a", textAlign: "center" }}>
           {offering.title || "Audio"}
         </div>
-        <audio
-          src={offering.file_url}
-          controls
-          style={{ width: "140px", height: "28px" }}
-          crossOrigin="anonymous"
-        />
+        <audio src={offering.file_url} controls style={{ width: "140px", height: "28px" }} crossOrigin="anonymous" />
       </div>
     );
   }
-
   if (offering.media_type === "link" && offering.link_url) {
     return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "6px",
-        padding: "16px",
-        fontFamily: "Georgia, serif",
-        textAlign: "center",
-      }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
+        justifyContent: "center", gap: "6px", padding: "16px", fontFamily: "Georgia, serif", textAlign: "center" }}>
         <div style={{ fontSize: "24px" }}>🔗</div>
         <div style={{ fontSize: "10px", color: "#5a5a5a", wordBreak: "break-all" }}>
           {offering.link_url.replace(/^https?:\/\//, "").slice(0, 40)}
@@ -248,42 +384,25 @@ function FrameContent({ offering, pxW, pxH }: { offering: Offering; pxW: number;
       </div>
     );
   }
-
   if (offering.media_type === "pdf") {
     return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "6px",
-        padding: "16px",
-        fontFamily: "Georgia, serif",
-      }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
+        justifyContent: "center", gap: "6px", padding: "16px", fontFamily: "Georgia, serif" }}>
         <div style={{ fontSize: "28px" }}>📄</div>
-        <div style={{ fontSize: "10px", color: "#5a5a5a", textAlign: "center" }}>
-          {offering.title || "PDF"}
-        </div>
+        <div style={{ fontSize: "10px", color: "#5a5a5a", textAlign: "center" }}>{offering.title || "PDF"}</div>
       </div>
     );
   }
-
-  // Fallback
   return (
-    <div style={{
-      fontFamily: "Georgia, serif",
-      fontSize: "11px",
-      color: "#8a8a8a",
-      textAlign: "center",
-      fontStyle: "italic",
-      padding: "16px",
-    }}>
+    <div style={{ fontFamily: "Georgia, serif", fontSize: "11px", color: "#8a8a8a",
+      textAlign: "center", fontStyle: "italic", padding: "16px" }}>
       {offering.title || "Cavapendolata"}
     </div>
   );
 }
 
-// Seeded random for deterministic layout
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
 function seededRandom(seed: number) {
   const x = Math.sin(seed * 9301 + 49297) * 49297;
   return x - Math.floor(x);
@@ -294,27 +413,87 @@ function seededRandom(seed: number) {
 function GalleryRoom() {
   return (
     <group>
+      {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
         <planeGeometry args={[60, 60]} />
         <meshStandardMaterial color="#d8d0c5" roughness={0.85} />
       </mesh>
+      {/* Center circle */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.99, 0]}>
         <circleGeometry args={[8, 32]} />
         <meshStandardMaterial color="#e8e0d5" transparent opacity={0.4} />
       </mesh>
+      {/* Back wall */}
       <mesh position={[0, 4, -18]} receiveShadow>
         <planeGeometry args={[60, 20]} />
         <meshStandardMaterial color="#f0ebe3" roughness={0.95} />
       </mesh>
+      {/* Left wall */}
       <mesh position={[-18, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[60, 20]} />
         <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
       </mesh>
+      {/* Right wall */}
       <mesh position={[18, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[60, 20]} />
         <meshStandardMaterial color="#e8e0d5" roughness={0.95} />
       </mesh>
+      {/* Ceiling (faint) */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 10, 0]}>
+        <planeGeometry args={[60, 60]} />
+        <meshStandardMaterial color="#f5f0e8" roughness={1} transparent opacity={0.3} />
+      </mesh>
     </group>
+  );
+}
+
+// ─── Volumetric Light Shafts ────────────────────────────────────────────────
+
+function LightShaft({ position, targetY = -3, color = "#fff8e8" }: {
+  position: [number, number, number];
+  targetY?: number;
+  color?: string;
+}) {
+  const height = position[1] - targetY;
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      const t = state.clock.elapsedTime;
+      const mat = meshRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.04 + Math.sin(t * 0.3 + position[0]) * 0.015;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} position={[position[0], position[1] - height / 2, position[2]]}>
+      <coneGeometry args={[2.5, height, 16, 1, true]} />
+      <meshBasicMaterial color={color} transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} />
+    </mesh>
+  );
+}
+
+function VolumetricLights() {
+  return (
+    <group>
+      <LightShaft position={[-6, 10, -16]} />
+      <LightShaft position={[4, 10, -16]} />
+      <LightShaft position={[0, 10, -16]} color="#f8f0e0" />
+      {/* Spotlight actors */}
+      <spotLight position={[-6, 9, -15]} angle={0.25} penumbra={0.8} intensity={0.6} color="#fff5e6" target-position={[-6, 0, -17]} castShadow />
+      <spotLight position={[4, 9, -15]} angle={0.25} penumbra={0.8} intensity={0.6} color="#fff5e6" target-position={[4, 0, -17]} castShadow />
+    </group>
+  );
+}
+
+// ─── Creature Shadow ────────────────────────────────────────────────────────
+
+function CreatureShadow({ position }: { position: [number, number, number] }) {
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[position[0], -2.98, position[2]]}>
+      <circleGeometry args={[0.6, 16]} />
+      <meshBasicMaterial color="#000" transparent opacity={0.12} depthWrite={false} />
+    </mesh>
   );
 }
 
@@ -323,10 +502,10 @@ function GalleryRoom() {
 function GalleryLighting() {
   return (
     <>
-      <ambientLight intensity={0.4} />
-      <directionalLight 
-        position={[10, 15, 10]} 
-        intensity={0.5} 
+      <ambientLight intensity={0.35} />
+      <directionalLight
+        position={[10, 15, 10]}
+        intensity={0.5}
         color="#fff5e6"
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -341,18 +520,11 @@ function GalleryLighting() {
 
 function GalleryDust() {
   return (
-    <Sparkles
-      count={200}
-      scale={40}
-      size={1}
-      speed={0.15}
-      color="#c9b896"
-      opacity={0.25}
-    />
+    <Sparkles count={200} scale={40} size={1} speed={0.15} color="#c9b896" opacity={0.25} />
   );
 }
 
-// ─── Story Creatures (bigger, more detailed, animated) ──────────────────────
+// ─── Story Creatures ────────────────────────────────────────────────────────
 
 const CREATURES = [
   {
@@ -360,470 +532,174 @@ const CREATURES = [
     story: "«Noi cavallucci siamo i primi cavapendoli: oscilliamo nell'acqua come pendoli viventi. Ogni onda ci spinge, ogni corrente ci tira, ma noi non cadiamo mai.»",
     position: [-8, -1.8, -10] as [number, number, number],
     rotation: [0, 0.6, 0] as [number, number, number],
-    color: "#7a9b8a",
-    emissive: "#4a6b5a",
-    geometry: "seahorse" as const,
-    scale: 1.4,
+    color: "#7a9b8a", emissive: "#4a6b5a", geometry: "seahorse" as const, scale: 1.4,
   },
   {
     name: "Gufo Saggio",
     story: "«Di notte conto i cavapendoli che dondolano tra le stelle. Non finiscono mai. E ogni volta che ne conto uno, ne nascono tre nuovi.»",
     position: [10, -0.8, -7] as [number, number, number],
     rotation: [0, -0.9, 0] as [number, number, number],
-    color: "#8b7355",
-    emissive: "#5a4a35",
-    geometry: "owl" as const,
-    scale: 1.2,
+    color: "#8b7355", emissive: "#5a4a35", geometry: "owl" as const, scale: 1.2,
   },
   {
     name: "Lucertola Sognatrice",
     story: "«Mi fermo al sole e sogno cavapendoli fatti di luce, che oscillano senza ombra. Li vedo solo io, perché ho gli occhi fatti di cristallo.»",
     position: [5, -2.5, 6] as [number, number, number],
     rotation: [-0.1, 1.4, 0] as [number, number, number],
-    color: "#6b8b5b",
-    emissive: "#3a5a2b",
-    geometry: "lizard" as const,
-    scale: 1.1,
+    color: "#6b8b5b", emissive: "#3a5a2b", geometry: "lizard" as const, scale: 1.1,
   },
   {
     name: "Lumaca Filosofa",
     story: "«Ogni cavapendolo è una spirale, come la mia casa. Il tempo gira, mai dritto. Chi ha fretta non troverà mai un cavapendolo.»",
     position: [-6, -2.6, 7] as [number, number, number],
     rotation: [0, 2.3, 0] as [number, number, number],
-    color: "#b09878",
-    emissive: "#806848",
-    geometry: "snail" as const,
-    scale: 1.0,
+    color: "#b09878", emissive: "#806848", geometry: "snail" as const, scale: 1.0,
   },
   {
     name: "Gatto Lunare",
     story: "«I cavapendoli migliori appaiono a mezzanotte, quando nessuno guarda. Li catturo con le mie zampe di velluto e li nascondo sotto la luna.»",
     position: [12, -1.6, 3] as [number, number, number],
     rotation: [0, -1.6, 0] as [number, number, number],
-    color: "#4a4a5a",
-    emissive: "#2a2a3a",
-    geometry: "cat" as const,
-    scale: 1.3,
+    color: "#4a4a5a", emissive: "#2a2a3a", geometry: "cat" as const, scale: 1.3,
   },
   {
     name: "Rana Cantante",
     story: "«Canto per i cavapendoli: cra-cra-pendolo, cra-cra-pendolo… è la mia ninna nanna. Quando smetto di cantare, il mondo si ferma un istante.»",
     position: [-11, -2.2, 1] as [number, number, number],
     rotation: [0, 1.2, 0] as [number, number, number],
-    color: "#5a8b5a",
-    emissive: "#2a5b2a",
-    geometry: "frog" as const,
-    scale: 1.0,
+    color: "#5a8b5a", emissive: "#2a5b2a", geometry: "frog" as const, scale: 1.0,
   },
 ];
 
-// ─── Detailed Creature Bodies ───────────────────────────────────────────────
+// ─── Creature Bodies (unchanged from original) ─────────────────────────────
 
 function CreatureBody({ type, color, emissive }: { type: string; color: string; emissive: string }) {
   const matProps = { color, emissive, emissiveIntensity: 0.3, roughness: 0.7, metalness: 0.1 };
   const darkMat = { color: "#222", roughness: 0.4, metalness: 0.2 };
-  
+
   if (type === "seahorse") {
     return (
       <group>
-        {/* Head */}
-        <mesh position={[0, 1.0, 0]}>
-          <sphereGeometry args={[0.35, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Crown/crest */}
-        <mesh position={[0, 1.35, -0.05]} rotation={[0.2, 0, 0]}>
-          <coneGeometry args={[0.12, 0.3, 6]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[-0.08, 1.28, -0.02]} rotation={[0.3, 0, 0.4]}>
-          <coneGeometry args={[0.06, 0.18, 5]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.08, 1.28, -0.02]} rotation={[0.3, 0, -0.4]}>
-          <coneGeometry args={[0.06, 0.18, 5]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Snout */}
-        <mesh position={[0.2, 1.0, 0.2]} rotation={[0, 0, -0.4]} scale={[1.8, 0.5, 0.5]}>
-          <cylinderGeometry args={[0.05, 0.08, 0.4, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Eye */}
-        <mesh position={[0.12, 1.08, 0.25]}>
-          <sphereGeometry args={[0.07, 8, 8]} />
-          <meshStandardMaterial color="#e8e0d0" />
-        </mesh>
-        <mesh position={[0.14, 1.08, 0.3]}>
-          <sphereGeometry args={[0.035, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        {/* Body segments - S curve */}
+        <mesh position={[0, 1.0, 0]}><sphereGeometry args={[0.35, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, 1.35, -0.05]} rotation={[0.2, 0, 0]}><coneGeometry args={[0.12, 0.3, 6]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.08, 1.28, -0.02]} rotation={[0.3, 0, 0.4]}><coneGeometry args={[0.06, 0.18, 5]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.08, 1.28, -0.02]} rotation={[0.3, 0, -0.4]}><coneGeometry args={[0.06, 0.18, 5]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.2, 1.0, 0.2]} rotation={[0, 0, -0.4]} scale={[1.8, 0.5, 0.5]}><cylinderGeometry args={[0.05, 0.08, 0.4, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.12, 1.08, 0.25]}><sphereGeometry args={[0.07, 8, 8]} /><meshStandardMaterial color="#e8e0d0" /></mesh>
+        <mesh position={[0.14, 1.08, 0.3]}><sphereGeometry args={[0.035, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
         {[0.55, 0.2, -0.15, -0.45].map((y, i) => (
-          <mesh key={i} position={[i * 0.04, y, 0.03 * Math.sin(i)]} scale={[0.7 - i * 0.05, 0.8, 0.6 - i * 0.04]}>
-            <sphereGeometry args={[0.3, 12, 12]} />
-            <meshStandardMaterial {...matProps} />
-          </mesh>
+          <mesh key={i} position={[i * 0.04, y, 0.03 * Math.sin(i)]} scale={[0.7 - i * 0.05, 0.8, 0.6 - i * 0.04]}><sphereGeometry args={[0.3, 12, 12]} /><meshStandardMaterial {...matProps} /></mesh>
         ))}
-        {/* Body ridge bumps */}
         {[0.7, 0.4, 0.1, -0.2].map((y, i) => (
-          <mesh key={`bump-${i}`} position={[-0.2, y, 0]} rotation={[0, 0, 0.3]}>
-            <coneGeometry args={[0.04, 0.12, 4]} />
-            <meshStandardMaterial {...matProps} />
-          </mesh>
+          <mesh key={`bump-${i}`} position={[-0.2, y, 0]} rotation={[0, 0, 0.3]}><coneGeometry args={[0.04, 0.12, 4]} /><meshStandardMaterial {...matProps} /></mesh>
         ))}
-        {/* Tail curl */}
-        <mesh position={[0.15, -0.7, 0]} rotation={[0.3, 0, -0.8]}>
-          <torusGeometry args={[0.25, 0.07, 8, 16, Math.PI * 1.3]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Dorsal fin */}
-        <mesh position={[-0.22, 0.3, 0]} rotation={[0, 0, 0.4]} scale={[0.12, 0.8, 0.5]}>
-          <coneGeometry args={[0.3, 0.7, 6]} />
-          <meshStandardMaterial {...matProps} transparent opacity={0.6} />
-        </mesh>
-        {/* Pectoral fin */}
-        <mesh position={[0.15, 0.45, 0.2]} rotation={[0.5, 0.3, -0.3]} scale={[0.5, 0.3, 0.1]}>
-          <sphereGeometry args={[0.2, 8, 8]} />
-          <meshStandardMaterial {...matProps} transparent opacity={0.5} />
-        </mesh>
+        <mesh position={[0.15, -0.7, 0]} rotation={[0.3, 0, -0.8]}><torusGeometry args={[0.25, 0.07, 8, 16, Math.PI * 1.3]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.22, 0.3, 0]} rotation={[0, 0, 0.4]} scale={[0.12, 0.8, 0.5]}><coneGeometry args={[0.3, 0.7, 6]} /><meshStandardMaterial {...matProps} transparent opacity={0.6} /></mesh>
+        <mesh position={[0.15, 0.45, 0.2]} rotation={[0.5, 0.3, -0.3]} scale={[0.5, 0.3, 0.1]}><sphereGeometry args={[0.2, 8, 8]} /><meshStandardMaterial {...matProps} transparent opacity={0.5} /></mesh>
       </group>
     );
   }
-  
+
   if (type === "owl") {
     return (
       <group>
-        {/* Body */}
-        <mesh position={[0, 0, 0]} scale={[0.9, 1.2, 0.8]}>
-          <sphereGeometry args={[0.45, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Chest lighter patch */}
-        <mesh position={[0, -0.05, 0.3]} scale={[0.6, 0.8, 0.3]}>
-          <sphereGeometry args={[0.35, 12, 12]} />
-          <meshStandardMaterial color="#a09070" roughness={0.8} />
-        </mesh>
-        {/* Head */}
-        <mesh position={[0, 0.6, 0.05]}>
-          <sphereGeometry args={[0.35, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Face disk */}
-        <mesh position={[0, 0.58, 0.28]} scale={[1, 1.1, 0.3]}>
-          <sphereGeometry args={[0.28, 12, 12]} />
-          <meshStandardMaterial color="#9a8565" roughness={0.9} />
-        </mesh>
-        {/* Eyes - large */}
-        <mesh position={[-0.12, 0.62, 0.32]}>
-          <sphereGeometry args={[0.12, 10, 10]} />
-          <meshStandardMaterial color="#f0e68c" emissive="#f0e68c" emissiveIntensity={0.6} />
-        </mesh>
-        <mesh position={[0.12, 0.62, 0.32]}>
-          <sphereGeometry args={[0.12, 10, 10]} />
-          <meshStandardMaterial color="#f0e68c" emissive="#f0e68c" emissiveIntensity={0.6} />
-        </mesh>
-        {/* Pupils */}
-        <mesh position={[-0.12, 0.62, 0.42]}>
-          <sphereGeometry args={[0.055, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        <mesh position={[0.12, 0.62, 0.42]}>
-          <sphereGeometry args={[0.055, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        {/* Ear tufts */}
-        <mesh position={[-0.25, 0.9, 0]} rotation={[0.1, 0, 0.3]}>
-          <coneGeometry args={[0.08, 0.28, 4]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.25, 0.9, 0]} rotation={[0.1, 0, -0.3]}>
-          <coneGeometry args={[0.08, 0.28, 4]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Beak */}
-        <mesh position={[0, 0.5, 0.38]} rotation={[0.4, 0, 0]}>
-          <coneGeometry args={[0.05, 0.14, 4]} />
-          <meshStandardMaterial color="#e8a020" />
-        </mesh>
-        {/* Wings */}
-        <mesh position={[-0.4, 0.05, -0.1]} rotation={[0, 0, 0.4]} scale={[0.2, 0.7, 0.5]}>
-          <sphereGeometry args={[0.35, 10, 10]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.4, 0.05, -0.1]} rotation={[0, 0, -0.4]} scale={[0.2, 0.7, 0.5]}>
-          <sphereGeometry args={[0.35, 10, 10]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Feet */}
-        <mesh position={[-0.12, -0.55, 0.15]} scale={[0.5, 0.15, 0.7]}>
-          <sphereGeometry args={[0.12, 8, 8]} />
-          <meshStandardMaterial color="#e8a020" />
-        </mesh>
-        <mesh position={[0.12, -0.55, 0.15]} scale={[0.5, 0.15, 0.7]}>
-          <sphereGeometry args={[0.12, 8, 8]} />
-          <meshStandardMaterial color="#e8a020" />
-        </mesh>
-        {/* Feather tufts on body */}
+        <mesh position={[0, 0, 0]} scale={[0.9, 1.2, 0.8]}><sphereGeometry args={[0.45, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, -0.05, 0.3]} scale={[0.6, 0.8, 0.3]}><sphereGeometry args={[0.35, 12, 12]} /><meshStandardMaterial color="#a09070" roughness={0.8} /></mesh>
+        <mesh position={[0, 0.6, 0.05]}><sphereGeometry args={[0.35, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, 0.58, 0.28]} scale={[1, 1.1, 0.3]}><sphereGeometry args={[0.28, 12, 12]} /><meshStandardMaterial color="#9a8565" roughness={0.9} /></mesh>
+        <mesh position={[-0.12, 0.62, 0.32]}><sphereGeometry args={[0.12, 10, 10]} /><meshStandardMaterial color="#f0e68c" emissive="#f0e68c" emissiveIntensity={0.6} /></mesh>
+        <mesh position={[0.12, 0.62, 0.32]}><sphereGeometry args={[0.12, 10, 10]} /><meshStandardMaterial color="#f0e68c" emissive="#f0e68c" emissiveIntensity={0.6} /></mesh>
+        <mesh position={[-0.12, 0.62, 0.42]}><sphereGeometry args={[0.055, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[0.12, 0.62, 0.42]}><sphereGeometry args={[0.055, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[-0.25, 0.9, 0]} rotation={[0.1, 0, 0.3]}><coneGeometry args={[0.08, 0.28, 4]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.25, 0.9, 0]} rotation={[0.1, 0, -0.3]}><coneGeometry args={[0.08, 0.28, 4]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, 0.5, 0.38]} rotation={[0.4, 0, 0]}><coneGeometry args={[0.05, 0.14, 4]} /><meshStandardMaterial color="#e8a020" /></mesh>
+        <mesh position={[-0.4, 0.05, -0.1]} rotation={[0, 0, 0.4]} scale={[0.2, 0.7, 0.5]}><sphereGeometry args={[0.35, 10, 10]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.4, 0.05, -0.1]} rotation={[0, 0, -0.4]} scale={[0.2, 0.7, 0.5]}><sphereGeometry args={[0.35, 10, 10]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.12, -0.55, 0.15]} scale={[0.5, 0.15, 0.7]}><sphereGeometry args={[0.12, 8, 8]} /><meshStandardMaterial color="#e8a020" /></mesh>
+        <mesh position={[0.12, -0.55, 0.15]} scale={[0.5, 0.15, 0.7]}><sphereGeometry args={[0.12, 8, 8]} /><meshStandardMaterial color="#e8a020" /></mesh>
         {[-0.25, 0, 0.25].map((x, i) => (
-          <mesh key={i} position={[x, -0.3, 0.25]} rotation={[0.3, 0, x * 0.5]}>
-            <coneGeometry args={[0.03, 0.1, 3]} />
-            <meshStandardMaterial {...matProps} />
-          </mesh>
+          <mesh key={i} position={[x, -0.3, 0.25]} rotation={[0.3, 0, x * 0.5]}><coneGeometry args={[0.03, 0.1, 3]} /><meshStandardMaterial {...matProps} /></mesh>
         ))}
       </group>
     );
   }
-  
+
   if (type === "cat") {
     return (
       <group>
-        {/* Body - sitting pose */}
-        <mesh position={[0, 0, 0]} scale={[0.7, 1, 0.95]}>
-          <sphereGeometry args={[0.4, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Belly */}
-        <mesh position={[0, -0.1, 0.2]} scale={[0.5, 0.6, 0.4]}>
-          <sphereGeometry args={[0.3, 12, 12]} />
-          <meshStandardMaterial color="#5a5a6a" roughness={0.8} />
-        </mesh>
-        {/* Head */}
-        <mesh position={[0, 0.6, 0.18]}>
-          <sphereGeometry args={[0.3, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Muzzle */}
-        <mesh position={[0, 0.52, 0.42]} scale={[0.6, 0.4, 0.5]}>
-          <sphereGeometry args={[0.12, 10, 10]} />
-          <meshStandardMaterial color="#5a5a6a" roughness={0.8} />
-        </mesh>
-        {/* Nose */}
-        <mesh position={[0, 0.55, 0.47]}>
-          <sphereGeometry args={[0.025, 6, 6]} />
-          <meshStandardMaterial color="#d4707a" />
-        </mesh>
-        {/* Ears */}
-        <mesh position={[-0.18, 0.88, 0.12]} rotation={[0.1, 0, 0.2]}>
-          <coneGeometry args={[0.09, 0.2, 4]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.18, 0.88, 0.12]} rotation={[0.1, 0, -0.2]}>
-          <coneGeometry args={[0.09, 0.2, 4]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Inner ears */}
-        <mesh position={[-0.17, 0.86, 0.15]} rotation={[0.1, 0, 0.2]} scale={[0.6, 0.7, 0.5]}>
-          <coneGeometry args={[0.07, 0.14, 4]} />
-          <meshStandardMaterial color="#d4707a" />
-        </mesh>
-        <mesh position={[0.17, 0.86, 0.15]} rotation={[0.1, 0, -0.2]} scale={[0.6, 0.7, 0.5]}>
-          <coneGeometry args={[0.07, 0.14, 4]} />
-          <meshStandardMaterial color="#d4707a" />
-        </mesh>
-        {/* Eyes */}
-        <mesh position={[-0.1, 0.64, 0.4]}>
-          <sphereGeometry args={[0.055, 8, 8]} />
-          <meshStandardMaterial color="#c4e060" emissive="#c4e060" emissiveIntensity={0.5} />
-        </mesh>
-        <mesh position={[0.1, 0.64, 0.4]}>
-          <sphereGeometry args={[0.055, 8, 8]} />
-          <meshStandardMaterial color="#c4e060" emissive="#c4e060" emissiveIntensity={0.5} />
-        </mesh>
-        {/* Pupils - vertical slits */}
-        <mesh position={[-0.1, 0.64, 0.45]} scale={[0.3, 1, 1]}>
-          <sphereGeometry args={[0.025, 6, 6]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        <mesh position={[0.1, 0.64, 0.45]} scale={[0.3, 1, 1]}>
-          <sphereGeometry args={[0.025, 6, 6]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        {/* Whiskers (thin cylinders) */}
-        {[-1, 1].map((side) => (
+        <mesh position={[0, 0, 0]} scale={[0.7, 1, 0.95]}><sphereGeometry args={[0.4, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, -0.1, 0.2]} scale={[0.5, 0.6, 0.4]}><sphereGeometry args={[0.3, 12, 12]} /><meshStandardMaterial color="#5a5a6a" roughness={0.8} /></mesh>
+        <mesh position={[0, 0.6, 0.18]}><sphereGeometry args={[0.3, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, 0.52, 0.42]} scale={[0.6, 0.4, 0.5]}><sphereGeometry args={[0.12, 10, 10]} /><meshStandardMaterial color="#5a5a6a" roughness={0.8} /></mesh>
+        <mesh position={[0, 0.55, 0.47]}><sphereGeometry args={[0.025, 6, 6]} /><meshStandardMaterial color="#d4707a" /></mesh>
+        <mesh position={[-0.18, 0.88, 0.12]} rotation={[0.1, 0, 0.2]}><coneGeometry args={[0.09, 0.2, 4]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.18, 0.88, 0.12]} rotation={[0.1, 0, -0.2]}><coneGeometry args={[0.09, 0.2, 4]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.17, 0.86, 0.15]} rotation={[0.1, 0, 0.2]} scale={[0.6, 0.7, 0.5]}><coneGeometry args={[0.07, 0.14, 4]} /><meshStandardMaterial color="#d4707a" /></mesh>
+        <mesh position={[0.17, 0.86, 0.15]} rotation={[0.1, 0, -0.2]} scale={[0.6, 0.7, 0.5]}><coneGeometry args={[0.07, 0.14, 4]} /><meshStandardMaterial color="#d4707a" /></mesh>
+        <mesh position={[-0.1, 0.64, 0.4]}><sphereGeometry args={[0.055, 8, 8]} /><meshStandardMaterial color="#c4e060" emissive="#c4e060" emissiveIntensity={0.5} /></mesh>
+        <mesh position={[0.1, 0.64, 0.4]}><sphereGeometry args={[0.055, 8, 8]} /><meshStandardMaterial color="#c4e060" emissive="#c4e060" emissiveIntensity={0.5} /></mesh>
+        <mesh position={[-0.1, 0.64, 0.45]} scale={[0.3, 1, 1]}><sphereGeometry args={[0.025, 6, 6]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[0.1, 0.64, 0.45]} scale={[0.3, 1, 1]}><sphereGeometry args={[0.025, 6, 6]} /><meshStandardMaterial {...darkMat} /></mesh>
+        {[-1, 1].map((side) =>
           [0, 1, 2].map((i) => (
             <mesh key={`w-${side}-${i}`} position={[side * 0.15, 0.52 + i * 0.02, 0.42]} rotation={[0.1 * (i - 1), 0, side * (0.15 + i * 0.1)]}>
-              <cylinderGeometry args={[0.003, 0.002, 0.25, 4]} />
-              <meshStandardMaterial color="#888" />
+              <cylinderGeometry args={[0.003, 0.002, 0.25, 4]} /><meshStandardMaterial color="#888" />
             </mesh>
           ))
-        ))}
-        {/* Front paws */}
-        <mesh position={[-0.15, -0.42, 0.3]} scale={[0.35, 0.2, 0.5]}>
-          <sphereGeometry args={[0.12, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.15, -0.42, 0.3]} scale={[0.35, 0.2, 0.5]}>
-          <sphereGeometry args={[0.12, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Tail */}
-        <mesh position={[-0.15, 0.1, -0.4]} rotation={[0.9, 0.3, 0]} scale={[0.15, 0.15, 1]}>
-          <cylinderGeometry args={[0.08, 0.04, 0.8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Tail tip */}
-        <mesh position={[-0.3, 0.55, -0.75]}>
-          <sphereGeometry args={[0.06, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
+        )}
+        <mesh position={[-0.15, -0.42, 0.3]} scale={[0.35, 0.2, 0.5]}><sphereGeometry args={[0.12, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.15, -0.42, 0.3]} scale={[0.35, 0.2, 0.5]}><sphereGeometry args={[0.12, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.15, 0.1, -0.4]} rotation={[0.9, 0.3, 0]} scale={[0.15, 0.15, 1]}><cylinderGeometry args={[0.08, 0.04, 0.8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.3, 0.55, -0.75]}><sphereGeometry args={[0.06, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
       </group>
     );
   }
-  
+
   if (type === "frog") {
     return (
       <group>
-        {/* Body */}
-        <mesh position={[0, 0, 0]} scale={[1.1, 0.7, 1]}>
-          <sphereGeometry args={[0.35, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Belly */}
-        <mesh position={[0, -0.08, 0.15]} scale={[0.8, 0.5, 0.7]}>
-          <sphereGeometry args={[0.3, 12, 12]} />
-          <meshStandardMaterial color="#7aab6a" roughness={0.8} />
-        </mesh>
-        {/* Head bump */}
-        <mesh position={[0, 0.12, 0.2]} scale={[0.9, 0.6, 0.8]}>
-          <sphereGeometry args={[0.25, 12, 12]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Eyes - bulging */}
-        <mesh position={[-0.18, 0.3, 0.18]}>
-          <sphereGeometry args={[0.13, 10, 10]} />
-          <meshStandardMaterial color="#e8e8e0" />
-        </mesh>
-        <mesh position={[0.18, 0.3, 0.18]}>
-          <sphereGeometry args={[0.13, 10, 10]} />
-          <meshStandardMaterial color="#e8e8e0" />
-        </mesh>
-        <mesh position={[-0.18, 0.33, 0.28]}>
-          <sphereGeometry args={[0.055, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        <mesh position={[0.18, 0.33, 0.28]}>
-          <sphereGeometry args={[0.055, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        {/* Mouth line */}
-        <mesh position={[0, 0.02, 0.35]} scale={[0.8, 0.08, 0.1]}>
-          <boxGeometry args={[0.4, 0.02, 0.02]} />
-          <meshStandardMaterial color="#3a6a3a" />
-        </mesh>
-        {/* Front legs */}
-        <mesh position={[-0.28, -0.18, 0.25]} rotation={[0.4, 0, 0.3]}>
-          <cylinderGeometry args={[0.05, 0.04, 0.25, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.28, -0.18, 0.25]} rotation={[0.4, 0, -0.3]}>
-          <cylinderGeometry args={[0.05, 0.04, 0.25, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Front feet */}
-        <mesh position={[-0.35, -0.28, 0.32]} scale={[0.6, 0.15, 0.8]}>
-          <sphereGeometry args={[0.08, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.35, -0.28, 0.32]} scale={[0.6, 0.15, 0.8]}>
-          <sphereGeometry args={[0.08, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Hind legs - folded */}
-        <mesh position={[-0.3, -0.1, -0.1]} rotation={[0.6, 0, 0.8]} scale={[1, 1, 1.2]}>
-          <cylinderGeometry args={[0.06, 0.05, 0.3, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.3, -0.1, -0.1]} rotation={[0.6, 0, -0.8]} scale={[1, 1, 1.2]}>
-          <cylinderGeometry args={[0.06, 0.05, 0.3, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Hind feet */}
-        <mesh position={[-0.42, -0.22, -0.15]} scale={[0.7, 0.12, 1.2]}>
-          <sphereGeometry args={[0.1, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        <mesh position={[0.42, -0.22, -0.15]} scale={[0.7, 0.12, 1.2]}>
-          <sphereGeometry args={[0.1, 8, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Warts/bumps */}
+        <mesh position={[0, 0, 0]} scale={[1.1, 0.7, 1]}><sphereGeometry args={[0.35, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, -0.08, 0.15]} scale={[0.8, 0.5, 0.7]}><sphereGeometry args={[0.3, 12, 12]} /><meshStandardMaterial color="#7aab6a" roughness={0.8} /></mesh>
+        <mesh position={[0, 0.12, 0.2]} scale={[0.9, 0.6, 0.8]}><sphereGeometry args={[0.25, 12, 12]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.18, 0.3, 0.18]}><sphereGeometry args={[0.13, 10, 10]} /><meshStandardMaterial color="#e8e8e0" /></mesh>
+        <mesh position={[0.18, 0.3, 0.18]}><sphereGeometry args={[0.13, 10, 10]} /><meshStandardMaterial color="#e8e8e0" /></mesh>
+        <mesh position={[-0.18, 0.33, 0.28]}><sphereGeometry args={[0.055, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[0.18, 0.33, 0.28]}><sphereGeometry args={[0.055, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[0, 0.02, 0.35]} scale={[0.8, 0.08, 0.1]}><boxGeometry args={[0.4, 0.02, 0.02]} /><meshStandardMaterial color="#3a6a3a" /></mesh>
+        <mesh position={[-0.28, -0.18, 0.25]} rotation={[0.4, 0, 0.3]}><cylinderGeometry args={[0.05, 0.04, 0.25, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.28, -0.18, 0.25]} rotation={[0.4, 0, -0.3]}><cylinderGeometry args={[0.05, 0.04, 0.25, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.35, -0.28, 0.32]} scale={[0.6, 0.15, 0.8]}><sphereGeometry args={[0.08, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.35, -0.28, 0.32]} scale={[0.6, 0.15, 0.8]}><sphereGeometry args={[0.08, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.3, -0.1, -0.1]} rotation={[0.6, 0, 0.8]} scale={[1, 1, 1.2]}><cylinderGeometry args={[0.06, 0.05, 0.3, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.3, -0.1, -0.1]} rotation={[0.6, 0, -0.8]} scale={[1, 1, 1.2]}><cylinderGeometry args={[0.06, 0.05, 0.3, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.42, -0.22, -0.15]} scale={[0.7, 0.12, 1.2]}><sphereGeometry args={[0.1, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.42, -0.22, -0.15]} scale={[0.7, 0.12, 1.2]}><sphereGeometry args={[0.1, 8, 8]} /><meshStandardMaterial {...matProps} /></mesh>
         {[[0.15, 0.1, -0.2], [-0.1, 0.15, -0.15], [0.2, 0.05, 0.05]].map(([x, y, z], i) => (
-          <mesh key={i} position={[x, y, z]}>
-            <sphereGeometry args={[0.035, 6, 6]} />
-            <meshStandardMaterial color="#4a7a4a" roughness={0.9} />
-          </mesh>
+          <mesh key={i} position={[x, y, z]}><sphereGeometry args={[0.035, 6, 6]} /><meshStandardMaterial color="#4a7a4a" roughness={0.9} /></mesh>
         ))}
       </group>
     );
   }
-  
+
   if (type === "snail") {
     return (
       <group>
-        {/* Shell - main */}
-        <mesh position={[0, 0.25, -0.1]}>
-          <sphereGeometry args={[0.35, 16, 16]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Shell spiral details */}
-        <mesh position={[0.08, 0.35, -0.15]} scale={[0.8, 0.8, 0.8]}>
-          <torusGeometry args={[0.15, 0.06, 8, 16, Math.PI * 1.5]} />
-          <meshStandardMaterial color="#c0a878" roughness={0.6} />
-        </mesh>
-        <mesh position={[0.05, 0.3, -0.12]} scale={[0.5, 0.5, 0.5]}>
-          <torusGeometry args={[0.1, 0.04, 8, 12, Math.PI * 1.8]} />
-          <meshStandardMaterial color="#d0b888" roughness={0.5} />
-        </mesh>
-        {/* Shell stripes */}
+        <mesh position={[0, 0.25, -0.1]}><sphereGeometry args={[0.35, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.08, 0.35, -0.15]} scale={[0.8, 0.8, 0.8]}><torusGeometry args={[0.15, 0.06, 8, 16, Math.PI * 1.5]} /><meshStandardMaterial color="#c0a878" roughness={0.6} /></mesh>
+        <mesh position={[0.05, 0.3, -0.12]} scale={[0.5, 0.5, 0.5]}><torusGeometry args={[0.1, 0.04, 8, 12, Math.PI * 1.8]} /><meshStandardMaterial color="#d0b888" roughness={0.5} /></mesh>
         {[0, 0.7, 1.4, 2.1].map((a, i) => (
-          <mesh key={i} position={[Math.cos(a) * 0.25, 0.25 + Math.sin(a) * 0.15, -0.1]} rotation={[0, a, 0]}>
-            <cylinderGeometry args={[0.005, 0.005, 0.3, 4]} />
-            <meshStandardMaterial color="#a08858" />
-          </mesh>
+          <mesh key={i} position={[Math.cos(a) * 0.25, 0.25 + Math.sin(a) * 0.15, -0.1]} rotation={[0, a, 0]}><cylinderGeometry args={[0.005, 0.005, 0.3, 4]} /><meshStandardMaterial color="#a08858" /></mesh>
         ))}
-        {/* Body */}
-        <mesh position={[0, -0.08, 0.15]} scale={[0.7, 0.4, 1.5]}>
-          <sphereGeometry args={[0.22, 12, 12]} />
-          <meshStandardMaterial color="#a09080" roughness={0.8} />
-        </mesh>
-        {/* Body extension (head part) */}
-        <mesh position={[0, 0.0, 0.4]} scale={[0.5, 0.35, 0.6]}>
-          <sphereGeometry args={[0.18, 10, 10]} />
-          <meshStandardMaterial color="#a09080" roughness={0.8} />
-        </mesh>
-        {/* Eye stalks */}
-        <mesh position={[-0.07, 0.18, 0.45]} rotation={[0.6, 0, 0.1]}>
-          <cylinderGeometry args={[0.018, 0.018, 0.22, 6]} />
-          <meshStandardMaterial color="#a09080" />
-        </mesh>
-        <mesh position={[0.07, 0.18, 0.45]} rotation={[0.6, 0, -0.1]}>
-          <cylinderGeometry args={[0.018, 0.018, 0.22, 6]} />
-          <meshStandardMaterial color="#a09080" />
-        </mesh>
-        {/* Eyes */}
-        <mesh position={[-0.08, 0.28, 0.53]}>
-          <sphereGeometry args={[0.035, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        <mesh position={[0.08, 0.28, 0.53]}>
-          <sphereGeometry args={[0.035, 8, 8]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        {/* Smaller tentacles */}
-        <mesh position={[-0.04, 0.08, 0.48]} rotation={[0.8, 0, 0.15]}>
-          <cylinderGeometry args={[0.01, 0.01, 0.12, 4]} />
-          <meshStandardMaterial color="#a09080" />
-        </mesh>
-        <mesh position={[0.04, 0.08, 0.48]} rotation={[0.8, 0, -0.15]}>
-          <cylinderGeometry args={[0.01, 0.01, 0.12, 4]} />
-          <meshStandardMaterial color="#a09080" />
-        </mesh>
-        {/* Slime trail */}
-        <mesh position={[0, -0.15, -0.25]} scale={[0.3, 0.02, 0.8]}>
-          <boxGeometry args={[0.3, 0.01, 1]} />
-          <meshStandardMaterial color="#b8b0a0" transparent opacity={0.3} />
-        </mesh>
+        <mesh position={[0, -0.08, 0.15]} scale={[0.7, 0.4, 1.5]}><sphereGeometry args={[0.22, 12, 12]} /><meshStandardMaterial color="#a09080" roughness={0.8} /></mesh>
+        <mesh position={[0, 0.0, 0.4]} scale={[0.5, 0.35, 0.6]}><sphereGeometry args={[0.18, 10, 10]} /><meshStandardMaterial color="#a09080" roughness={0.8} /></mesh>
+        <mesh position={[-0.07, 0.18, 0.45]} rotation={[0.6, 0, 0.1]}><cylinderGeometry args={[0.018, 0.018, 0.22, 6]} /><meshStandardMaterial color="#a09080" /></mesh>
+        <mesh position={[0.07, 0.18, 0.45]} rotation={[0.6, 0, -0.1]}><cylinderGeometry args={[0.018, 0.018, 0.22, 6]} /><meshStandardMaterial color="#a09080" /></mesh>
+        <mesh position={[-0.08, 0.28, 0.53]}><sphereGeometry args={[0.035, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[0.08, 0.28, 0.53]}><sphereGeometry args={[0.035, 8, 8]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[-0.04, 0.08, 0.48]} rotation={[0.8, 0, 0.15]}><cylinderGeometry args={[0.01, 0.01, 0.12, 4]} /><meshStandardMaterial color="#a09080" /></mesh>
+        <mesh position={[0.04, 0.08, 0.48]} rotation={[0.8, 0, -0.15]}><cylinderGeometry args={[0.01, 0.01, 0.12, 4]} /><meshStandardMaterial color="#a09080" /></mesh>
+        <mesh position={[0, -0.15, -0.25]} scale={[0.3, 0.02, 0.8]}><boxGeometry args={[0.3, 0.01, 1]} /><meshStandardMaterial color="#b8b0a0" transparent opacity={0.3} /></mesh>
       </group>
     );
   }
@@ -831,45 +707,14 @@ function CreatureBody({ type, color, emissive }: { type: string; color: string; 
   if (type === "lizard") {
     return (
       <group>
-        {/* Body */}
-        <mesh position={[0, 0, 0]} scale={[0.55, 0.35, 1.3]}>
-          <sphereGeometry args={[0.3, 14, 14]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Body pattern (darker stripe) */}
-        <mesh position={[0, 0.1, 0]} scale={[0.15, 0.08, 1.2]}>
-          <boxGeometry args={[0.3, 0.1, 0.6]} />
-          <meshStandardMaterial color="#4a6a3a" roughness={0.8} />
-        </mesh>
-        {/* Head */}
-        <mesh position={[0, 0.06, 0.4]} scale={[0.8, 0.55, 0.9]}>
-          <sphereGeometry args={[0.18, 12, 12]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Snout */}
-        <mesh position={[0, 0.04, 0.55]} scale={[0.5, 0.35, 0.6]}>
-          <sphereGeometry args={[0.12, 10, 10]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Eyes */}
-        <mesh position={[-0.1, 0.12, 0.48]}>
-          <sphereGeometry args={[0.04, 8, 8]} />
-          <meshStandardMaterial color="#e8c020" emissive="#e8c020" emissiveIntensity={0.4} />
-        </mesh>
-        <mesh position={[0.1, 0.12, 0.48]}>
-          <sphereGeometry args={[0.04, 8, 8]} />
-          <meshStandardMaterial color="#e8c020" emissive="#e8c020" emissiveIntensity={0.4} />
-        </mesh>
-        {/* Pupils */}
-        <mesh position={[-0.1, 0.12, 0.52]} scale={[0.5, 1, 1]}>
-          <sphereGeometry args={[0.02, 6, 6]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        <mesh position={[0.1, 0.12, 0.52]} scale={[0.5, 1, 1]}>
-          <sphereGeometry args={[0.02, 6, 6]} />
-          <meshStandardMaterial {...darkMat} />
-        </mesh>
-        {/* Legs - 4 */}
+        <mesh position={[0, 0, 0]} scale={[0.55, 0.35, 1.3]}><sphereGeometry args={[0.3, 14, 14]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, 0.1, 0]} scale={[0.15, 0.08, 1.2]}><boxGeometry args={[0.3, 0.1, 0.6]} /><meshStandardMaterial color="#4a6a3a" roughness={0.8} /></mesh>
+        <mesh position={[0, 0.06, 0.4]} scale={[0.8, 0.55, 0.9]}><sphereGeometry args={[0.18, 12, 12]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0, 0.04, 0.55]} scale={[0.5, 0.35, 0.6]}><sphereGeometry args={[0.12, 10, 10]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[-0.1, 0.12, 0.48]}><sphereGeometry args={[0.04, 8, 8]} /><meshStandardMaterial color="#e8c020" emissive="#e8c020" emissiveIntensity={0.4} /></mesh>
+        <mesh position={[0.1, 0.12, 0.48]}><sphereGeometry args={[0.04, 8, 8]} /><meshStandardMaterial color="#e8c020" emissive="#e8c020" emissiveIntensity={0.4} /></mesh>
+        <mesh position={[-0.1, 0.12, 0.52]} scale={[0.5, 1, 1]}><sphereGeometry args={[0.02, 6, 6]} /><meshStandardMaterial {...darkMat} /></mesh>
+        <mesh position={[0.1, 0.12, 0.52]} scale={[0.5, 1, 1]}><sphereGeometry args={[0.02, 6, 6]} /><meshStandardMaterial {...darkMat} /></mesh>
         {[
           { pos: [-0.18, -0.1, 0.15], rot: [0, 0, 0.7] },
           { pos: [0.18, -0.1, 0.15], rot: [0, 0, -0.7] },
@@ -878,66 +723,43 @@ function CreatureBody({ type, color, emissive }: { type: string; color: string; 
         ].map((leg, i) => (
           <group key={i}>
             <mesh position={leg.pos as [number, number, number]} rotation={leg.rot as [number, number, number]}>
-              <cylinderGeometry args={[0.03, 0.025, 0.2, 6]} />
-              <meshStandardMaterial {...matProps} />
+              <cylinderGeometry args={[0.03, 0.025, 0.2, 6]} /><meshStandardMaterial {...matProps} />
             </mesh>
             <mesh position={[leg.pos[0] + (leg.pos[0] > 0 ? 0.08 : -0.08), leg.pos[1] - 0.1, leg.pos[2] + 0.03]}>
-              <sphereGeometry args={[0.025, 6, 6]} />
-              <meshStandardMaterial {...matProps} />
+              <sphereGeometry args={[0.025, 6, 6]} /><meshStandardMaterial {...matProps} />
             </mesh>
           </group>
         ))}
-        {/* Tail - long and tapered */}
-        <mesh position={[0, -0.02, -0.45]} rotation={[0.1, 0, 0]} scale={[0.2, 0.15, 1.8]}>
-          <cylinderGeometry args={[0.08, 0.01, 0.5, 8]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Tail continuation */}
-        <mesh position={[0.05, -0.04, -0.75]} rotation={[0.05, 0.3, 0]} scale={[0.12, 0.1, 1]}>
-          <cylinderGeometry args={[0.04, 0.005, 0.3, 6]} />
-          <meshStandardMaterial {...matProps} />
-        </mesh>
-        {/* Scales on back */}
+        <mesh position={[0, -0.02, -0.45]} rotation={[0.1, 0, 0]} scale={[0.2, 0.15, 1.8]}><cylinderGeometry args={[0.08, 0.01, 0.5, 8]} /><meshStandardMaterial {...matProps} /></mesh>
+        <mesh position={[0.05, -0.04, -0.75]} rotation={[0.05, 0.3, 0]} scale={[0.12, 0.1, 1]}><cylinderGeometry args={[0.04, 0.005, 0.3, 6]} /><meshStandardMaterial {...matProps} /></mesh>
         {[-0.15, 0, 0.15].map((z, i) => (
-          <mesh key={i} position={[0, 0.12, z]} scale={[0.3, 0.1, 0.15]}>
-            <coneGeometry args={[0.06, 0.06, 4]} />
-            <meshStandardMaterial color="#5a7a4a" roughness={0.7} />
-          </mesh>
+          <mesh key={i} position={[0, 0.12, z]} scale={[0.3, 0.1, 0.15]}><coneGeometry args={[0.06, 0.06, 4]} /><meshStandardMaterial color="#5a7a4a" roughness={0.7} /></mesh>
         ))}
       </group>
     );
   }
-  
-  // Fallback sphere
+
   return (
-    <mesh>
-      <sphereGeometry args={[0.4, 16, 16]} />
-      <meshStandardMaterial {...matProps} />
-    </mesh>
+    <mesh><sphereGeometry args={[0.4, 16, 16]} /><meshStandardMaterial {...matProps} /></mesh>
   );
 }
 
 // ─── Animated Story Creature ────────────────────────────────────────────────
 
-function StoryCreature({ 
-  creature, 
-  onSelect 
-}: { 
+function StoryCreature({
+  creature,
+  onSelect,
+}: {
   creature: typeof CREATURES[number];
   onSelect: (creature: typeof CREATURES[number]) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const headRef = useRef<THREE.Group>(null);
-  const tailRef = useRef<THREE.Group>(null);
-  
+
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     const offset = creature.position[0] * 0.5;
-    
     if (groupRef.current) {
-      // Gentle breathing bob
       groupRef.current.position.y = creature.position[1] + Math.sin(t * 0.6 + offset) * 0.12;
-      // Subtle body sway
       groupRef.current.rotation.z = Math.sin(t * 0.4 + offset) * 0.03;
     }
   });
@@ -948,86 +770,105 @@ function StoryCreature({
       position={creature.position}
       rotation={creature.rotation}
       scale={creature.scale}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(creature);
-      }}
+      onClick={(e) => { e.stopPropagation(); onSelect(creature); }}
     >
       <CreatureBody type={creature.geometry} color={creature.color} emissive={creature.emissive} />
-      
-      {/* Name label floating above */}
-      <Html
-        position={[0, 1.4, 0]}
-        center
-        distanceFactor={8}
-        style={{ pointerEvents: "none" }}
-        zIndexRange={[0, 0]}
-      >
+      <Html position={[0, 1.4, 0]} center distanceFactor={8} style={{ pointerEvents: "none" }} zIndexRange={[0, 0]}>
         <div style={{
-          background: "rgba(0,0,0,0.55)",
-          color: "#fff",
-          padding: "3px 10px",
-          borderRadius: "10px",
-          fontSize: "10px",
-          fontFamily: "Georgia, serif",
-          whiteSpace: "nowrap",
-          textAlign: "center",
+          background: "rgba(0,0,0,0.55)", color: "#fff", padding: "3px 10px",
+          borderRadius: "10px", fontSize: "10px", fontFamily: "Georgia, serif",
+          whiteSpace: "nowrap", textAlign: "center",
         }}>
           {creature.name}
         </div>
       </Html>
-      
-      {/* Subtle glow underneath */}
       <pointLight position={[0, -0.3, 0]} intensity={0.25} color={creature.color} distance={5} />
     </group>
   );
 }
 
-// ─── Main 3D Scene ──────────────────────────────────────────────────────────
+// ─── Scene ──────────────────────────────────────────────────────────────────
 
-function Scene({ offerings, onSelectOffering, onSelectCreature }: GalleryRoomProps & { onSelectCreature: (c: typeof CREATURES[number]) => void }) {
+function Scene({
+  offerings,
+  onSelectOffering,
+  onSelectCreature,
+  cameraTarget,
+  onCameraArrived,
+}: {
+  offerings: Offering[];
+  onSelectOffering: (o: Offering) => void;
+  onSelectCreature: (c: typeof CREATURES[number]) => void;
+  cameraTarget: CameraTarget | null;
+  onCameraArrived: () => void;
+}) {
+  const controlsRef = useRef<any>(null);
+
+  // Disable orbit controls when flying to a frame
+  useEffect(() => {
+    if (controlsRef.current) {
+      controlsRef.current.enabled = !cameraTarget;
+    }
+  }, [cameraTarget]);
+
   const positions = useMemo(() => {
     const backSlots = { count: 0 };
     const leftSlots = { count: 0 };
     const rightSlots = { count: 0 };
-    
+
     return offerings.map((o, i) => {
       const wall = i % 3;
       const seed = o.id.charCodeAt(0) * 100 + i;
       const tilt = (seededRandom(seed) - 0.5) * 0.2;
       const yJitter = (seededRandom(seed + 1) - 0.5) * 1.2;
-      
+
       if (wall === 0) {
         const slot = backSlots.count++;
         const x = (slot - 2) * 3.5 + (seededRandom(seed + 2) - 0.5) * 0.8;
         return {
           position: [x, 1 + yJitter, -17.8] as [number, number, number],
-          rotation: [0, 0, tilt] as [number, number, number]
+          rotation: [0, 0, tilt] as [number, number, number],
         };
       } else if (wall === 1) {
         const slot = leftSlots.count++;
         const z = (slot - 1) * 3.5 + (seededRandom(seed + 3) - 0.5) * 0.8;
         return {
           position: [-17.8, 1 + yJitter, z] as [number, number, number],
-          rotation: [0, Math.PI / 2, tilt] as [number, number, number]
+          rotation: [0, Math.PI / 2, tilt] as [number, number, number],
         };
       } else {
         const slot = rightSlots.count++;
         const z = (slot - 1) * 3.5 + (seededRandom(seed + 4) - 0.5) * 0.8;
         return {
           position: [17.8, 1 + yJitter, z] as [number, number, number],
-          rotation: [0, -Math.PI / 2, tilt] as [number, number, number]
+          rotation: [0, -Math.PI / 2, tilt] as [number, number, number],
         };
       }
     });
   }, [offerings]);
 
+  // Compute fly-to position for a frame
+  const handleFrameClick = useCallback(
+    (offering: Offering, index: number) => {
+      const pos = positions[index];
+      if (!pos) {
+        onSelectOffering(offering);
+        return;
+      }
+      onSelectOffering(offering);
+    },
+    [positions, onSelectOffering],
+  );
+
   return (
     <>
       <fog attach="fog" args={["#f5f0e8", 15, 50]} />
       <GalleryLighting />
+      <VolumetricLights />
       <GalleryRoom />
-      
+
+      <CameraController target={cameraTarget} onArrived={onCameraArrived} />
+
       {offerings.slice(0, 16).map((offering, i) => {
         const pos = positions[i];
         return (
@@ -1036,34 +877,28 @@ function Scene({ offerings, onSelectOffering, onSelectCreature }: GalleryRoomPro
             offering={offering}
             position={pos.position}
             rotation={pos.rotation}
-            onClick={() => onSelectOffering(offering)}
+            onClick={() => handleFrameClick(offering, i)}
           />
         );
       })}
-      
+
       {CREATURES.map((creature) => (
-        <StoryCreature
-          key={creature.name}
-          creature={creature}
-          onSelect={onSelectCreature}
-        />
+        <StoryCreature key={creature.name} creature={creature} onSelect={onSelectCreature} />
       ))}
-      
+
+      {/* Creature shadows */}
+      {CREATURES.map((creature) => (
+        <CreatureShadow key={`shadow-${creature.name}`} position={creature.position} />
+      ))}
+
       <GalleryDust />
-      
-      <Stars
-        radius={80}
-        depth={60}
-        count={500}
-        factor={1.5}
-        saturation={0}
-        fade
-        speed={0.1}
-      />
-      
+
+      <Stars radius={80} depth={60} count={500} factor={1.5} saturation={0} fade speed={0.1} />
+
       <Environment preset="apartment" />
-      
+
       <OrbitControls
+        ref={controlsRef}
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
@@ -1091,19 +926,10 @@ function LoadingFallback() {
 
 // ─── Modals ─────────────────────────────────────────────────────────────────
 
-function OfferingModal({ 
-  offering, 
-  onClose 
-}: { 
-  offering: Offering | null; 
-  onClose: () => void;
-}) {
+function OfferingModal({ offering, onClose }: { offering: Offering | null; onClose: () => void }) {
   if (!offering) return null;
-  
-  const authorDisplay = offering.author_type === "anonymous" 
-    ? "Anonimo" 
-    : offering.author_name || "Artista";
-  
+  const authorDisplay = offering.author_type === "anonymous" ? "Anonimo" : offering.author_name || "Artista";
+
   return (
     <AnimatePresence>
       <motion.div
@@ -1121,81 +947,38 @@ function OfferingModal({
           className="relative max-w-lg w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30"
           onClick={(e) => e.stopPropagation()}
         >
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none"
-          >
-            ×
-          </button>
-          
-          <h2 className="text-2xl font-serif text-foreground mb-4">
-            {offering.title || "Senza titolo"}
-          </h2>
-          
+          <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none">×</button>
+          <h2 className="text-2xl font-serif text-foreground mb-4">{offering.title || "Senza titolo"}</h2>
           {offering.text_content && (
-            <p className="text-lg italic text-foreground/80 mb-4 font-serif leading-relaxed">
-              {offering.text_content}
-            </p>
+            <p className="text-lg italic text-foreground/80 mb-4 font-serif leading-relaxed">{offering.text_content}</p>
           )}
-          
           {offering.note && (
-            <p className="text-base text-foreground/60 mb-4 italic">
-              "{offering.note}"
-            </p>
+            <p className="text-base text-foreground/60 mb-4 italic">"{offering.note}"</p>
           )}
-          
           {offering.media_type === "image" && offering.file_url && (
             <div className="mb-4 bg-muted rounded overflow-hidden">
-              <img 
-                src={offering.file_url} 
-                alt={offering.title || "Immagine"}
-                className="max-w-full h-auto"
-              />
+              <img src={offering.file_url} alt={offering.title || "Immagine"} className="max-w-full h-auto" />
             </div>
           )}
-
           {offering.media_type === "video" && offering.file_url && (
             <div className="mb-4 bg-muted rounded overflow-hidden">
-              <video 
-                src={offering.file_url}
-                controls
-                className="max-w-full h-auto"
-              />
+              <video src={offering.file_url} controls className="max-w-full h-auto" />
             </div>
           )}
-
           {offering.media_type === "audio" && offering.file_url && (
-            <div className="mb-4">
-              <audio src={offering.file_url} controls className="w-full" />
-            </div>
+            <div className="mb-4"><audio src={offering.file_url} controls className="w-full" /></div>
           )}
-          
           {offering.media_type === "link" && offering.link_url && (
-            <a 
-              href={offering.link_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block mb-4 text-accent-foreground hover:underline"
-            >
-              🔗 Apri link →
-            </a>
+            <a href={offering.link_url} target="_blank" rel="noopener noreferrer"
+              className="block mb-4 text-accent-foreground hover:underline">🔗 Apri link →</a>
           )}
-          
           <div className="mt-6 pt-4 border-t border-border/30 text-sm text-muted-foreground">
-            <p>
-              Di <span className="font-medium text-foreground">{authorDisplay}</span>
-            </p>
-            <p className="mt-1 text-xs">
-              Inviata: {new Date(offering.created_at).toLocaleDateString("it-IT")}
-            </p>
+            <p>Di <span className="font-medium text-foreground">{authorDisplay}</span></p>
+            <p className="mt-1 text-xs">Inviata: {new Date(offering.created_at).toLocaleDateString("it-IT")}</p>
             {offering.approved_at && (
-              <p className="mt-1 text-xs">
-                In galleria dal: {new Date(offering.approved_at).toLocaleDateString("it-IT")}
-              </p>
+              <p className="mt-1 text-xs">In galleria dal: {new Date(offering.approved_at).toLocaleDateString("it-IT")}</p>
             )}
-            <p className="mt-1 text-xs uppercase tracking-wide">
-              Tipo: {offering.media_type}
-            </p>
+            <p className="mt-1 text-xs uppercase tracking-wide">Tipo: {offering.media_type}</p>
             <p className="mt-1 text-[10px] opacity-80">ID: {offering.id}</p>
           </div>
         </motion.div>
@@ -1207,72 +990,12 @@ function OfferingModal({
 // ─── Demo fallback data ─────────────────────────────────────────────────────
 
 const DEMO_OFFERINGS: Offering[] = [
-  {
-    id: "demo-1",
-    title: "Il Primo Cavapendolo",
-    note: "Ho immaginato un piccolo essere che oscilla nel vento",
-    text_content: "I cavapendoli sono creature di luce, sospese tra il cielo e la terra.",
-    media_type: "text",
-    file_url: null,
-    link_url: null,
-    author_name: "Maria",
-    author_type: "name",
-    created_at: "2024-01-15",
-  },
-  {
-    id: "demo-2",
-    title: "Spirale d'Argento",
-    note: "Un disegno che rappresenta il movimento",
-    media_type: "image",
-    file_url: "/cavapendoli/models-a.png",
-    link_url: null,
-    author_name: "Roberto",
-    author_type: "name",
-    created_at: "2024-01-16",
-  },
-  {
-    id: "demo-3",
-    title: "Pensiero Sospeso",
-    text_content: "Come un pendolo che non trova mai il fondo, così va la vita.",
-    media_type: "text",
-    file_url: null,
-    link_url: null,
-    author_type: "anonymous",
-    author_name: null,
-    created_at: "2024-01-17",
-  },
-  {
-    id: "demo-4",
-    title: "Movimento",
-    note: "Il cavapendolo che si muove nell'aria",
-    media_type: "image",
-    file_url: "/cavapendoli/models-b.png",
-    link_url: null,
-    author_name: "@artista",
-    author_type: "instagram",
-    created_at: "2024-01-18",
-  },
-  {
-    id: "demo-5",
-    title: "Nel Vento",
-    text_content: "Sospesi, fluttuando nel tempo che non passa mai.",
-    media_type: "text",
-    file_url: null,
-    link_url: null,
-    author_name: "Giulia",
-    author_type: "name",
-    created_at: "2024-01-19",
-  },
-  {
-    id: "demo-6",
-    title: "Colore B",
-    media_type: "image",
-    file_url: "/cavapendoli/models-bw.png",
-    link_url: null,
-    author_name: "Luca",
-    author_type: "name",
-    created_at: "2024-01-20",
-  },
+  { id: "demo-1", title: "Il Primo Cavapendolo", note: "Ho immaginato un piccolo essere che oscilla nel vento", text_content: "I cavapendoli sono creature di luce, sospese tra il cielo e la terra.", media_type: "text", file_url: null, link_url: null, author_name: "Maria", author_type: "name", created_at: "2024-01-15" },
+  { id: "demo-2", title: "Spirale d'Argento", note: "Un disegno che rappresenta il movimento", media_type: "image", file_url: "/cavapendoli/models-a.png", link_url: null, author_name: "Roberto", author_type: "name", created_at: "2024-01-16" },
+  { id: "demo-3", title: "Pensiero Sospeso", text_content: "Come un pendolo che non trova mai il fondo, così va la vita.", media_type: "text", file_url: null, link_url: null, author_type: "anonymous", author_name: null, created_at: "2024-01-17" },
+  { id: "demo-4", title: "Movimento", note: "Il cavapendolo che si muove nell'aria", media_type: "image", file_url: "/cavapendoli/models-b.png", link_url: null, author_name: "@artista", author_type: "instagram", created_at: "2024-01-18" },
+  { id: "demo-5", title: "Nel Vento", text_content: "Sospesi, fluttuando nel tempo che non passa mai.", media_type: "text", file_url: null, link_url: null, author_name: "Giulia", author_type: "name", created_at: "2024-01-19" },
+  { id: "demo-6", title: "Colore B", media_type: "image", file_url: "/cavapendoli/models-bw.png", link_url: null, author_name: "Luca", author_type: "name", created_at: "2024-01-20" },
 ];
 
 // ─── Main Component ─────────────────────────────────────────────────────────
@@ -1280,8 +1003,20 @@ const DEMO_OFFERINGS: Offering[] = [
 function CavapendoGallery({ className = "" }: { className?: string }) {
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
   const [selectedCreature, setSelectedCreature] = useState<typeof CREATURES[number] | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [cameraTarget, setCameraTarget] = useState<CameraTarget | null>(null);
+  const [hintVisible, setHintVisible] = useState(true);
 
-  // Fetch approved offerings from database
+  // Auto-hide hint
+  useEffect(() => {
+    const timer = setTimeout(() => setHintVisible(false), 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Ambient audio system
+  useAmbientAudio(audioEnabled);
+
+  // Fetch approved offerings
   const { data: liveOfferings } = useQuery({
     queryKey: ["gallery-offerings"],
     queryFn: async () => {
@@ -1300,48 +1035,83 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
 
   const offerings = liveOfferings && liveOfferings.length > 0 ? liveOfferings : DEMO_OFFERINGS;
 
+  // ESC to exit focus mode
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setCameraTarget(null);
+        setSelectedOffering(null);
+        setSelectedCreature(null);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
   return (
     <div className={`relative w-full h-full min-h-[600px] ${className}`} style={{ height: "100%", minHeight: "600px", isolation: "isolate" }}>
       <Canvas
         camera={{ position: [0, 1, 12], fov: 45 }}
-        gl={{ 
-          antialias: true, 
+        gl={{
+          antialias: true,
           alpha: true,
           powerPreference: "high-performance",
-          failIfMajorPerformanceCaveat: false
+          failIfMajorPerformanceCaveat: false,
         }}
         style={{ background: "linear-gradient(180deg, #f5f0e8 0%, #e0d8d0 100%)", width: "100%", height: "100%", position: "relative", zIndex: 0 }}
         shadows
       >
         <Suspense fallback={<LoadingFallback />}>
-          <Scene 
+          <Scene
             offerings={offerings}
             onSelectOffering={setSelectedOffering}
             onSelectCreature={setSelectedCreature}
+            cameraTarget={cameraTarget}
+            onCameraArrived={() => {}}
           />
         </Suspense>
       </Canvas>
-      
+
       {/* UI Overlay */}
-      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none">
-        <div className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20">
-          <p className="font-mono-light text-xs text-muted-foreground">
-            🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura
-          </p>
+      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none" style={{ zIndex: 10 }}>
+        <div className="flex items-end gap-3">
+          {/* Audio toggle */}
+          <button
+            onClick={() => setAudioEnabled((v) => !v)}
+            className="pointer-events-auto bg-background/80 backdrop-blur-sm px-3 py-2 rounded-md border border-border/30 text-lg hover:bg-background/95 transition-colors"
+            title={audioEnabled ? "Disattiva audio" : "Attiva audio ambientale"}
+          >
+            {audioEnabled ? "🔊" : "🔇"}
+          </button>
+
+          {/* Hint text */}
+          <AnimatePresence>
+            {hintVisible && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.5 }}
+                className="bg-background/70 backdrop-blur-sm px-4 py-2 rounded-md border border-border/20"
+              >
+                <p className="font-mono-light text-xs text-muted-foreground">
+                  🖱️ Trascina per ruotare • Zoom con scroll • Clicca un quadro o una creatura
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <Link 
+
+        <Link
           to="/offri"
           className="pointer-events-auto bg-primary text-primary-foreground px-6 py-2.5 rounded-md hover:bg-primary/90 transition-colors font-mono-light text-sm shadow-lg"
         >
           + Lascia una cavapendolata
         </Link>
       </div>
-      
-      <OfferingModal 
-        offering={selectedOffering}
-        onClose={() => setSelectedOffering(null)}
-      />
-      
+
+      <OfferingModal offering={selectedOffering} onClose={() => setSelectedOffering(null)} />
+
       {/* Creature story modal */}
       <AnimatePresence>
         {selectedCreature && (
@@ -1360,22 +1130,10 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
               className="relative max-w-sm w-full bg-background p-8 rounded-lg shadow-2xl border border-border/30 text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setSelectedCreature(null)}
-                className="absolute top-3 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none"
-              >
-                ×
-              </button>
-              <div 
-                className="w-4 h-4 rounded-full mx-auto mb-3" 
-                style={{ backgroundColor: selectedCreature.color, boxShadow: `0 0 12px ${selectedCreature.color}` }}
-              />
-              <h3 className="text-xl font-serif text-foreground mb-3">
-                {selectedCreature.name}
-              </h3>
-              <p className="text-base italic text-foreground/80 font-serif leading-relaxed">
-                {selectedCreature.story}
-              </p>
+              <button onClick={() => setSelectedCreature(null)} className="absolute top-3 right-4 text-muted-foreground hover:text-foreground text-2xl leading-none">×</button>
+              <div className="w-4 h-4 rounded-full mx-auto mb-3" style={{ backgroundColor: selectedCreature.color, boxShadow: `0 0 12px ${selectedCreature.color}` }} />
+              <h3 className="text-xl font-serif text-foreground mb-3">{selectedCreature.name}</h3>
+              <p className="text-base italic text-foreground/80 font-serif leading-relaxed">{selectedCreature.story}</p>
             </motion.div>
           </motion.div>
         )}
