@@ -81,14 +81,19 @@ function ArtisticFrame({
   
   return (
     <group position={position} rotation={rotation}>
-      <group 
-        onClick={(e) => {
+      <group
+        onPointerDown={(e) => {
           e.stopPropagation();
           onClick();
         }}
       >
+        {/* Invisible larger hit area for reliable clicks */}
+        <mesh position={[0, 0, 0.2]}>
+          <planeGeometry args={[w + 0.3, h + 0.3]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+
         {/* Outer frame */}
-        <mesh>
           <boxGeometry args={[w, h, 0.12]} />
           <meshStandardMaterial 
             color={FRAME_COLORS[colorIndex]}
