@@ -1482,7 +1482,8 @@ function CavapendoGallery({ className = "" }: { className?: string }) {
             onSelectOffering={setSelectedOffering}
             onSelectCreature={setSelectedCreature}
             cameraTarget={cameraTarget}
-            onCameraArrived={() => {}}
+            setCameraTarget={setCameraTarget}
+            onCameraArrived={() => setCameraTarget(null)}
           />
         </Suspense>
       </Canvas>
