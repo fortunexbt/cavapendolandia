@@ -790,9 +790,6 @@ function VolumetricLights() {
       <LightShaft position={[-6, 10, -16]} />
       <LightShaft position={[4, 10, -16]} />
       <LightShaft position={[0, 10, -16]} color="#f8f0e0" />
-      {/* Spotlight actors */}
-      <spotLight position={[-6, 9, -15]} angle={0.25} penumbra={0.8} intensity={0.6} color="#fff5e6" target-position={[-6, 0, -17]} castShadow />
-      <spotLight position={[4, 9, -15]} angle={0.25} penumbra={0.8} intensity={0.6} color="#fff5e6" target-position={[4, 0, -17]} castShadow />
     </group>
   );
 }
