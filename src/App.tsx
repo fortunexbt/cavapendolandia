@@ -1,3 +1,4 @@
+import { Suspense, lazy, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,19 +7,29 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
 import { useThemeMode } from "@/hooks/useThemeMode";
-import Index from "./pages/Index";
-import Entra from "./pages/Entra";
-import OfferingDetail from "./pages/OfferingDetail";
-import Offri from "./pages/Offri";
-import CheCose from "./pages/CheCose";
-import Regole from "./pages/Regole";
-import Rimozione from "./pages/Rimozione";
-import AdminLogin from "./pages/AdminLogin";
-import Anticamera from "./pages/admin/Anticamera";
-import AdminOfferingDetail from "./pages/admin/AdminOfferingDetail";
-import NotFound from "./pages/NotFound";
-import Galleria from "./pages/Galleria";
-import Grazie from "./pages/Grazie";
+const Index = lazy(() => import("./pages/Index"));
+const Entra = lazy(() => import("./pages/Entra"));
+const OfferingDetail = lazy(() => import("./pages/OfferingDetail"));
+const Offri = lazy(() => import("./pages/Offri"));
+const CheCose = lazy(() => import("./pages/CheCose"));
+const Regole = lazy(() => import("./pages/Regole"));
+const Rimozione = lazy(() => import("./pages/Rimozione"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const Anticamera = lazy(() => import("./pages/admin/Anticamera"));
+const AdminOfferingDetail = lazy(
+  () => import("./pages/admin/AdminOfferingDetail"),
+);
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Galleria = lazy(() => import("./pages/Galleria"));
+const Grazie = lazy(() => import("./pages/Grazie"));
+
+const RouteLoadingFallback = () => (
+  <div className="min-h-screen bg-[#120d0c]" />
+);
+
+const RouteBoundary = ({ children }: { children: ReactNode }) => (
+  <Suspense fallback={<RouteLoadingFallback />}>{children}</Suspense>
+);
 
 const queryClient = new QueryClient();
 
@@ -33,9 +44,7 @@ const AnimatedRoutes = () => {
 
   return (
     <>
-      {showPrelude && (
-        <CavapendoliPrelude onComplete={handlePreludeComplete} />
-      )}
+      {showPrelude && <CavapendoliPrelude onComplete={handlePreludeComplete} />}
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
@@ -45,22 +54,134 @@ const AnimatedRoutes = () => {
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
           <Routes location={location}>
-            <Route path="/" element={<Index />} />
-            <Route path="/entra" element={<Entra />} />
-            <Route path="/galleria" element={<Galleria />} />
-            <Route path="/grazie" element={<Grazie />} />
-            <Route path="/o/:id" element={<OfferingDetail />} />
-            <Route path="/offri" element={<Offri />} />
-            <Route path="/che-cose" element={<CheCose />} />
-            <Route path="/regole" element={<Regole />} />
-            <Route path="/rimozione" element={<Rimozione />} />
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/anticamera" element={<Anticamera statusFilter="pending" />} />
-            <Route path="/admin/archivio" element={<Anticamera statusFilter="approved" />} />
-            <Route path="/admin/nascosti" element={<Anticamera statusFilter="hidden" />} />
-            <Route path="/admin/rifiutati" element={<Anticamera statusFilter="rejected" />} />
-            <Route path="/admin/o/:id" element={<AdminOfferingDetail />} />
-            <Route path="*" element={<NotFound />} />
+            <Route
+              path="/"
+              element={
+                <RouteBoundary>
+                  <Index />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/entra"
+              element={
+                <RouteBoundary>
+                  <Entra />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/galleria"
+              element={
+                <RouteBoundary>
+                  <Galleria />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/grazie"
+              element={
+                <RouteBoundary>
+                  <Grazie />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/o/:id"
+              element={
+                <RouteBoundary>
+                  <OfferingDetail />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/offri"
+              element={
+                <RouteBoundary>
+                  <Offri />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/che-cose"
+              element={
+                <RouteBoundary>
+                  <CheCose />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/regole"
+              element={
+                <RouteBoundary>
+                  <Regole />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/rimozione"
+              element={
+                <RouteBoundary>
+                  <Rimozione />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RouteBoundary>
+                  <AdminLogin />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/anticamera"
+              element={
+                <RouteBoundary>
+                  <Anticamera statusFilter="pending" />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/archivio"
+              element={
+                <RouteBoundary>
+                  <Anticamera statusFilter="approved" />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/nascosti"
+              element={
+                <RouteBoundary>
+                  <Anticamera statusFilter="hidden" />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/rifiutati"
+              element={
+                <RouteBoundary>
+                  <Anticamera statusFilter="rejected" />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/o/:id"
+              element={
+                <RouteBoundary>
+                  <AdminOfferingDetail />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <RouteBoundary>
+                  <NotFound />
+                </RouteBoundary>
+              }
+            />
           </Routes>
         </motion.div>
       </AnimatePresence>
@@ -73,7 +194,12 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_relativeSplatPath: true,
+          v7_startTransition: true,
+        }}
+      >
         <AnimatedRoutes />
       </BrowserRouter>
     </TooltipProvider>

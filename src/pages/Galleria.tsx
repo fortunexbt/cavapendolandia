@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import CavapendoGallery from "@/components/CavapendoGallery";
+import CavapendoGalleryShell from "@/components/CavapendoGalleryShell";
 import MinimalHeader from "@/components/MinimalHeader";
 
 const Galleria = () => {
@@ -8,10 +8,19 @@ const Galleria = () => {
   const handleExit = useCallback(() => navigate("/grazie"), [navigate]);
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-dvh flex-col bg-background">
       <MinimalHeader />
-      <main className="flex-1 w-full" style={{ marginTop: "3.5rem" }}>
-        <CavapendoGallery className="h-[calc(100vh-3.5rem)] w-full" onExit={handleExit} />
+      <main
+        className="flex-1 min-h-0 w-full"
+        style={{
+          marginTop: "3.5rem",
+          height: "calc(100dvh - 3.5rem)",
+        }}
+      >
+        <CavapendoGalleryShell
+          className="min-h-[calc(100dvh-3.5rem)] h-full w-full"
+          onExit={handleExit}
+        />
       </main>
     </div>
   );

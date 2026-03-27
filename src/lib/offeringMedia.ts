@@ -12,7 +12,13 @@ const isAbsoluteUrl = (value: string) => /^https?:\/\//i.test(value);
 
 const resolveStoragePath = (offering: OfferingMediaLike) => {
   if (offering.file_path) return offering.file_path;
-  if (offering.file_url && !isAbsoluteUrl(offering.file_url)) return offering.file_url;
+  if (
+    offering.file_url &&
+    !isAbsoluteUrl(offering.file_url) &&
+    !offering.file_url.startsWith("/")
+  ) {
+    return offering.file_url;
+  }
   return null;
 };
 

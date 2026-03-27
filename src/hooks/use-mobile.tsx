@@ -8,10 +8,17 @@ export function useIsMobile() {
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      const shortSide = Math.min(window.innerWidth, window.innerHeight);
+      const touchPoints =
+        typeof navigator === "undefined" ? 0 : navigator.maxTouchPoints || 0;
+      setIsMobile(
+        window.innerWidth < MOBILE_BREAKPOINT ||
+          (coarsePointer && touchPoints > 0 && shortSide < 900),
+      );
     };
     mql.addEventListener("change", onChange);
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    onChange();
     return () => mql.removeEventListener("change", onChange);
   }, []);
 

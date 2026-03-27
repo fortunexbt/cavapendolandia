@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useAdmin } from "@/hooks/useAdmin";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,13 @@ type Initiative = {
   created_at: string;
 };
 
+type AdminOffering = Pick<
+  Tables<"offerings">,
+  "id" | "title" | "note" | "author_name" | "author_type" | "media_type" | "file_url" | "status" | "created_at"
+> & {
+  file_path?: string | null;
+};
+
 const STATUS_TABS: { value: StatusFilter; label: string; path: string }[] = [
   { value: "pending", label: "Anticamera", path: "/admin/anticamera" },
   { value: "approved", label: "Archivio", path: "/admin/archivio" },
@@ -40,7 +48,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   const [searchTerm, setSearchTerm] = useState("");
   
 
-  const DEMO_OFFERINGS: any[] = [
+  const DEMO_OFFERINGS: AdminOffering[] = [
     {
       id: "demo-1",
       title: "Una foto del mare",
@@ -75,7 +83,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     },
   ];
 
-  const { data: offerings = [], isLoading } = useQuery({
+  const { data: offerings = [], isLoading } = useQuery<AdminOffering[]>({
     queryKey: ["admin-offerings", statusFilter, mediaFilter],
     queryFn: async () => {
       if (isDemo) return withSignedFileUrls(DEMO_OFFERINGS.filter((o) => o.status === statusFilter));
@@ -91,7 +99,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
 
       const { data, error } = await query;
       if (error) throw error;
-      return withSignedFileUrls(data || []);
+      return withSignedFileUrls((data || []) as AdminOffering[]);
     },
     enabled: isAdmin,
   });
@@ -132,13 +140,13 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   });
 
   const filteredOfferings = useMemo(() => {
-    if (!searchTerm.trim()) return offerings as any[];
+    if (!searchTerm.trim()) return offerings;
     const term = searchTerm.trim().toLowerCase();
 
-    return (offerings as any[]).filter((offering: any) =>
+    return offerings.filter((offering) =>
       [offering.title, offering.note, offering.author_name]
         .filter(Boolean)
-        .some((value: string) => value?.toLowerCase().includes(term)),
+        .some((value) => value?.toLowerCase().includes(term)),
     );
   }, [offerings, searchTerm]);
 

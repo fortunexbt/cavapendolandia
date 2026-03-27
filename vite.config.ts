@@ -9,10 +9,10 @@ const FALLBACK_SUPABASE_PUBLISHABLE_KEY =
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-
   return {
     build: {
       target: "esnext",
+      chunkSizeWarningLimit: 800,
     },
     define: {
       "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
@@ -29,7 +29,9 @@ export default defineConfig(({ mode }) => {
         overlay: false,
       },
     },
-    plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+    plugins: [react(), mode === "development" && componentTagger()].filter(
+      Boolean,
+    ),
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
