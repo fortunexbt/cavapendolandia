@@ -58,7 +58,7 @@ function CavapendoloOrb({
       <mesh ref={meshRef} position={position} scale={1.35}>
         <icosahedronGeometry args={[1, 5]} />
         <MeshDistortMaterial
-          ref={materialRef}
+          ref={materialRef as any}
           color="#87644b"
           emissive="#4d3527"
           emissiveIntensity={0.24}

@@ -45,7 +45,7 @@ export interface OfferingSubmissionClient {
     };
   };
   from: (table: string) => {
-    insert: (payload: Record<string, unknown>) => Promise<InsertResponse>;
+    insert: (payload: Record<string, unknown>) => { select: () => Promise<InsertResponse> } & Promise<InsertResponse>;
   };
 }
 
