@@ -29,6 +29,7 @@ const PratoEditor = lazy(() => import("./pages/admin/PratoEditor"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Galleria = lazy(() => import("./pages/Galleria"));
 const Grazie = lazy(() => import("./pages/Grazie"));
+const Contatti = lazy(() => import("./pages/Contatti"));
 
 const RouteLoadingFallback = () => (
   <div className="relative min-h-screen overflow-hidden bg-[#120d0c] text-[#f3eadf]">
@@ -108,6 +109,14 @@ const AnimatedRoutes = () => {
               element={
                 <RouteBoundary>
                   <Grazie />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/contatti"
+              element={
+                <RouteBoundary>
+                  <Contatti />
                 </RouteBoundary>
               }
             />

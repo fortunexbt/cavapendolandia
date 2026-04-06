@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { to: "/offri", label: "Offri" },
   { to: "/regole", label: "Regole" },
   { to: "/rimozione", label: "Rimozione" },
+  { to: "/contatti", label: "Contatti" },
 ];
 
 const MinimalHeader = () => {
