@@ -49,6 +49,8 @@ import {
   type MeadowSkylineLandmark,
   type MeadowSkylineRidge,
 } from "@/lib/meadowWorld";
+import { useMeadowElements } from "@/features/meadow/hooks/useMeadowElements";
+import type { MeadowElement } from "@/features/meadow/api/meadowElements.repo";
 
 function createTerrainSphereGeometry(
   widthSegments: number,
@@ -2238,6 +2240,173 @@ function MeadowCreatureField({
   );
 }
 
+function DBTreeElement({ element }: { element: MeadowElement }) {
+  const anchor = useMemo(
+    () => createGroundedAnchor(element.position_x, element.position_z, 0.04),
+    [element.position_x, element.position_z],
+  );
+
+  return (
+    <MeadowSurfaceSocket anchor={anchor} rotationY={element.rotation} disableCulling>
+      <group scale={element.scale}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
+          <circleGeometry args={[1.2, 16]} />
+          <meshBasicMaterial
+            color="#8cac68"
+            transparent
+            opacity={0.18}
+            depthWrite={false}
+          />
+        </mesh>
+        <mesh position={[0, 1.2, 0]}>
+          <cylinderGeometry args={[0.18, 0.28, 2.4, 8]} />
+          <meshStandardMaterial color="#6b5038" roughness={1} />
+        </mesh>
+        <mesh position={[0, 2.8, 0]}>
+          <sphereGeometry args={[1.4, 12, 12]} />
+          <meshStandardMaterial
+            color={element.tone}
+            roughness={1}
+            emissive={element.tone}
+            emissiveIntensity={0.06}
+          />
+        </mesh>
+      </group>
+    </MeadowSurfaceSocket>
+  );
+}
+
+function DBMonolithElement({ element }: { element: MeadowElement }) {
+  const anchor = useMemo(
+    () => createGroundedAnchor(element.position_x, element.position_z, 0.04),
+    [element.position_x, element.position_z],
+  );
+
+  return (
+    <MeadowSurfaceSocket anchor={anchor} rotationY={element.rotation} disableCulling>
+      <group scale={element.scale}>
+        <mesh position={[0, 3, 0]}>
+          <cylinderGeometry args={[0.3, 0.6, 6, 6]} />
+          <meshStandardMaterial color={element.tone} roughness={0.9} />
+        </mesh>
+        <mesh position={[0, 6.5, 0]}>
+          <octahedronGeometry args={[0.5, 0]} />
+          <meshStandardMaterial
+            color="#f4f7ff"
+            emissive={element.tone}
+            emissiveIntensity={0.4}
+            roughness={0.32}
+          />
+        </mesh>
+      </group>
+    </MeadowSurfaceSocket>
+  );
+}
+
+function DBLanternElement({ element }: { element: MeadowElement }) {
+  const anchor = useMemo(
+    () => createHoverAnchor(element.position_x, element.position_z, 3.2),
+    [element.position_x, element.position_z],
+  );
+
+  return (
+    <MeadowSurfaceSocket anchor={anchor} rotationY={element.rotation} disableCulling>
+      <group scale={element.scale}>
+        <mesh>
+          <sphereGeometry args={[0.5, 16, 16]} />
+          <meshStandardMaterial
+            color="#fff4d0"
+            emissive={element.tone}
+            emissiveIntensity={1.2}
+            roughness={0.18}
+          />
+        </mesh>
+        <mesh position={[0, 0.04, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.7, 0.95, 24]} />
+          <meshBasicMaterial
+            color={element.tone}
+            transparent
+            opacity={0.28}
+          />
+        </mesh>
+        <mesh position={[0, -0.35, 0]}>
+          <cylinderGeometry args={[0.06, 0.12, 0.6, 6]} />
+          <meshStandardMaterial color="#7a6548" roughness={0.92} />
+        </mesh>
+      </group>
+    </MeadowSurfaceSocket>
+  );
+}
+
+function DBBillboardElement({ element }: { element: MeadowElement }) {
+  const anchor = useMemo(
+    () => createGroundedAnchor(element.position_x, element.position_z, 0.04),
+    [element.position_x, element.position_z],
+  );
+
+  return (
+    <MeadowSurfaceSocket anchor={anchor} rotationY={element.rotation} disableCulling>
+      <group scale={element.scale}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+          <circleGeometry args={[2.2, 24]} />
+          <meshBasicMaterial
+            color={element.tone}
+            transparent
+            opacity={0.12}
+            depthWrite={false}
+          />
+        </mesh>
+        <mesh position={[0, 2.5, 0]}>
+          <cylinderGeometry args={[0.12, 0.18, 5, 6]} />
+          <meshStandardMaterial color="#7a6550" roughness={0.94} />
+        </mesh>
+        <mesh position={[0, 5.2, 0]}>
+          <boxGeometry args={[3.2, 2.4, 0.08]} />
+          <meshStandardMaterial
+            color="#f5f0e8"
+            roughness={0.85}
+            emissive={element.tone}
+            emissiveIntensity={0.08}
+          />
+        </mesh>
+        <mesh position={[0, 5.2, 0.06]}>
+          <boxGeometry args={[2.8, 2, 0.04]} />
+          <meshBasicMaterial
+            color={element.tone}
+            transparent
+            opacity={0.6}
+          />
+        </mesh>
+      </group>
+    </MeadowSurfaceSocket>
+  );
+}
+
+function DBMeadowElementsLayer({ quality }: { quality: QualityTier }) {
+  const { elements = [] } = useMeadowElements();
+
+  if (elements.length === 0) return null;
+
+  return (
+    <group>
+      {elements.map((element) => {
+        switch (element.element_type) {
+          case "tree":
+            return <DBTreeElement key={element.id} element={element} />;
+          case "monolith":
+            return <DBMonolithElement key={element.id} element={element} />;
+          case "lantern":
+            return <DBLanternElement key={element.id} element={element} />;
+          case "billboard":
+            return <DBBillboardElement key={element.id} element={element} />;
+          default:
+            return null;
+        }
+      })}
+    </group>
+  );
+}
+
 function MeadowArchitecture({
   grassTexture,
   shadowTexture,
@@ -2396,6 +2565,7 @@ function MeadowArchitecture({
       <MeadowLandmarkProps quality={quality} />
       <MeadowLanternGuides quality={quality} />
       <HorizonMonoliths quality={quality} />
+      <DBMeadowElementsLayer quality={quality} />
       <OuterScatterField quality={quality} />
       <TreeCluster
         tier={quality}
