@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import OfferingSubmissionWizard from "@/components/OfferingSubmissionWizard";
+import { useActiveInitiative } from "@/hooks/useActiveInitiative";
 
 const Offri = () => {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const { data: initiative } = useActiveInitiative();
 
   useEffect(() => {
     if (!submitted) return;
@@ -65,6 +67,21 @@ const Offri = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
+            {initiative && (
+              <div className="mb-8 text-center">
+                <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-accent mb-2">
+                  Un pensiero
+                </p>
+                <h1 className="text-2xl md:text-3xl font-light text-foreground mb-2">
+                  {initiative.prompt}
+                </h1>
+                {initiative.details && (
+                  <p className="text-sm italic text-muted-foreground">
+                    {initiative.details}
+                  </p>
+                )}
+              </div>
+            )}
             <OfferingSubmissionWizard
               title="Lascia una cavapendolata"
               subtitle="Qualcosa che possa stare qui."

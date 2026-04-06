@@ -6,6 +6,7 @@ import {
   type Offering,
   type StoryCreatureData,
 } from "@/components/cavapendo-gallery/types";
+import { useActiveInitiative } from "@/hooks/useActiveInitiative";
 
 export function OfferingModal({
   offering,
@@ -247,6 +248,7 @@ export function DepositModal({
   onClose: () => void;
   onSubmitted: (siteId: string) => void;
 }) {
+  const { data: initiative } = useActiveInitiative();
   return (
     <AnimatePresence>
       {site && (
@@ -282,6 +284,11 @@ export function DepositModal({
               {site.subtitle}. La traccia resta in questo luogo: non esce mai
               dalla scena che stai attraversando.
             </p>
+            {initiative && (
+              <p className="mt-3 text-xs italic text-[#7c6552]">
+                Un pensiero: {initiative.prompt}
+              </p>
+            )}
             </div>
 
             <OfferingSubmissionWizard
