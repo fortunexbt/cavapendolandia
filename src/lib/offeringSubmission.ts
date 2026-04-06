@@ -45,7 +45,7 @@ export interface OfferingSubmissionClient {
     };
   };
   from: (table: string) => {
-    insert: (payload: Record<string, unknown>) => Promise<InsertResponse>;
+    insert: (payload: Record<string, unknown>) => { select: () => Promise<InsertResponse> } & Promise<InsertResponse>;
   };
 }
 
@@ -164,7 +164,7 @@ export const canProceedSubmissionStep = (
 
 export async function submitOfferingSubmission(
   draft: OfferingSubmissionDraft,
-  client: OfferingSubmissionClient = supabase,
+  client: OfferingSubmissionClient = supabase as unknown as OfferingSubmissionClient,
 ): Promise<OfferingSubmissionResult> {
   if (!draft.mediaType) {
     return {

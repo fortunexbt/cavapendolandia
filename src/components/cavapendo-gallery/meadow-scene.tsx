@@ -1089,10 +1089,10 @@ function MeadowCreatureField({
     if (densityMultiplier >= 0.96) return baseCreatures;
 
     return baseCreatures.filter((creature, index) => {
-      if (creature.kind === "walker") return true;
+      if ((creature.kind as string) === "walker") return true;
       if (densityMultiplier >= 0.84) return index % 3 !== 0;
       if (densityMultiplier >= 0.7) return creature.kind !== "floater";
-      return creature.kind === "walker" || creature.id === "nastro-del-bacino";
+      return (creature.kind as string) === "walker" || creature.id === "nastro-del-bacino";
     });
   }, [densityMultiplier, quality]);
 
