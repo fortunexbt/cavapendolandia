@@ -175,6 +175,8 @@ export interface MeadowDepositSite {
   sector: MeadowSector;
   landmarkId: string;
   interactionRadius: number;
+  /** Category determines which offering types are accepted at this deposit site. */
+  category: "grafica" | "musicale" | "letteraria";
 }
 
 export interface MeadowTree {
@@ -1821,6 +1823,7 @@ export const MEADOW_DEPOSIT_SITES: MeadowDepositSite[] = [
     sector: "whisper_grove",
     landmarkId: "cedro-vecchio",
     interactionRadius: 7.2,
+    category: "grafica",
   },
   {
     id: "soglia-casa-muta",
@@ -1833,6 +1836,7 @@ export const MEADOW_DEPOSIT_SITES: MeadowDepositSite[] = [
     sector: "whisper_grove",
     landmarkId: "casa-muta",
     interactionRadius: 7.2,
+    category: "musicale",
   },
   {
     id: "radura-centrale",
@@ -1845,6 +1849,7 @@ export const MEADOW_DEPOSIT_SITES: MeadowDepositSite[] = [
     sector: "shrine_basin",
     landmarkId: "bacino-della-luna",
     interactionRadius: 7.4,
+    category: "letteraria",
   },
   {
     id: "radura-est",
@@ -1857,6 +1862,7 @@ export const MEADOW_DEPOSIT_SITES: MeadowDepositSite[] = [
     sector: "far_rim",
     landmarkId: "obelisco-pallido",
     interactionRadius: 7.4,
+    category: "grafica",
   },
 ];
 

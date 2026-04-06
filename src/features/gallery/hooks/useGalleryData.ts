@@ -3,9 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 import type { Offering } from "@/components/cavapendo-gallery/types";
 import { DEMO_OFFERINGS } from "@/components/cavapendo-gallery/config";
+import {
+  deriveCategory,
+  type OfferingCategory,
+} from "@/lib/categoryUtils";
 
 export interface GalleryDataOptions {
   quality?: "low" | "medium" | "high";
+  /**
+   * If provided, only return offerings whose category matches this value.
+   * Uses deriveCategory() to map media_type to category.
+   */
+  category?: OfferingCategory;
 }
 
 export interface GalleryDataResult {
@@ -15,10 +24,10 @@ export interface GalleryDataResult {
 }
 
 export function useGalleryData(options: GalleryDataOptions = {}): GalleryDataResult {
-  const { quality = "medium" } = options;
+  const { quality = "medium", category } = options;
 
   const { data: liveOfferings, isLoading, error } = useQuery({
-    queryKey: ["gallery-offerings"],
+    queryKey: ["gallery-offerings", category],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("offerings")
@@ -44,7 +53,15 @@ export function useGalleryData(options: GalleryDataOptions = {}): GalleryDataRes
       liveOfferings && liveOfferings.length > 0
         ? liveOfferings
         : DEMO_OFFERINGS;
-    return source.slice(0, visibleCount);
+
+    let filtered = source;
+    if (category) {
+      filtered = source.filter(
+        (offering) => deriveCategory(offering.media_type) === category,
+      );
+    }
+
+    return filtered.slice(0, visibleCount);
   })();
 
   return {
