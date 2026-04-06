@@ -419,6 +419,33 @@ export const getNextLowerRenderProfile = (
   return RENDER_PROFILE_ORDER[currentIndex + 1];
 };
 
+export const getAutoDowngradeFloor = (
+  deviceClass: DeviceClass,
+): RenderProfile =>
+  deviceClass === "mobile" ? "mobile_safe" : "desktop_balanced";
+
+export const getNextAutoRenderProfile = ({
+  currentProfile,
+  deviceClass,
+}: {
+  currentProfile: RenderProfile;
+  deviceClass: DeviceClass;
+}): RenderProfile | null => {
+  const nextProfile = getNextLowerRenderProfile(currentProfile);
+  if (!nextProfile) return null;
+
+  const nextIndex = RENDER_PROFILE_ORDER.indexOf(nextProfile);
+  const floorIndex = RENDER_PROFILE_ORDER.indexOf(
+    getAutoDowngradeFloor(deviceClass),
+  );
+
+  if (nextIndex > floorIndex) {
+    return null;
+  }
+
+  return nextProfile;
+};
+
 export const clampRenderProfileForDevice = (
   profile: RenderProfile,
   deviceClass: DeviceClass,
@@ -531,15 +558,15 @@ export const getGuideDescriptor = (
       step: 1,
       total: 3,
       title: isMobile
-        ? "Ruota il telefono e prendi il globo"
-        : "Prendi il ritmo della galleria",
+        ? "Trova un passo comodo"
+        : "Lascia che la stanza si apra",
       body: isMobile
-        ? "In orizzontale il globo respira meglio. Il pad sinistro sposta il corpo, il destro curva lo sguardo: resta vicino al centro per micro-movimenti, spingiti al bordo per girarti piu in fretta."
-        : "WASD sposta il corpo, il mouse prende lo sguardo. Un clic aggancia la visuale: appena senti il ritmo, cerca l'arco ESTERNO sul muro opposto.",
+        ? "In orizzontale l'esterno si legge meglio. Il pad sinistro accompagna il corpo, il destro curva lo sguardo: resta morbido al centro, spingiti al bordo quando vuoi voltarti di piu."
+        : "WASD muove il corpo e il mouse accompagna lo sguardo. Appena senti il ritmo della stanza, lascia che l'occhio trovi l'arco ESTERNO sul muro opposto.",
       hints: isMobile
-        ? ["Ruota in orizzontale", "Sinistra: muovi", "Destra: guarda"]
-        : ["WASD muove", "Mouse guarda", "F entra in fullscreen"],
-      compactLabel: "Trova l'arco ESTERNO",
+        ? ["Tieni il telefono in orizzontale", "Sinistra per muovere", "Destra per guardare"]
+        : ["WASD per muovere", "Mouse per guardare", "F per allargare la scena"],
+      compactLabel: "Cerca ESTERNO",
     };
   }
 
@@ -547,9 +574,9 @@ export const getGuideDescriptor = (
     return {
       step: 1,
       total: 3,
-      title: "Attraversa la soglia",
-      body: "L'interno resta caldo e raccolto. Sul muro opposto c'e l'arco ESTERNO: avvicinati e usa Enter o E per aprire il passaggio.",
-      hints: ["Muro opposto", "Usa E o Enter", "La scena non cambia route"],
+      title: "Avvicinati alla soglia",
+      body: "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
+      hints: ["Muro opposto", "Nessun tasto necessario", "Lascia che il passaggio si apra"],
       compactLabel: "Raggiungi ESTERNO",
     };
   }
@@ -558,14 +585,14 @@ export const getGuideDescriptor = (
     return {
       step: 2,
       total: 4,
-      title: "Leggi il pianeta",
-      body: "Fuori la terra curva davvero. Segui la linea di lanterne davanti a te: ti porta nella prima fascia viva del globo senza perdere GALLERIA di riferimento.",
+      title: "Lascia entrare l'esterno",
+      body: "Fuori non c'e un compito: c'e un primo spazio calmo che si apre verso tre direzioni. Guarda prima le masse, poi scegli quale richiamo seguire.",
       hints: [
-        "Segui le lanterne",
-        "La curva e reale",
-        "GALLERIA resta alle spalle",
+        "Ovest piu fitto",
+        "Sud piu aperto",
+        "Est piu costruito",
       ],
-      compactLabel: "Segui la cresta accesa",
+      compactLabel: "Leggi il primo paesaggio",
     };
   }
 
@@ -573,10 +600,10 @@ export const getGuideDescriptor = (
     return {
       step: 3,
       total: 4,
-      title: "Osserva chi abita il vento",
-      body: "Le creature non assegnano missioni. Ti orientano con sguardi, spostamenti e richiami: dove qualcosa insiste, li vicino di solito c'e un luogo da notare.",
-      hints: ["Camminatori", "Posatoi", "Aloni mobili"],
-      compactLabel: "Segui un movimento vivo",
+      title: "Segui cio che insiste",
+      body: "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
+      hints: ["Posatoi", "Passaggi ripetuti", "Presenze leggere"],
+      compactLabel: "Segui un movimento",
     };
   }
 
@@ -584,23 +611,23 @@ export const getGuideDescriptor = (
     return {
       step: 4,
       total: 4,
-      title: "Trova una radura rituale",
-      body: "Anelli sospesi, bagliori verticali e creature che ritornano su un punto indicano una radura. Li puoi fermarti, ascoltare il luogo e decidere se lasciare qualcosa.",
-      hints: ["Tre radure", "Bagliori verticali", "Il rito resta nel globo"],
-      compactLabel: "Cerca un santuario",
+      title: "Fermati solo dove serve",
+      body: "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non e un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
+      hints: ["Tre luoghi rituali", "Bagliori verticali", "Lascia qualcosa solo se ha senso"],
+      compactLabel: "Riconosci un luogo rituale",
     };
   }
 
   return {
     step: 4,
     total: 4,
-    title: "Apri il rito del santuario",
+    title: "Sosta rituale",
     body: isMobile
-      ? "Usa il bottone del rito quando sei vicino a una radura, poi scegli se lasciare davvero una cavapendolata."
-      : "Premi Enter o E vicino a una radura per aprire il rito. Da li puoi scegliere se lasciare davvero una cavapendolata.",
+      ? "Quando sei nel punto giusto, apri la sosta rituale e decidi con calma se lasciare davvero una cavapendolata."
+      : "Quando sei nel punto giusto, la sosta rituale si apre senza chiedere gesti tecnici. Da li puoi scegliere se lasciare davvero una cavapendolata.",
     hints: isMobile
-      ? ["Apri il rito", "Poi lascia qui", "Il globo conserva il deposito"]
-      : ["Enter o E", "Rito prima del form", "Il globo conserva il deposito"],
-    compactLabel: "Apri il rito",
+      ? ["Apri la sosta", "Lascia qui se vuoi", "Il luogo trattiene la traccia"]
+      : ["Lascia che si apra", "Poi scegli se lasciare", "Il luogo trattiene la traccia"],
+    compactLabel: "Sosta rituale",
   };
 };

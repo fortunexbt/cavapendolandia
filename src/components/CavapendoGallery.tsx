@@ -42,6 +42,7 @@ import {
   MobileOrientationOverlay,
   PlayerHud,
   SettingsPanel,
+  ZoneTransitionOverlay,
 } from "@/components/cavapendo-gallery/overlays";
 import {
   MeadowScene as PremiumMeadowScene,
@@ -61,6 +62,7 @@ import {
   REDUCED_CAMERA_MOTION_STORAGE_KEY,
   RENDER_PROFILE_STORAGE_KEY,
   TOUCH_SENSITIVITY_STORAGE_KEY,
+  getAutoDowngradeFloor,
   getControlProfile,
   getDeviceClass,
   getGuideDescriptor,
@@ -89,6 +91,7 @@ import {
   type DoorTrigger,
   type InteractionTarget,
   type JoystickInput,
+  type MeadowDebugPose,
   type MeadowCreatureRuntimeSnapshot,
   type Offering,
   type WorldStateSnapshot,
@@ -101,6 +104,7 @@ import {
   MEADOW_LANDMARKS,
   MEADOW_PLANET_RADIUS,
   MEADOW_SECTORS,
+  MEADOW_SKYLINE_LANDMARKS,
   MEADOW_SPAWN,
   type MeadowCreatureDefinition,
   type MeadowSector,
@@ -169,16 +173,24 @@ function CavapendoGallery({
   const stepRef = useRef<(deltaSeconds: number) => void>(() => undefined);
   const stepReadyRef = useRef(false);
   const stepWaitersRef = useRef<Array<() => void>>([]);
+  const meadowDebugPoseRef = useRef<((pose: MeadowDebugPose) => void) | null>(
+    null,
+  );
   const meadowCreatureRuntimeRef = useRef<
     Record<string, MeadowCreatureRuntimeSnapshot>
   >({});
   const creatureCueCooldownRef = useRef<Record<string, number>>({});
+  const zoneTransitionTimersRef = useRef<number[]>([]);
   const snapshotRef = useRef<WorldStateSnapshot>({
     zone: "gallery",
     sector: null,
+    deviceClass: "desktop",
     renderProfile: "desktop_balanced",
+    resolvedRenderProfile: "desktop_balanced",
     renderProfilePreference: "auto",
     renderProfileSource: "auto",
+    renderProfileAutoFloor: "desktop_balanced",
+    renderProfileReason: "desktop_auto_default",
     profileLocked: true,
     quality: "medium",
     hudMode: "player",
@@ -204,12 +216,18 @@ function CavapendoGallery({
     nearbyDepositId: null,
     nearbyCreatureIds: [],
     visibleLandmarkIds: [],
+    horizonLandmarkIds: [],
     doorPrompt: null,
     ambience: {
       activeCues: [],
       muted: false,
       volume: 0.72,
       zone: "gallery",
+      galleryTrack: null,
+      transition: {
+        cue: null,
+        active: false,
+      },
     },
     player: {
       x: GALLERY_SPAWN.position.x,
@@ -256,7 +274,7 @@ function CavapendoGallery({
   const [landscapeHintAcknowledged, setLandscapeHintAcknowledged] =
     usePersistedFlag(MOBILE_LANDSCAPE_HINT_STORAGE_KEY, false);
   const [guideHidden, setGuideHidden] = useState(guideCompleted);
-  const [guideExpanded, setGuideExpanded] = useState(!guideCompleted && !isMobile);
+  const [guideExpanded, setGuideExpanded] = useState(false);
   const previousGuideStepRef = useRef<GuideStep>("intro");
   const [nearbyTriggerId, setNearbyTriggerId] = useState<
     DoorTrigger["id"] | null
@@ -266,7 +284,13 @@ function CavapendoGallery({
   >(null);
   const [nearbyCreatureIds, setNearbyCreatureIds] = useState<string[]>([]);
   const [visibleLandmarkIds, setVisibleLandmarkIds] = useState<string[]>([]);
+  const [horizonLandmarkIds, setHorizonLandmarkIds] = useState<string[]>([]);
   const [currentSector, setCurrentSector] = useState<MeadowSector | null>(null);
+  const [zoneTransition, setZoneTransition] = useState<{
+    label: string;
+    detail: string;
+    phase: "cover" | "opening";
+  } | null>(null);
   const [mouseSensitivity, setMouseSensitivity] = usePersistedNumber(
     MOUSE_SENSITIVITY_STORAGE_KEY,
     DEFAULT_MOUSE_SENSITIVITY,
@@ -327,6 +351,27 @@ function CavapendoGallery({
       resolvedPreferredProfile.id,
     ],
   );
+  const autoDowngradeFloor = useMemo(
+    () => getAutoDowngradeFloor(deviceClass),
+    [deviceClass],
+  );
+  const renderProfileReason = useMemo(() => {
+    if (renderProfilePreference !== "auto") return "manual_selection";
+    if (activeRenderProfileId === resolvedPreferredProfile.id) {
+      return deviceClass === "desktop"
+        ? "desktop_auto_default"
+        : "mobile_auto_default";
+    }
+    return deviceClass === "desktop"
+      ? "runtime_slow_windows_desktop_floor_desktop_balanced"
+      : `runtime_slow_windows_mobile_floor_${autoDowngradeFloor}`;
+  }, [
+    activeRenderProfileId,
+    autoDowngradeFloor,
+    deviceClass,
+    renderProfilePreference,
+    resolvedPreferredProfile.id,
+  ]);
   const quality = activeRenderProfile.tier;
   const controlProfile = useMemo(
     () =>
@@ -398,7 +443,8 @@ function CavapendoGallery({
   const modalOpen = Boolean(
     selectedOffering || selectedCreatureId || ritualSiteId || activeDepositId,
   );
-  const sceneInterrupted = modalOpen || settingsOpen || showOrientationOverlay;
+  const sceneInterrupted =
+    modalOpen || settingsOpen || showOrientationOverlay || Boolean(zoneTransition);
   const showGuideUi = !sceneInterrupted;
   const ambienceState = useAmbientAudio({
     enabled: hasInteracted,
@@ -408,6 +454,7 @@ function CavapendoGallery({
     nearbyDepositId,
     volume: ambienceVolume,
     muted: ambienceMuted,
+    renderProfileId: activeRenderProfile.id,
   });
 
   const guideStep = useMemo<GuideStep>(() => {
@@ -438,15 +485,13 @@ function CavapendoGallery({
     : null;
   const doorPromptLabel = useMemo(() => {
     if (!nearbyTriggerId || modalOpen) return null;
-    if (nearbyTriggerId === "outdoor") return "Enter / E · entra in ESTERNO";
-    if (nearbyTriggerId === "return") return "Enter / E · torna in GALLERIA";
-    return "Enter / E · esci dalla galleria";
+    if (nearbyTriggerId === "outdoor") return "Varco · ESTERNO";
+    if (nearbyTriggerId === "return") return "Rientro · GALLERIA";
+    return "Soglia · USCITA";
   }, [modalOpen, nearbyTriggerId]);
   const ritualPromptLabel =
     zone === "meadow" && nearbyDeposit && !modalOpen
-      ? isMobile
-        ? "Apri il rito del santuario"
-        : "Enter / E · apri il rito del santuario"
+      ? `Sosta rituale · ${nearbyDeposit.label}`
       : null;
   const playerPromptLabel = ritualPromptLabel || doorPromptLabel;
   const mobileControlsLandscape = controlsLayout === "mobile_landscape";
@@ -454,38 +499,23 @@ function CavapendoGallery({
     if (modalOpen) return null;
     if (zone === "meadow" && nearbyDeposit) {
       return {
-        kind: "deposit" as const,
         label: "Apri rito",
         detail: nearbyDeposit.label,
       };
     }
-    if (nearbyTriggerId === "outdoor") {
-      return {
-        kind: "door" as const,
-        label: "Entra",
-        detail: "ESTERNO",
-      };
-    }
-    if (nearbyTriggerId === "return") {
-      return {
-        kind: "door" as const,
-        label: "Torna",
-        detail: "GALLERIA",
-      };
-    }
-    if (nearbyTriggerId === "exit") {
-      return {
-        kind: "door" as const,
-        label: "Esci",
-        detail: "USCITA",
-      };
-    }
     return null;
-  }, [modalOpen, nearbyDeposit, nearbyTriggerId, zone]);
+  }, [modalOpen, nearbyDeposit, zone]);
   const ambienceLabel =
     !ambienceMuted && ambienceState.activeCues.length > 0
       ? `Ambiente ${ambienceState.activeCues.length > 1 ? "vivo" : "attivo"}`
       : null;
+  const showGuidePill =
+    showGuideUi &&
+    Boolean(guideDescriptor) &&
+    (zone === "gallery" ||
+      Boolean(nearbyDeposit) ||
+      Boolean(ritualSiteId) ||
+      Boolean(activeDepositId));
 
   const { data: liveOfferings } = useQuery({
     queryKey: ["gallery-offerings"],
@@ -536,6 +566,13 @@ function CavapendoGallery({
     }
   }, [guideCompleted, guideExpanded]);
 
+  const clearZoneTransitionTimers = useCallback(() => {
+    zoneTransitionTimersRef.current.forEach((timer) =>
+      window.clearTimeout(timer),
+    );
+    zoneTransitionTimersRef.current = [];
+  }, []);
+
   useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -545,6 +582,8 @@ function CavapendoGallery({
     const frameId = window.requestAnimationFrame(focusWrapper);
     return () => window.cancelAnimationFrame(frameId);
   }, []);
+
+  useEffect(() => () => clearZoneTransitionTimers(), [clearZoneTransitionTimers]);
 
   useEffect(() => {
     if (zone !== "meadow") {
@@ -643,22 +682,84 @@ function CavapendoGallery({
 
   const handleDoorTrigger = useCallback(
     (id: DoorTrigger["id"]) => {
+      if (zoneTransition) return;
+
       if (id === "exit") {
         onExit?.();
         return;
       }
-      if (id === "outdoor") {
-        setMeadowArrivalAcknowledged(false);
+
+      const resetInputs = () => {
+        keysDownRef.current.clear();
+        interactRequestedRef.current = false;
+        jumpRequestedRef.current = false;
+        joystickRef.current = {
+          moveX: 0,
+          moveZ: 0,
+          lookX: 0,
+          lookY: 0,
+        };
+      };
+
+      const startTransition = (
+        nextZone: WorldZone,
+        label: string,
+        detail: string,
+      ) => {
+        clearZoneTransitionTimers();
+        resetInputs();
+        setSettingsOpen(false);
+        setGuideExpanded(false);
         setAmbientCreatureCue(null);
-        setZone("meadow");
+        if (nextZone === "meadow") {
+          setMeadowArrivalAcknowledged(false);
+        }
+
+        setZoneTransition({
+          label,
+          detail,
+          phase: "cover",
+        });
+
+        zoneTransitionTimersRef.current.push(
+          window.setTimeout(() => {
+            setZone(nextZone);
+            setZoneTransition((current) =>
+              current
+                ? {
+                    ...current,
+                    phase: "opening",
+                  }
+                : current,
+            );
+          }, 260),
+        );
+
+        zoneTransitionTimersRef.current.push(
+          window.setTimeout(() => {
+            setZoneTransition(null);
+            wrapperRef.current?.focus();
+          }, 1160),
+        );
+      };
+
+      if (id === "outdoor") {
+        startTransition(
+          "meadow",
+          "Attraverso ESTERNO",
+          "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
+        );
         return;
       }
       if (id === "return") {
-        setAmbientCreatureCue(null);
-        setZone("gallery");
+        startTransition(
+          "gallery",
+          "Rientro nella galleria",
+          "La luce si richiude e il padiglione torna a respirare attorno alle opere.",
+        );
       }
     },
-    [onExit],
+    [clearZoneTransitionTimers, onExit, zoneTransition],
   );
 
   const handleInteraction = useCallback(
@@ -790,9 +891,13 @@ function CavapendoGallery({
       ...snapshotRef.current,
       zone,
       sector: currentSector,
+      deviceClass,
       renderProfile: activeRenderProfile.id,
+      resolvedRenderProfile: resolvedPreferredProfile.id,
       renderProfilePreference,
       renderProfileSource,
+      renderProfileAutoFloor: autoDowngradeFloor,
+      renderProfileReason,
       profileLocked: profileShiftLocked,
       quality,
       hudMode,
@@ -817,6 +922,7 @@ function CavapendoGallery({
       ambience: ambienceState,
       nearbyCreatureIds,
       visibleLandmarkIds,
+      horizonLandmarkIds,
       modal: activeDepositId
         ? { type: "deposit", id: activeDepositId }
         : ritualSiteId
@@ -834,8 +940,10 @@ function CavapendoGallery({
     controlProfile.mouseLookSensitivity,
     controlProfile.touchLookSensitivity,
     currentSector,
+    deviceClass,
     fullscreen,
     guideStep,
+    horizonLandmarkIds,
     hudMode,
     joystickRadius,
     controlsLayout,
@@ -845,8 +953,11 @@ function CavapendoGallery({
     playerPromptLabel,
     profileShiftLocked,
     quality,
+    autoDowngradeFloor,
     renderProfilePreference,
+    renderProfileReason,
     renderProfileSource,
+    resolvedPreferredProfile.id,
     ritualSiteId,
     selectedCreatureId,
     selectedOffering,
@@ -910,6 +1021,7 @@ function CavapendoGallery({
     const windowWithGameHooks = window as Window & {
       advanceTime?: (ms: number) => Promise<void>;
       render_game_to_text?: () => string;
+      set_meadow_debug_pose?: (pose: MeadowDebugPose) => Promise<boolean>;
     };
 
     windowWithGameHooks.advanceTime = async (ms: number) => {
@@ -947,9 +1059,13 @@ function CavapendoGallery({
           "world-space position; +x right; +y up; in gallery +z points to USCITA and -z points to ESTERNO; in meadow movement follows a larger small-planet globe around the planet center",
         zone: snapshotRef.current.zone,
         sector: snapshotRef.current.sector,
+        device_class: snapshotRef.current.deviceClass,
         render_profile: snapshotRef.current.renderProfile,
+        resolved_render_profile: snapshotRef.current.resolvedRenderProfile,
         render_profile_preference: snapshotRef.current.renderProfilePreference,
         render_profile_source: snapshotRef.current.renderProfileSource,
+        auto_downgrade_floor: snapshotRef.current.renderProfileAutoFloor,
+        render_profile_reason: snapshotRef.current.renderProfileReason,
         profile_locked: snapshotRef.current.profileLocked,
         guide_step: snapshotRef.current.guideStep,
         hud_mode: snapshotRef.current.hudMode,
@@ -979,10 +1095,18 @@ function CavapendoGallery({
         nearby_deposit: snapshotRef.current.nearbyDepositId,
         nearby_creatures: snapshotRef.current.nearbyCreatureIds,
         visible_landmarks: snapshotRef.current.visibleLandmarkIds,
+        horizon_landmarks: snapshotRef.current.horizonLandmarkIds,
         nearby_landmark_summary: snapshotRef.current.visibleLandmarkIds
           .map(
             (landmarkId) =>
               MEADOW_LANDMARKS.find((landmark) => landmark.id === landmarkId)
+                ?.label,
+          )
+          .filter(Boolean),
+        horizon_landmark_summary: snapshotRef.current.horizonLandmarkIds
+          .map(
+            (landmarkId) =>
+              MEADOW_SKYLINE_LANDMARKS.find((landmark) => landmark.id === landmarkId)
                 ?.label,
           )
           .filter(Boolean),
@@ -996,9 +1120,18 @@ function CavapendoGallery({
       });
     };
 
+    windowWithGameHooks.set_meadow_debug_pose = async (pose) => {
+      meadowDebugPoseRef.current?.(pose);
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      });
+      return Boolean(meadowDebugPoseRef.current);
+    };
+
     return () => {
       delete windowWithGameHooks.advanceTime;
       delete windowWithGameHooks.render_game_to_text;
+      delete windowWithGameHooks.set_meadow_debug_pose;
     };
   }, [depositCounts]);
 
@@ -1037,9 +1170,6 @@ function CavapendoGallery({
               offerings={offerings}
               renderProfile={activeRenderProfile}
               onSelectOffering={setSelectedOffering}
-              onSelectCreature={(creature) =>
-                setSelectedCreatureId(creature.id)
-              }
             />
           ) : (
             <PremiumMeadowScene
@@ -1054,6 +1184,7 @@ function CavapendoGallery({
 
           <RenderProfileGuardian
             profileId={activeRenderProfile.id}
+            deviceClass={deviceClass}
             allowAutoDowngrade={renderProfilePreference === "auto"}
             locked={
               automationProfileLock ||
@@ -1072,6 +1203,7 @@ function CavapendoGallery({
             touchLookSensitivity={controlProfile.touchLookSensitivity}
             invertLookFactor={controlProfile.invertLookFactor}
             reducedCameraMotion={controlProfile.reducedCameraMotion}
+            qualityTier={quality}
             landmarkDrawDistance={activeRenderProfile.landmarkDrawDistance}
             viewport={viewport}
             fullscreen={fullscreen}
@@ -1087,6 +1219,7 @@ function CavapendoGallery({
             onCreatureProximityChange={setNearbyCreatureIds}
             onSectorChange={setCurrentSector}
             onVisibleLandmarksChange={setVisibleLandmarkIds}
+            onHorizonLandmarksChange={setHorizonLandmarkIds}
             registerStep={(step) => {
               stepRef.current = step;
               if (!stepReadyRef.current) {
@@ -1094,11 +1227,15 @@ function CavapendoGallery({
                 stepWaitersRef.current.splice(0).forEach((resolve) => resolve());
               }
             }}
+            debugPoseRef={meadowDebugPoseRef}
             creatureRuntimeRef={meadowCreatureRuntimeRef}
             snapshotRef={snapshotRef}
           />
         </Canvas>
       </div>
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_center,_rgba(255,248,240,0)_42%,_rgba(11,8,7,0.08)_74%,_rgba(5,4,4,0.28)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] shadow-[inset_0_0_0_1px_rgba(255,245,232,0.08),inset_0_70px_90px_rgba(0,0,0,0.14),inset_0_-110px_130px_rgba(0,0,0,0.24)]" />
+      <ZoneTransitionOverlay transition={zoneTransition} />
 
       <AnimatePresence>
         {showGuideUi &&
@@ -1117,7 +1254,7 @@ function CavapendoGallery({
       </AnimatePresence>
 
       <AnimatePresence>
-        {showGuideUi &&
+        {showGuidePill &&
           guideDescriptor &&
           (guideHidden || !guideExpanded || isMobile) && (
           <GuideObjectivePill
@@ -1135,13 +1272,13 @@ function CavapendoGallery({
       showGuideUi &&
       (!guideDescriptor || guideHidden || !guideExpanded) ? (
         <PlayerHud
-          zoneLabel={zone === "gallery" ? "Interno" : "Globo"}
+          zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
           sectorLabel={
             zone === "meadow" ? currentSectorDescriptor?.label || null : null
           }
           objectiveLabel={null}
           promptLabel={!modalOpen ? playerPromptLabel : null}
-          landmarkLabel={visibleLandmarkLabel}
+          landmarkLabel={zone === "gallery" ? visibleLandmarkLabel : null}
           ambienceLabel={ambienceLabel}
           creatureCount={nearbyCreatureDefinitions.length}
           depositReady={Boolean(nearbyDeposit)}
@@ -1154,7 +1291,7 @@ function CavapendoGallery({
         />
       ) : hudMode === "debug" ? (
         <DebugHud
-          zoneLabel={zone === "gallery" ? "Interno" : "Globo"}
+          zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
           sectorLabel={currentSectorDescriptor?.label || null}
           renderProfile={activeRenderProfile.label}
           ambienceLabel={ambienceLabel}
@@ -1174,14 +1311,14 @@ function CavapendoGallery({
         >
           <button
             onClick={() => setSettingsOpen((open) => !open)}
-            className="pointer-events-auto rounded-full border border-white/10 bg-[#17110f]/82 px-3 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#f3eadd] shadow-[0_18px_46px_rgba(0,0,0,0.28)] backdrop-blur-xl hover:bg-[#241916]/86"
+            className="pointer-events-auto rounded-full border border-[#7d6857] bg-[#17110f] px-3 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#fff7ea] shadow-[0_18px_46px_rgba(0,0,0,0.34)] hover:bg-[#281c17]"
           >
             Impostazioni
           </button>
           {!isMobile && (
             <Link
               to="/offri"
-              className="pointer-events-auto rounded-full bg-[#f1eadf] px-4 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#2a2018] shadow-[0_18px_46px_rgba(0,0,0,0.22)]"
+              className="pointer-events-auto rounded-full border border-[#f2e4d3] bg-[#f7efe4] px-4 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#221710] shadow-[0_18px_46px_rgba(0,0,0,0.24)]"
             >
               + Offri
             </Link>
@@ -1290,10 +1427,8 @@ function CavapendoGallery({
             {mobilePrimaryAction && (
               <button
                 onClick={() => {
-                  if (mobilePrimaryAction.kind === "deposit" && nearbyDeposit) {
+                  if (nearbyDeposit) {
                     setRitualSiteId(nearbyDeposit.id);
-                  } else {
-                    interactRequestedRef.current = true;
                   }
                   handleActivity();
                 }}
@@ -1331,7 +1466,7 @@ function CavapendoGallery({
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 rounded-full border border-[#6b594b] bg-[#120d0c]/88 px-4 py-2 text-sm italic text-[#f4eadf] backdrop-blur-xl"
+            className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 rounded-full border border-[#816d5b] bg-[#130d0c]/94 px-4 py-2 text-sm italic text-[#fff3e6] backdrop-blur-xl"
           >
             Una cavapendolata è stata lasciata in{" "}
             {DEPOSIT_SITES.find((site) => site.id === lastDepositSiteId)?.label}
@@ -1346,12 +1481,12 @@ function CavapendoGallery({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
-            className="pointer-events-none absolute bottom-32 left-1/2 z-20 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 rounded-3xl border border-[#6a5749] bg-[#130e0d]/92 px-5 py-4 text-[#f8efe4] shadow-[0_24px_70px_rgba(0,0,0,0.34)] backdrop-blur-xl"
+            className="pointer-events-none absolute bottom-32 left-1/2 z-20 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 rounded-3xl border border-[#816c58] bg-[#130d0c]/95 px-5 py-4 text-[#fff6eb] shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl"
           >
-            <div className="font-mono-light text-[0.62rem] uppercase tracking-[0.18em] text-[#d6bea6]">
+            <div className="font-mono-light text-[0.62rem] uppercase tracking-[0.18em] text-[#ebd0b3]">
               {ambientCreatureCue.label}
             </div>
-            <div className="mt-1 text-sm leading-relaxed text-[#efe3d5]">
+            <div className="mt-1 text-sm leading-relaxed text-[#fff1e0]">
               {ambientCreatureCue.caption}
             </div>
           </motion.div>
@@ -1393,7 +1528,7 @@ function CavapendoGallery({
               id: reactedCreature.id,
               label: reactedCreature.label,
               caption:
-                "Il luogo cambia ritmo per un attimo: qualcosa nel globo ha sentito il deposito.",
+                "Il luogo trattiene un'eco per qualche istante: qualcosa, li vicino, ha sentito la traccia lasciata.",
             });
           }
         }}

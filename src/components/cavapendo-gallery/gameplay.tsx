@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -10,7 +11,9 @@ import {
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import {
-  getNextLowerRenderProfile,
+  getNextAutoRenderProfile,
+  type DeviceClass,
+  type QualityTier,
   type RenderProfile,
   type ViewportMetrics,
   type WorldZone,
@@ -34,11 +37,16 @@ import {
   type DoorTrigger,
   type InteractionTarget,
   type JoystickInput,
+  type MeadowDebugPose,
   type MeadowCreatureRuntimeSnapshot,
   type WorldStateSnapshot,
 } from "@/components/cavapendo-gallery/types";
 import {
+  getPlanarFromMeadowNormal,
+  getPlanarFromWorldPosition,
+  getMeadowTerrainLift,
   MEADOW_CREATURES,
+  MEADOW_PLAYER_COLLIDER_RADIUS,
   MEADOW_DOORS,
   MEADOW_LANDMARKS,
   MEADOW_PLANET_CENTER,
@@ -46,7 +54,12 @@ import {
   MEADOW_SPAWN,
   MEADOW_STAND_HEIGHT,
   getMeadowReferenceForward,
+  getMeadowSkylineLandmarksForQuality,
   getMeadowSectorForWorldPosition,
+  projectPlanarPointToMeadowNormal,
+  projectPlanarPointToMeadowRadialNormal,
+  projectPlanarPointToMeadowSurface,
+  resolvePlanarMeadowCollisions,
   type MeadowSector,
 } from "@/lib/meadowWorld";
 
@@ -175,6 +188,7 @@ export function WorldController({
   touchLookSensitivity,
   invertLookFactor,
   reducedCameraMotion,
+  qualityTier,
   landmarkDrawDistance,
   viewport,
   fullscreen,
@@ -190,7 +204,9 @@ export function WorldController({
   onCreatureProximityChange,
   onSectorChange,
   onVisibleLandmarksChange,
+  onHorizonLandmarksChange,
   registerStep,
+  debugPoseRef,
   creatureRuntimeRef,
   snapshotRef,
 }: {
@@ -201,6 +217,7 @@ export function WorldController({
   touchLookSensitivity: number;
   invertLookFactor: 1 | -1;
   reducedCameraMotion: boolean;
+  qualityTier: QualityTier;
   landmarkDrawDistance: number;
   viewport: ViewportMetrics;
   fullscreen: boolean;
@@ -216,7 +233,9 @@ export function WorldController({
   onCreatureProximityChange: (ids: string[]) => void;
   onSectorChange: (sector: MeadowSector | null) => void;
   onVisibleLandmarksChange: (ids: string[]) => void;
+  onHorizonLandmarksChange: (ids: string[]) => void;
   registerStep: (step: (deltaSeconds: number) => void) => void;
+  debugPoseRef: MutableRefObject<((pose: MeadowDebugPose) => void) | null>;
   creatureRuntimeRef: MutableRefObject<Record<string, MeadowCreatureRuntimeSnapshot>>;
   snapshotRef: MutableRefObject<WorldStateSnapshot>;
 }) {
@@ -230,8 +249,20 @@ export function WorldController({
   const nearbyDepositRef = useRef<DepositSite["id"] | null>(null);
   const nearbyCreatureKeyRef = useRef("");
   const visibleLandmarkKeyRef = useRef("");
+  const horizonLandmarkKeyRef = useRef("");
   const sectorRef = useRef<MeadowSector | null>(null);
   const initializedRef = useRef(false);
+  const skylineLandmarks = useMemo(
+    () => getMeadowSkylineLandmarksForQuality(qualityTier),
+    [qualityTier],
+  );
+  const autoDoorRef = useRef<{
+    zone: WorldZone;
+    id: DoorTrigger["id"] | null;
+  }>({
+    zone,
+    id: null,
+  });
   const frameForward = useRef(new THREE.Vector3());
   const frameRight = useRef(new THREE.Vector3());
   const surfaceUp = useRef(new THREE.Vector3());
@@ -371,11 +402,13 @@ export function WorldController({
     nearbyDepositRef.current = null;
     nearbyCreatureKeyRef.current = "";
     visibleLandmarkKeyRef.current = "";
+    horizonLandmarkKeyRef.current = "";
     sectorRef.current = zone === "meadow" ? "return_court" : null;
     onTriggerProximityChange(null);
     onDepositProximityChange(null);
     onCreatureProximityChange([]);
     onVisibleLandmarksChange([]);
+    onHorizonLandmarksChange([]);
     onSectorChange(zone === "meadow" ? "return_court" : null);
     if (initializedRef.current) {
       resetTransientInputs();
@@ -386,6 +419,7 @@ export function WorldController({
     applyPose,
     onCreatureProximityChange,
     onDepositProximityChange,
+    onHorizonLandmarksChange,
     onSectorChange,
     onTriggerProximityChange,
     onVisibleLandmarksChange,
@@ -563,14 +597,22 @@ export function WorldController({
   const step = useCallback(
     (deltaSeconds: number) => {
       const joy = joystickRef.current;
-      const wantsCancelTransition =
+      const hasMoveIntent =
         keysDownRef.current.size > 0 ||
         Math.abs(joy.moveX) > 0.06 ||
         Math.abs(joy.moveZ) > 0.06 ||
-        Math.abs(joy.lookX) > 0.025 ||
-        Math.abs(joy.lookY) > 0.025 ||
-        jumpRequestedRef.current ||
-        interactRequestedRef.current;
+        jumpRequestedRef.current;
+      const hasLookIntent =
+        Math.abs(joy.lookX) > 0.025 || Math.abs(joy.lookY) > 0.025;
+      const currentTransition = transitionRef.current;
+      const movementCanBreakTransition =
+        !currentTransition ||
+        currentTransition.elapsed >=
+          (currentTransition.zone === "meadow" ? 0.9 : 0.45);
+      const wantsCancelTransition =
+        hasLookIntent ||
+        interactRequestedRef.current ||
+        (movementCanBreakTransition && hasMoveIntent);
 
       if (wantsCancelTransition) {
         transitionRef.current = null;
@@ -712,10 +754,18 @@ export function WorldController({
             16.5,
           );
         } else {
-          surfaceUp.current
-            .copy(camera.position)
-            .sub(MEADOW_PLANET_CENTER)
-            .normalize();
+          const currentPlanarPoint = getPlanarFromWorldPosition(camera.position);
+          const currentTerrainLift = getMeadowTerrainLift(
+            currentPlanarPoint.x,
+            currentPlanarPoint.z,
+          );
+
+          surfaceUp.current.copy(
+            projectPlanarPointToMeadowNormal(
+              currentPlanarPoint.x,
+              currentPlanarPoint.z,
+            ),
+          );
           tangentReference.current.copy(
             getMeadowReferenceForward(surfaceUp.current),
           );
@@ -738,16 +788,42 @@ export function WorldController({
           }
 
           surfaceFoot.current
-            .copy(MEADOW_PLANET_CENTER)
-            .addScaledVector(surfaceUp.current, MEADOW_PLANET_RADIUS);
+            .copy(
+              projectPlanarPointToMeadowSurface(
+                currentPlanarPoint.x,
+                currentPlanarPoint.z,
+                0,
+              ),
+            );
           surfaceFoot.current.addScaledVector(
             movementDirection.current,
             MEADOW_SPEED * deltaSeconds,
           );
-          surfaceUp.current
-            .copy(surfaceFoot.current)
+          const movedNormal = surfaceFoot.current
+            .clone()
             .sub(MEADOW_PLANET_CENTER)
             .normalize();
+          const movedPlanar = getPlanarFromMeadowNormal(movedNormal);
+
+          const resolvedPlanar = resolvePlanarMeadowCollisions(
+            [movedPlanar.x, movedPlanar.z],
+            MEADOW_PLAYER_COLLIDER_RADIUS,
+          );
+
+          const radialNormal = projectPlanarPointToMeadowRadialNormal(
+            resolvedPlanar[0],
+            resolvedPlanar[1],
+          );
+          const nextTerrainLift = getMeadowTerrainLift(
+            resolvedPlanar[0],
+            resolvedPlanar[1],
+          );
+          surfaceUp.current.copy(
+            projectPlanarPointToMeadowNormal(
+              resolvedPlanar[0],
+              resolvedPlanar[1],
+            ),
+          );
 
           if (jumpRequestedRef.current && groundedRef.current) {
             velocityYRef.current = MEADOW_JUMP_VELOCITY;
@@ -758,7 +834,7 @@ export function WorldController({
           velocityYRef.current += MEADOW_GRAVITY * deltaSeconds;
           let jumpHeight =
             camera.position.distanceTo(MEADOW_PLANET_CENTER) -
-            (MEADOW_PLANET_RADIUS + MEADOW_STAND_HEIGHT);
+            (MEADOW_PLANET_RADIUS + currentTerrainLift + MEADOW_STAND_HEIGHT);
           jumpHeight += velocityYRef.current * deltaSeconds;
           if (jumpHeight <= 0) {
             jumpHeight = 0;
@@ -769,8 +845,11 @@ export function WorldController({
           camera.position
             .copy(MEADOW_PLANET_CENTER)
             .addScaledVector(
-              surfaceUp.current,
-              MEADOW_PLANET_RADIUS + MEADOW_STAND_HEIGHT + jumpHeight,
+              radialNormal,
+              MEADOW_PLANET_RADIUS +
+                nextTerrainLift +
+                MEADOW_STAND_HEIGHT +
+                jumpHeight,
             );
         }
       }
@@ -790,6 +869,11 @@ export function WorldController({
       if (nearbyDoorId !== nearbyDoorRef.current) {
         nearbyDoorRef.current = nearbyDoorId;
         onTriggerProximityChange(nearbyDoorId);
+      }
+      if (autoDoorRef.current.zone !== zone) {
+        autoDoorRef.current = { zone, id: null };
+      } else if (!nearbyDoorId) {
+        autoDoorRef.current.id = null;
       }
 
       const nearbyDeposit =
@@ -858,6 +942,33 @@ export function WorldController({
         onVisibleLandmarksChange(visibleLandmarkIds);
       }
 
+      const horizonLandmarkIds =
+        zone === "meadow"
+          ? skylineLandmarks.filter((landmark) => {
+              const dx = landmark.position[0] - camera.position.x;
+              const dy = landmark.position[1] - camera.position.y;
+              const dz = landmark.position[2] - camera.position.z;
+              const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+              if (
+                distance >
+                landmark.visibleDistance * Math.max(0.95, landmarkDrawDistance)
+              ) {
+                return false;
+              }
+              const inverseDistance = distance > 0.0001 ? 1 / distance : 1;
+              const facing =
+                dx * inverseDistance * lookDirection.current.x +
+                dy * inverseDistance * lookDirection.current.y +
+                dz * inverseDistance * lookDirection.current.z;
+              return facing > -0.82;
+            }).map((landmark) => landmark.id)
+          : [];
+      const horizonLandmarkKey = horizonLandmarkIds.join("|");
+      if (horizonLandmarkKey !== horizonLandmarkKeyRef.current) {
+        horizonLandmarkKeyRef.current = horizonLandmarkKey;
+        onHorizonLandmarksChange(horizonLandmarkIds);
+      }
+
       const nextSector =
         zone === "meadow"
           ? getMeadowSectorForWorldPosition(camera.position)
@@ -865,6 +976,19 @@ export function WorldController({
       if (nextSector !== sectorRef.current) {
         sectorRef.current = nextSector;
         onSectorChange(nextSector);
+      }
+
+      let doorTriggeredThisFrame: DoorTrigger["id"] | null = null;
+      if (
+        nearbyDoorId &&
+        !modalOpen &&
+        !transitionRef.current &&
+        autoDoorRef.current.id !== nearbyDoorId
+      ) {
+        autoDoorRef.current.id = nearbyDoorId;
+        doorTriggeredThisFrame = nearbyDoorId;
+        resetTransientInputs();
+        onDoorTrigger(nearbyDoorId);
       }
 
       if (interactRequestedRef.current && !modalOpen) {
@@ -877,7 +1001,8 @@ export function WorldController({
               : null);
         if (interactionTarget) {
           onInteraction(interactionTarget);
-        } else if (nearbyDoorId) {
+        } else if (nearbyDoorId && doorTriggeredThisFrame !== nearbyDoorId) {
+          resetTransientInputs();
           onDoorTrigger(nearbyDoorId);
         }
       }
@@ -900,6 +1025,7 @@ export function WorldController({
         nearbyDepositId,
         nearbyCreatureIds,
         visibleLandmarkIds,
+        horizonLandmarkIds,
       };
     },
     [
@@ -916,12 +1042,15 @@ export function WorldController({
       onCreatureProximityChange,
       onDepositProximityChange,
       onDoorTrigger,
+      onHorizonLandmarksChange,
       onInteraction,
       onSectorChange,
       onTriggerProximityChange,
       onVisibleLandmarksChange,
+      resetTransientInputs,
       resolveInteractionTarget,
       snapshotRef,
+      skylineLandmarks,
       touchLookSensitivity,
       zone,
     ],
@@ -930,6 +1059,40 @@ export function WorldController({
   useEffect(() => {
     registerStep(step);
   }, [registerStep, step]);
+
+  useEffect(() => {
+    debugPoseRef.current = (pose) => {
+      if (zone !== "meadow") return;
+
+      const jumpHeight = Math.max(0, pose.jumpHeight ?? 0);
+      const resolvedPlanar = resolvePlanarMeadowCollisions(
+        [pose.planarX, pose.planarZ],
+        MEADOW_PLAYER_COLLIDER_RADIUS,
+      );
+      const nextPosition = projectPlanarPointToMeadowSurface(
+        resolvedPlanar[0],
+        resolvedPlanar[1],
+        MEADOW_STAND_HEIGHT + jumpHeight,
+      );
+
+      transitionRef.current = null;
+      velocityYRef.current = 0;
+      groundedRef.current = jumpHeight <= 0.001;
+      camera.position.copy(nextPosition);
+      yawRef.current = pose.yaw ?? yawRef.current;
+      pitchRef.current = THREE.MathUtils.clamp(
+        pose.pitch ?? pitchRef.current,
+        -MAX_PITCH,
+        MAX_PITCH,
+      );
+      movementGuardUntilRef.current = performance.now() + 180;
+      applyOrientation("meadow");
+    };
+
+    return () => {
+      debugPoseRef.current = null;
+    };
+  }, [applyOrientation, camera, debugPoseRef, zone]);
 
   useFrame((_, deltaSeconds) => {
     step(Math.min(deltaSeconds, 1 / 20));
@@ -940,11 +1103,13 @@ export function WorldController({
 
 export function RenderProfileGuardian({
   profileId,
+  deviceClass,
   allowAutoDowngrade,
   locked,
   onDowngrade,
 }: {
   profileId: RenderProfile;
+  deviceClass: DeviceClass;
   allowAutoDowngrade: boolean;
   locked: boolean;
   onDowngrade: (nextProfile: RenderProfile) => void;
@@ -985,7 +1150,10 @@ export function RenderProfileGuardian({
     if (sample.slowWindows < 2) return;
 
     sample.slowWindows = 0;
-    const nextProfile = getNextLowerRenderProfile(profileId);
+    const nextProfile = getNextAutoRenderProfile({
+      currentProfile: profileId,
+      deviceClass,
+    });
     if (nextProfile) {
       onDowngrade(nextProfile);
     }

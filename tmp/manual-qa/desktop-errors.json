@@ -1,0 +1,18 @@
+[
+  {
+    "type": "pageerror",
+    "text": "ReferenceError: Cannot access 'modalOpen' before initialization"
+  },
+  {
+    "type": "pageerror",
+    "text": "ReferenceError: Cannot access 'modalOpen' before initialization"
+  },
+  {
+    "type": "console",
+    "text": "The above error occurred in the <CavapendoGallery> component:\n\n    at CavapendoGallery (http://127.0.0.1:4173/src/components/CavapendoGallery.tsx?t=1774595884343:39:29)\n    at CavapendoGalleryShell (http://127.0.0.1:4173/src/components/CavapendoGalleryShell.tsx?t=1774595703012:40:34)\n    at main\n    at div\n    at Galleria (http://127.0.0.1:4173/src/pages/Galleria.tsx?t=1774595761608:28:22)\n    at Suspense\n    at RouteBoundary (http://127.0.0.1:4173/src/App.tsx?t=1774595761608:65:26)\n    at RenderedRoute (http://127.0.0.1:4173/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:4088:5)\n    at Routes (http://127.0.0.1:4173/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:4558:5)\n    at div\n    at MotionDOMComponent (http://127.0.0.1:4173/node_modules/.vite/deps/framer-motion.js?v=c4bec356:8733:40)\n    at PopChildMeasure (http://127.0.0.1:4173/node_modules/.vite/deps/framer-motion.js?v=c4bec356:7879:23)\n    at PopChild (http://127.0.0.1:4173/node_modules/.vite/deps/framer-motion.js?v=c4bec356:7905:21)\n    at PresenceChild (http://127.0.0.1:4173/node_modules/.vite/deps/framer-motion.js?v=c4bec356:7953:24)\n    at AnimatePresence (http://127.0.0.1:4173/node_modules/.vite/deps/framer-motion.js?v=c4bec356:8030:26)\n    at AnimatedRoutes (http://127.0.0.1:4173/src/App.tsx?t=1774595761608:81:22)\n    at Router (http://127.0.0.1:4173/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:4501:15)\n    at BrowserRouter (http://127.0.0.1:4173/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:5247:5)\n    at Provider (http://127.0.0.1:4173/node_modules/.vite/deps/chunk-LEVCHQB7.js?v=c4bec356:25:15)\n    at TooltipProvider (http://127.0.0.1:4173/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=c4bec356:2234:5)\n    at QueryClientProvider (http://127.0.0.1:4173/node_modules/.vite/deps/@tanstack_react-query.js?v=c4bec356:2934:3)\n    at App\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries."
+  },
+  {
+    "type": "pageerror",
+    "text": "ReferenceError: Cannot access 'modalOpen' before initialization"
+  }
+]

@@ -1,4 +1,5 @@
 import {
+  type DeviceClass,
   type GuideStep,
   type HudMode,
   type MobileControlsLayout,
@@ -10,6 +11,8 @@ import {
   type WorldZone,
 } from "@/components/cavapendo-gallery/runtime";
 import type { AmbientAudioCue, MeadowDepositSite, MeadowSector } from "@/lib/meadowWorld";
+
+export type AmbientTransitionCue = "portal_hit_out" | "portal_hit_in";
 
 export interface Offering {
   id: string;
@@ -69,19 +72,36 @@ export interface MeadowCreatureRuntimeSnapshot {
   sector: MeadowSector;
 }
 
+export interface MeadowDebugPose {
+  planarX: number;
+  planarZ: number;
+  yaw?: number;
+  pitch?: number;
+  jumpHeight?: number;
+}
+
 export interface AmbientStateSnapshot {
   activeCues: AmbientAudioCue[];
   muted: boolean;
   volume: number;
   zone: WorldZone;
+  galleryTrack: string | null;
+  transition: {
+    cue: AmbientTransitionCue | null;
+    active: boolean;
+  };
 }
 
 export interface WorldStateSnapshot {
   zone: WorldZone;
   sector: MeadowSector | null;
+  deviceClass: DeviceClass;
   renderProfile: RenderProfile;
+  resolvedRenderProfile: RenderProfile;
   renderProfilePreference: RenderProfilePreference;
   renderProfileSource: "manual" | "auto" | "auto_downgraded";
+  renderProfileAutoFloor: RenderProfile;
+  renderProfileReason: string | null;
   profileLocked: boolean;
   quality: QualityTier;
   hudMode: HudMode;
@@ -115,6 +135,7 @@ export interface WorldStateSnapshot {
   nearbyDepositId: DepositSite["id"] | null;
   nearbyCreatureIds: string[];
   visibleLandmarkIds: string[];
+  horizonLandmarkIds: string[];
   doorPrompt: string | null;
   ambience: AmbientStateSnapshot;
 }

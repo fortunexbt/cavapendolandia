@@ -1,0 +1,26 @@
+[
+  {
+    "type": "console",
+    "message": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  Could not create a WebGL context, VENDOR = 0xffff, DEVICE = 0xffff, GL_VENDOR = Google Inc. (Google), GL_RENDERER = ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver-5.0.0), GL_VERSION = 5.0.0, Sandboxed = no, Optimus = no, AMD switchable = no, Reset notification strategy = 0x8252, ErrorMessage = BindToCurrentSequence failed: ."
+  },
+  {
+    "type": "console",
+    "message": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  Could not create a WebGL context, VENDOR = 0xffff, DEVICE = 0xffff, GL_VENDOR = Google Inc. (Google), GL_RENDERER = ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver-5.0.0), GL_VERSION = 5.0.0, Sandboxed = no, Optimus = no, AMD switchable = no, Reset notification strategy = 0x8252, ErrorMessage = BindToCurrentSequence failed: ."
+  },
+  {
+    "type": "console",
+    "message": "THREE.WebGLRenderer: Error creating WebGL context."
+  },
+  {
+    "type": "pageerror",
+    "message": "Error: Error creating WebGL context."
+  },
+  {
+    "type": "console",
+    "message": "The above error occurred in the <ForwardRef(Canvas)> component:\n\n    at Canvas (http://127.0.0.1:8080/node_modules/.vite/deps/chunk-TYSNTWEB.js?v=c4bec356:18236:3)\n    at FiberProvider (http://127.0.0.1:8080/node_modules/.vite/deps/chunk-TYSNTWEB.js?v=c4bec356:18170:21)\n    at CanvasWrapper\n    at div\n    at CavapendoGallery (http://127.0.0.1:8080/src/components/CavapendoGallery.tsx:39:29)\n    at CavapendoGalleryShell (http://127.0.0.1:8080/src/components/CavapendoGalleryShell.tsx:40:34)\n    at main\n    at div\n    at Galleria (http://127.0.0.1:8080/src/pages/Galleria.tsx:28:22)\n    at Suspense\n    at RouteBoundary (http://127.0.0.1:8080/src/App.tsx:65:26)\n    at RenderedRoute (http://127.0.0.1:8080/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:4088:5)\n    at Routes (http://127.0.0.1:8080/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:4558:5)\n    at div\n    at MotionDOMComponent (http://127.0.0.1:8080/node_modules/.vite/deps/framer-motion.js?v=c4bec356:8733:40)\n    at PopChildMeasure (http://127.0.0.1:8080/node_modules/.vite/deps/framer-motion.js?v=c4bec356:7879:23)\n    at PopChild (http://127.0.0.1:8080/node_modules/.vite/deps/framer-motion.js?v=c4bec356:7905:21)\n    at PresenceChild (http://127.0.0.1:8080/node_modules/.vite/deps/framer-motion.js?v=c4bec356:7953:24)\n    at AnimatePresence (http://127.0.0.1:8080/node_modules/.vite/deps/framer-motion.js?v=c4bec356:8030:26)\n    at AnimatedRoutes (http://127.0.0.1:8080/src/App.tsx:81:22)\n    at Router (http://127.0.0.1:8080/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:4501:15)\n    at BrowserRouter (http://127.0.0.1:8080/node_modules/.vite/deps/react-router-dom.js?v=c4bec356:5247:5)\n    at Provider (http://127.0.0.1:8080/node_modules/.vite/deps/chunk-LEVCHQB7.js?v=c4bec356:25:15)\n    at TooltipProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=c4bec356:2234:5)\n    at QueryClientProvider (http://127.0.0.1:8080/node_modules/.vite/deps/@tanstack_react-query.js?v=c4bec356:2934:3)\n    at App\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries."
+  },
+  {
+    "type": "pageerror",
+    "message": "Error: Error creating WebGL context."
+  }
+]

@@ -34,7 +34,7 @@ Il progetto ha un'anima curatoriale: i contributi passano per l'Anticamera (mode
    - `/rimozione` - Richiesta rimozione
 
 3. **Admin Dashboard**
-   - Login con email/password (`cavapendoli@gmail.com` / `barbantni`)
+   - Login con email/password (`ADMIN_EMAIL` / `ADMIN_PASSWORD`)
    - `/admin/anticamera` - Moderazione contenuti pending
    - `/admin/archivio` - Contenuti approvati
    - `/admin/nascosti` - Contenuti nascosti
@@ -90,8 +90,8 @@ Il database Supabase era offline quando abbiamo lavorato. **Ora dovrebbe essere 
 ### Variabili d'Ambiente
 Se ti serve connetterti al DB:
 ```
-VITE_SUPABASE_URL=https://sasjrpdecjwmdxoyepas.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=...
+VITE_SUPABASE_URL=your-supabase-url.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 
 ### Per Testare Senza DB

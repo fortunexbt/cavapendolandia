@@ -5,6 +5,7 @@ import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import InitiativeHint from "@/components/InitiativeHint";
 import CavapendoWorld from "@/components/CavapendoWorld";
+import { SeahorseIcon } from "@/components/shared/SeahorseIcon";
 
 const MYSTICAL_OPENING = `I Cavapendoli scendono a spirale, quasi veloci.
 Prima erano ovunque, nei magazzini del mondo impalpabile.
@@ -19,17 +20,6 @@ Vanno e vengono, svolacchiano, si posano e se ne vanno.
 Chi sa cosa fanno quando non si mostrano.
 Li invito con umiltà a entrare nel cannello della penna...
 e mi ridacchiano addosso.`;
-
-const SEAHORSE_SVG = (
-  <svg viewBox="0 0 280 240" className="h-24 w-24 md:h-48 md:w-48">
-    <path d="M175 35c22 24 30 55 22 88-4 17-15 31-29 39 5 22-3 42-20 60-13 13-28 19-45 17 19-9 30-23 34-43 4-19 0-36-12-50-16-18-24-39-22-62 2-24 14-45 35-60 23-16 50-14 71 11Z" fill="currentColor" className="text-secondary" />
-    <polygon points="115,92 146,68 186,74 198,108 167,127 132,117" fill="currentColor" className="text-accent" />
-    <polygon points="102,129 129,108 159,133 143,163 111,156" fill="currentColor" className="text-destructive/80" />
-    <polygon points="161,150 189,137 203,160 183,187 154,173" fill="currentColor" className="text-ring" />
-    <ellipse cx="205" cy="84" rx="18" ry="18" fill="none" stroke="currentColor" strokeWidth="4" className="text-foreground/20" />
-    <circle cx="208" cy="84" r="5" fill="currentColor" className="text-foreground/40" />
-  </svg>
-);
 
 const DECORATIVE_BORDER = (
   <svg viewBox="0 0 400 100" className="absolute inset-0 w-full h-full pointer-events-none opacity-30" preserveAspectRatio="none">
@@ -95,7 +85,7 @@ const Index = () => {
           <motion.div variants={itemVariants} className="mb-5 flex justify-center">
             <div className="relative">
               <div className="absolute inset-[-14%] rounded-full bg-[radial-gradient(circle,rgba(231,210,184,0.62),transparent_60%)] blur-2xl" />
-              <div className="relative text-foreground/95">{SEAHORSE_SVG}</div>
+              <div className="relative text-foreground/95"><SeahorseIcon className="h-24 w-24 md:h-48 md:w-48" /></div>
             </div>
           </motion.div>
 

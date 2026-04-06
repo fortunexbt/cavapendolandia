@@ -1,0 +1,147 @@
+{
+  "coordinate_system": "world-space position; +x right; +y up; in gallery +z points to USCITA and -z points to ESTERNO; in meadow movement follows a larger small-planet globe around the planet center",
+  "zone": "meadow",
+  "sector": "return_court",
+  "render_profile": "desktop_showcase",
+  "render_profile_preference": "auto",
+  "render_profile_source": "auto",
+  "profile_locked": true,
+  "guide_step": "meet-creatures",
+  "hud_mode": "player",
+  "quality": "high",
+  "outdoor_radius": 108,
+  "surface": {
+    "width": 1440,
+    "height": 900,
+    "dpr": 1,
+    "context": "embedded",
+    "fullscreen": false
+  },
+  "mobile_orientation_state": "desktop",
+  "controls_layout": "desktop",
+  "mouse_sensitivity_setting": 1.06,
+  "touch_sensitivity_setting": 1.02,
+  "joystick_radius": 56,
+  "mouse_sensitivity": 0.99,
+  "touch_look_sensitivity": 0.93,
+  "fullscreen": false,
+  "modal": {
+    "type": "none",
+    "id": null
+  },
+  "player": {
+    "x": 0,
+    "y": -14.93,
+    "z": 53.37,
+    "yaw": 3.302,
+    "pitch": -0.32,
+    "vy": 0,
+    "grounded": true
+  },
+  "nearby_trigger": null,
+  "door_prompt": null,
+  "nearby_deposit": null,
+  "nearby_creatures": [],
+  "visible_landmarks": [
+    "lantern-threshold",
+    "lantern-crown",
+    "cedro-vecchio",
+    "casa-muta",
+    "bacino-della-luna",
+    "obelisco-pallido",
+    "spirale-dei-reeds",
+    "sentinella-dei-sussurri",
+    "soglia-del-rim",
+    "campana-del-sud",
+    "orto-sommerso",
+    "casa-del-sole-basso",
+    "obelisco-di-sotto",
+    "lanterna-del-meriggio",
+    "faro-del-bordo-basso",
+    "veglia-del-bosco-basso",
+    "specchio-del-fondo",
+    "veglia-dell-orlo-alto",
+    "brace-del-sud-ovest",
+    "lanterna-del-fondo-centrale",
+    "veglia-del-sud-est",
+    "lanterna-della-curva-bassa",
+    "veglia-del-fianco-lungo",
+    "faro-del-sud-profondo",
+    "sole-del-fondo",
+    "arco-dell-orlo-profondo"
+  ],
+  "nearby_landmark_summary": [
+    "Lanterna di soglia",
+    "Corona di lanterne",
+    "Cedro inclinato",
+    "Casa muta",
+    "Bacino della luna",
+    "Obelisco pallido",
+    "Spirale dei canneti",
+    "Sentinella dei sussurri",
+    "Soglia del rim",
+    "Campana del sud",
+    "Orto sommerso",
+    "Casa del sole basso",
+    "Obelisco di sotto",
+    "Lanterna del meriggio",
+    "Faro del bordo basso",
+    "Veglia del bosco basso",
+    "Specchio del fondo",
+    "Veglia dell'orlo alto",
+    "Brace del sud ovest",
+    "Lanterna del fondo centrale",
+    "Veglia del sud est",
+    "Lanterna della curva bassa",
+    "Veglia del fianco lungo",
+    "Faro del sud profondo",
+    "Sole del fondo",
+    "Arco dell'orlo profondo"
+  ],
+  "ambience": {
+    "activeCues": [
+      "wind",
+      "birds",
+      "grass",
+      "return_court_accent",
+      "gust"
+    ],
+    "muted": false,
+    "volume": 0.72,
+    "zone": "meadow",
+    "galleryTrack": null,
+    "transition": {
+      "cue": null,
+      "active": false
+    }
+  },
+  "doors": [
+    {
+      "id": "return",
+      "label": "GALLERIA",
+      "distance": 22.36
+    }
+  ],
+  "deposit_sites": [
+    {
+      "id": "radura-ovest",
+      "label": "Radura Ovest",
+      "deposited_here": 0
+    },
+    {
+      "id": "soglia-casa-muta",
+      "label": "Casa Muta",
+      "deposited_here": 0
+    },
+    {
+      "id": "radura-centrale",
+      "label": "Radura Centrale",
+      "deposited_here": 0
+    },
+    {
+      "id": "radura-est",
+      "label": "Radura Est",
+      "deposited_here": 0
+    }
+  ]
+}

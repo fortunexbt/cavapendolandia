@@ -1,0 +1,112 @@
+{
+  "coordinate_system": "world-space position; +x right; +y up; in gallery +z points to USCITA and -z points to ESTERNO; in meadow movement follows a larger small-planet globe around the planet center",
+  "zone": "meadow",
+  "sector": "shrine_basin",
+  "render_profile": "desktop_showcase",
+  "render_profile_preference": "auto",
+  "render_profile_source": "auto",
+  "profile_locked": true,
+  "guide_step": "find-deposit",
+  "hud_mode": "player",
+  "quality": "high",
+  "outdoor_radius": 108,
+  "surface": {
+    "width": 1440,
+    "height": 900,
+    "dpr": 1,
+    "context": "embedded",
+    "fullscreen": false
+  },
+  "mobile_orientation_state": "desktop",
+  "controls_layout": "desktop",
+  "mouse_sensitivity_setting": 1.06,
+  "touch_sensitivity_setting": 1.02,
+  "joystick_radius": 56,
+  "mouse_sensitivity": 0.99,
+  "touch_look_sensitivity": 0.93,
+  "fullscreen": false,
+  "modal": {
+    "type": "none",
+    "id": null
+  },
+  "player": {
+    "x": 69.15,
+    "y": -33.2,
+    "z": -43.22,
+    "yaw": 2.25,
+    "pitch": 0.04,
+    "vy": 0,
+    "grounded": true
+  },
+  "nearby_trigger": null,
+  "door_prompt": null,
+  "nearby_deposit": null,
+  "nearby_creatures": [
+    "ronzatore-dell-orlo-basso"
+  ],
+  "visible_landmarks": [
+    "casa-del-sole-basso",
+    "specchio-del-fondo",
+    "lanterna-del-fondo-centrale",
+    "veglia-del-sud-est",
+    "lanterna-della-curva-bassa",
+    "veglia-del-fianco-lungo",
+    "sole-del-fondo",
+    "arco-dell-orlo-profondo"
+  ],
+  "nearby_landmark_summary": [
+    "Casa del sole basso",
+    "Specchio del fondo",
+    "Lanterna del fondo centrale",
+    "Veglia del sud est",
+    "Lanterna della curva bassa",
+    "Veglia del fianco lungo",
+    "Sole del fondo",
+    "Arco dell'orlo profondo"
+  ],
+  "ambience": {
+    "activeCues": [
+      "wind",
+      "birds",
+      "grass",
+      "shrine_basin_accent"
+    ],
+    "muted": false,
+    "volume": 0.72,
+    "zone": "meadow",
+    "galleryTrack": null,
+    "transition": {
+      "cue": null,
+      "active": false
+    }
+  },
+  "doors": [
+    {
+      "id": "return",
+      "label": "GALLERIA",
+      "distance": 134.24
+    }
+  ],
+  "deposit_sites": [
+    {
+      "id": "radura-ovest",
+      "label": "Radura Ovest",
+      "deposited_here": 0
+    },
+    {
+      "id": "soglia-casa-muta",
+      "label": "Casa Muta",
+      "deposited_here": 0
+    },
+    {
+      "id": "radura-centrale",
+      "label": "Radura Centrale",
+      "deposited_here": 0
+    },
+    {
+      "id": "radura-est",
+      "label": "Radura Est",
+      "deposited_here": 0
+    }
+  ]
+}

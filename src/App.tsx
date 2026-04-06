@@ -24,7 +24,25 @@ const Galleria = lazy(() => import("./pages/Galleria"));
 const Grazie = lazy(() => import("./pages/Grazie"));
 
 const RouteLoadingFallback = () => (
-  <div className="min-h-screen bg-[#120d0c]" />
+  <div className="relative min-h-screen overflow-hidden bg-[#120d0c] text-[#f3eadf]">
+    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(239,227,210,0.18),transparent_28%),radial-gradient(circle_at_20%_80%,rgba(156,123,85,0.14),transparent_34%),linear-gradient(180deg,rgba(255,245,232,0.06),transparent_22%,rgba(0,0,0,0.2)_100%)]" />
+    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e7d8c2]/40 to-transparent" />
+    <div className="relative flex min-h-screen items-center justify-center px-6">
+      <div className="w-full max-w-md rounded-[2rem] border border-[#5b4739]/70 bg-[#140f0d]/82 px-8 py-10 shadow-[0_34px_110px_rgba(0,0,0,0.42)] backdrop-blur-xl">
+        <div className="font-mono-light text-[0.68rem] uppercase tracking-[0.26em] text-[#cbb59a]">
+          Cavapendolandia
+        </div>
+        <div className="mt-4 h-px w-20 bg-gradient-to-r from-[#f0dfc7]/75 to-transparent" />
+        <h1 className="mt-5 text-3xl font-light tracking-[0.16em] text-[#f7eee3]">
+          Sto aprendo la soglia
+        </h1>
+        <p className="mt-4 text-sm leading-relaxed text-[#dbcbbc]">
+          Sto riallineando le stanze, le superfici dipinte e il passaggio fra
+          galleria e prato.
+        </p>
+      </div>
+    </div>
+  </div>
 );
 
 const RouteBoundary = ({ children }: { children: ReactNode }) => (

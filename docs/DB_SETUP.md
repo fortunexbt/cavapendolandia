@@ -9,7 +9,7 @@
 
 ### Admin Auth
 - Changed from magic link to password auth
-- Credentials hardcoded: `cavapendoli@gmail.com` / `barbantni`
+- Credentials hardcoded: `ADMIN_EMAIL` / `ADMIN_PASSWORD`
 - Uses Supabase Auth
 
 ### Initiatives System

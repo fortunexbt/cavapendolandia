@@ -1,0 +1,40 @@
+{
+  "gallery_music": [
+    {
+      "id": "direct_to_video",
+      "path": "public/audio/cavapendolandia/gallery/interior-direct-to-video.ogg",
+      "title": "Direct to Video",
+      "artist": "Chris Zabriskie",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_01_-_Direct_to_Video.ogg",
+      "source_file": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chris_Zabriskie_-_01_-_Direct_to_Video.ogg",
+      "license": "CC0",
+      "notes": "Used as gallery interior track A for the art-ambient score pass."
+    },
+    {
+      "id": "what_does_anybody_know",
+      "path": "public/audio/cavapendolandia/gallery/interior-what-does-anybody-know.ogg",
+      "title": "What Does Anybody Know About Anything",
+      "artist": "Chris Zabriskie",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_02_-_What_Does_Anybody_Know_About_Anything.ogg",
+      "source_file": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chris_Zabriskie_-_02_-_What_Does_Anybody_Know_About_Anything.ogg",
+      "license": "CC0",
+      "notes": "Used as gallery interior track B for the art-ambient score pass."
+    }
+  ],
+  "gallery_transition_fx": [
+    {
+      "id": "portal_hit_out",
+      "path": "public/audio/cavapendolandia/gallery/portal-hit-out.ogg",
+      "source": "generated_locally",
+      "generator": "scripts/generate_gallery_transition_audio.py",
+      "notes": "Short gallery-to-meadow portal impact cue."
+    },
+    {
+      "id": "portal_hit_in",
+      "path": "public/audio/cavapendolandia/gallery/portal-hit-in.ogg",
+      "source": "generated_locally",
+      "generator": "scripts/generate_gallery_transition_audio.py",
+      "notes": "Short meadow-to-gallery return impact cue."
+    }
+  ]
+}

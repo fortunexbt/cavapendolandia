@@ -390,6 +390,12 @@ export function ArchPortal({
   plaqueColor = "#efe3d2",
   quality,
   grounded = false,
+  veilOpacity,
+  thresholdColor,
+  thresholdOpacity,
+  innerFrameColor,
+  innerFrameGlowColor,
+  innerFrameGlowIntensity,
 }: {
   position: [number, number, number];
   rotationY?: number;
@@ -402,107 +408,135 @@ export function ArchPortal({
   plaqueColor?: string;
   quality: QualityTier;
   grounded?: boolean;
+  veilOpacity?: number;
+  thresholdColor?: string;
+  thresholdOpacity?: number;
+  innerFrameColor?: string;
+  innerFrameGlowColor?: string;
+  innerFrameGlowIntensity?: number;
 }) {
+  const resolvedVeilOpacity =
+    veilOpacity ?? (quality === "low" ? 0.06 : 0.1);
+  const resolvedThresholdOpacity =
+    thresholdOpacity ?? (quality === "low" ? 0.4 : quality === "medium" ? 0.5 : 0.6);
+  const resolvedInnerFrameGlowIntensity = innerFrameGlowIntensity ?? 0.55;
+  const resolvedTrimColor = innerFrameColor || "#d2c6b5";
+  const resolvedTrimGlowColor = innerFrameGlowColor || innerFrameColor || "#d2c6b5";
+
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
       {grounded && (
-        <>
-          <mesh position={[0, -0.16, 0]}>
-            <cylinderGeometry args={[3.6, 4.2, 0.42, 22]} />
-            <meshStandardMaterial color="#8a7765" roughness={0.96} />
-          </mesh>
-          {[-1, 1].map((side) => (
-            <mesh
-              key={`arch-stone-${side}`}
-              position={[side * 1.86, -0.05, 0.12]}
-              rotation={[0, side * 0.18, 0]}
-            >
-              <dodecahedronGeometry args={[0.42, 0]} />
-              <meshStandardMaterial color="#7a6857" roughness={0.96} />
-            </mesh>
-          ))}
-        </>
-      )}
-      <mesh position={[-2.12, 3.2, 0]}>
-        <boxGeometry args={[0.88, 6.95, 1.04]} />
-        <meshStandardMaterial color={stoneColor} roughness={0.82} />
-      </mesh>
-      <mesh position={[2.12, 3.2, 0]}>
-        <boxGeometry args={[0.88, 6.95, 1.04]} />
-        <meshStandardMaterial color={stoneColor} roughness={0.82} />
-      </mesh>
-      <mesh position={[0, 6.48, 0]}>
-        <boxGeometry args={[5.5, 0.84, 1.04]} />
-        <meshStandardMaterial color={stoneColor} roughness={0.82} />
-      </mesh>
-      <mesh position={[-1.64, 3.18, 0.18]}>
-        <boxGeometry args={[0.22, 5.3, 0.2]} />
-        <meshStandardMaterial color="#d2c6b5" roughness={0.86} />
-      </mesh>
-      <mesh position={[1.64, 3.18, 0.18]}>
-        <boxGeometry args={[0.22, 5.3, 0.2]} />
-        <meshStandardMaterial color="#d2c6b5" roughness={0.86} />
-      </mesh>
-      <mesh position={[0, 5.82, 0.18]}>
-        <boxGeometry args={[3.48, 0.22, 0.2]} />
-        <meshStandardMaterial color="#d2c6b5" roughness={0.86} />
-      </mesh>
-      <mesh position={[0, 0.36, 0.08]}>
-        <boxGeometry args={[4.8, 0.3, 1.1]} />
-        <meshStandardMaterial color={stoneColor} roughness={0.84} />
-      </mesh>
-      {quality !== "low" && (
-        <mesh position={[0, 3.2, -0.28]}>
-          <planeGeometry args={[4.35, 6.1]} />
-          <meshBasicMaterial color="#000000" transparent opacity={0.12} />
+        <mesh position={[0, -0.16, 0]}>
+          <cylinderGeometry args={[3.4, 3.9, 0.3, 24]} />
+          <meshStandardMaterial color="#8a7765" roughness={0.96} />
         </mesh>
       )}
-      <mesh position={[0, 3.48, -0.08]}>
-        <planeGeometry args={[3.84, 5.34]} />
-        <meshBasicMaterial
-          color={glowColor}
-          transparent
-          opacity={quality === "low" ? 0.08 : 0.15}
+      <mesh position={[-2.04, 3.16, 0]}>
+        <boxGeometry args={[0.82, 6.68, 0.9]} />
+        <meshStandardMaterial color={stoneColor} roughness={0.82} />
+      </mesh>
+      <mesh position={[2.04, 3.16, 0]}>
+        <boxGeometry args={[0.82, 6.68, 0.9]} />
+        <meshStandardMaterial color={stoneColor} roughness={0.82} />
+      </mesh>
+      <mesh position={[0, 6.28, 0]}>
+        <boxGeometry args={[5.3, 0.76, 0.9]} />
+        <meshStandardMaterial color={stoneColor} roughness={0.82} />
+      </mesh>
+      <mesh position={[-1.58, 3.1, 0.14]}>
+        <boxGeometry args={[0.2, 5.14, 0.18]} />
+        <meshStandardMaterial
+          color={resolvedTrimColor}
+          emissive={resolvedTrimGlowColor}
+          emissiveIntensity={innerFrameColor ? resolvedInnerFrameGlowIntensity : 0}
+          roughness={innerFrameColor ? 0.22 : 0.86}
         />
       </mesh>
-      <mesh position={[0, 3.48, 0.16]} rotation={[0, 0, Math.PI / 2]}>
-        <torusGeometry args={[1.74, 0.07, 14, 72]} />
+      <mesh position={[1.58, 3.1, 0.14]}>
+        <boxGeometry args={[0.2, 5.14, 0.18]} />
+        <meshStandardMaterial
+          color={resolvedTrimColor}
+          emissive={resolvedTrimGlowColor}
+          emissiveIntensity={innerFrameColor ? resolvedInnerFrameGlowIntensity : 0}
+          roughness={innerFrameColor ? 0.22 : 0.86}
+        />
+      </mesh>
+      <mesh position={[0, 5.6, 0.14]}>
+        <boxGeometry args={[3.3, 0.18, 0.18]} />
+        <meshStandardMaterial
+          color={resolvedTrimColor}
+          emissive={resolvedTrimGlowColor}
+          emissiveIntensity={innerFrameColor ? resolvedInnerFrameGlowIntensity : 0}
+          roughness={innerFrameColor ? 0.22 : 0.86}
+        />
+      </mesh>
+      <mesh position={[0, 3.38, 0.08]}>
+        <planeGeometry args={[3.66, 5.12]} />
+        <meshBasicMaterial
+          color={veilColor}
+          transparent
+          opacity={resolvedVeilOpacity}
+        />
+      </mesh>
+      {thresholdColor && (
+        <>
+          <mesh position={[0, 3.38, 0]}>
+            <planeGeometry args={[2.82, 4.38]} />
+            <meshBasicMaterial
+              color={thresholdColor}
+              transparent
+              opacity={resolvedThresholdOpacity}
+            />
+          </mesh>
+          <mesh position={[0, 3.38, -0.06]}>
+            <planeGeometry args={[3.18, 4.82]} />
+            <meshBasicMaterial
+              color={thresholdColor}
+              transparent
+              opacity={resolvedThresholdOpacity * 0.12}
+              depthWrite={false}
+            />
+          </mesh>
+        </>
+      )}
+      <mesh position={[0, 3.38, 0.16]} rotation={[0, 0, Math.PI / 2]}>
+        <torusGeometry args={[1.66, 0.06, 14, 64]} />
         <meshStandardMaterial
           color={glowColor}
           emissive={glowColor}
-          emissiveIntensity={quality === "high" ? 0.4 : 0.24}
+          emissiveIntensity={innerFrameColor ? (quality === "high" ? 0.6 : 0.42) : quality === "high" ? 0.34 : 0.22}
           roughness={0.3}
         />
       </mesh>
-      <mesh position={[0, 7.42, 0.28]}>
-        <boxGeometry args={[3.38, 0.94, 0.46]} />
-        <meshStandardMaterial color="#cab9a3" roughness={0.9} />
+      <mesh position={[0, 7.18, 0.18]}>
+        <boxGeometry args={[3.18, 0.78, 0.34]} />
+        <meshStandardMaterial color="#c9b7a1" roughness={0.9} />
       </mesh>
-      <mesh position={[0, 7.44, 0.34]}>
-        <boxGeometry args={[3.06, 0.64, 0.2]} />
+      <mesh position={[0, 7.2, 0.28]}>
+        <boxGeometry args={[2.9, 0.52, 0.18]} />
         <meshStandardMaterial color={plaqueColor} roughness={0.94} />
       </mesh>
       {quality !== "low" && (
         <>
-          <mesh position={[-1.72, 6.96, 0.35]}>
-            <sphereGeometry args={[0.12, 12, 12]} />
+          <mesh position={[-1.64, 6.72, 0.26]}>
+            <sphereGeometry args={[0.1, 12, 12]} />
             <meshBasicMaterial color={glowColor} />
           </mesh>
-          <mesh position={[1.72, 6.96, 0.35]}>
-            <sphereGeometry args={[0.12, 12, 12]} />
+          <mesh position={[1.64, 6.72, 0.26]}>
+            <sphereGeometry args={[0.1, 12, 12]} />
             <meshBasicMaterial color={glowColor} />
           </mesh>
-          <mesh position={[0, 4.08, -0.22]}>
-            <planeGeometry args={[2.26, 4.2]} />
-            <meshBasicMaterial color={veilColor} transparent opacity={0.12} />
+          <mesh position={[0, 0.02, 0.26]} rotation={[-Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[1.62, 2.16, 32]} />
+            <meshBasicMaterial color={glowColor} transparent opacity={0.08} />
           </mesh>
         </>
       )}
       <Text
-        position={[0, 7.46, 0.54]}
-        fontSize={0.52}
+        position={[0, 7.22, 0.46]}
+        fontSize={0.46}
         color={labelColor}
-        outlineWidth={0.024}
+        outlineWidth={0.022}
         outlineColor={outlineColor}
         anchorX="center"
         anchorY="middle"
@@ -516,10 +550,14 @@ export function ArchPortal({
 export function MeadowSurfaceSocket({
   anchor,
   rotationY = 0,
+  alignment = 1,
+  disableCulling = false,
   children,
 }: {
   anchor: MeadowSurfaceAnchor;
   rotationY?: number;
+  alignment?: number;
+  disableCulling?: boolean;
   children: ReactNode;
 }) {
   const position = useMemo(
@@ -531,13 +569,30 @@ export function MeadowSurfaceSocket({
     [anchor],
   );
   const quaternion = useMemo(
-    () => new THREE.Quaternion().setFromUnitVectors(UP_VECTOR, normal),
-    [normal],
+    () => {
+      const surfaceQuaternion = new THREE.Quaternion().setFromUnitVectors(
+        UP_VECTOR,
+        normal,
+      );
+      if (alignment >= 0.999) return surfaceQuaternion;
+      return new THREE.Quaternion().slerpQuaternions(
+        new THREE.Quaternion(),
+        surfaceQuaternion,
+        THREE.MathUtils.clamp(alignment, 0, 1),
+      );
+    },
+    [alignment, normal],
   );
 
   return (
-    <group position={position} quaternion={quaternion}>
-      <group rotation={[0, rotationY, 0]}>{children}</group>
+    <group
+      position={position}
+      quaternion={quaternion}
+      frustumCulled={!disableCulling}
+    >
+      <group rotation={[0, rotationY, 0]} frustumCulled={!disableCulling}>
+        {children}
+      </group>
     </group>
   );
 }
@@ -561,7 +616,7 @@ export function SkyDisc({
       </mesh>
       <mesh position={[0, 0, -0.2]}>
         <ringGeometry args={[radius * 1.1, radius * 1.42, 64]} />
-        <meshBasicMaterial color={glowColor} transparent opacity={0.22} />
+        <meshBasicMaterial color={glowColor} transparent opacity={0.08} />
       </mesh>
     </group>
   );
