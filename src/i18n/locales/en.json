@@ -39,6 +39,9 @@
     "descriptionFallback": "A room that opens in the meadow, an archive that breathes, a threshold where the cavapendoli show themselves only briefly.",
     "ctaEnter": "Enter",
     "initiativeBanner": "A thought",
+    "navGallery": "Gallery",
+    "navOffri": "Offer",
+    "navRegole": "Rules",
     "mysticalOpening1": "The Cavapendoli descend in a spiral, almost swift.",
     "mysticalOpening2": "They were once everywhere, in the warehouses of the intangible world.",
     "mysticalOpening3": "Slowly, over time, they took shape.",
@@ -80,6 +83,9 @@
       "lookActions": "Look + actions",
       "continueAnyway": "Continue anyway",
       "gotIt": "Got it"
+    },
+    "zoneTransition": {
+      "header": "Zone change"
     },
     "zone": {
       "interior": "Interior",
@@ -128,5 +134,38 @@
       "settings": "Settings",
       "offer": "+ Offer"
     }
+  },
+  "offri": {
+    "title": "Offer",
+    "subtitle": "Leave something for the cavapendoli.",
+    "initiativeLabel": "Active thought",
+    "submittedTitle": "Accepted",
+    "submittedLine1": "Your cavapendolata is waiting to enter.",
+    "submittedLine2": "It will be visible in the Archive after passing through the Antechamber.",
+    "ctaGallery": "Go to the Archive",
+    "ctaAnother": "Leave another"
+  },
+  "offeringDetail": {
+    "loading": "Loading...",
+    "notFound": "Nothing was found.",
+    "backToArchive": "Back to the Archive",
+    "found": "Found",
+    "copied": "Copied!",
+    "copyLink": "Copy link",
+    "another": "Another one",
+    "leaveOffering": "Leave a cavapendolata"
+  },
+  "grazie": {
+    "title": "Thank you",
+    "line1": "Your cavapendolata is making its way.",
+    "line2": "It will cross the Antechamber before entering the Archive.",
+    "ctaHome": "Return to the threshold",
+    "ctaGallery": "Go to the Archive"
+  },
+  "rimozione": {
+    "title": "Removal",
+    "line1": "If you left something and want it removed,",
+    "line2": "write to us at:",
+    "ctaOffer": "Leave something"
   }
 }

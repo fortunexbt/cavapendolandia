@@ -39,6 +39,9 @@
     "descriptionFallback": "Una stanza che si apre nel prato, un archivio che respira, una soglia dove i cavapendoli si fanno vedere solo per poco.",
     "ctaEnter": "Entra",
     "initiativeBanner": "Un pensiero",
+    "navGallery": "Galleria",
+    "navOffri": "Offri",
+    "navRegole": "Regole",
     "mysticalOpening1": "I Cavapendoli scendono a spirale, quasi velici.",
     "mysticalOpening2": "Prima erano ovunque, nei magazzini del mondo impalpabile.",
     "mysticalOpening3": "Lentamente, nel tempo, hanno assunto forma.",
@@ -80,6 +83,9 @@
       "lookActions": "Sguardo + azioni",
       "continueAnyway": "Continua comunque",
       "gotIt": "Ho capito"
+    },
+    "zoneTransition": {
+      "header": "Cambio zona"
     },
     "zone": {
       "interior": "Interno",
@@ -128,5 +134,38 @@
       "settings": "Impostazioni",
       "offer": "+ Offri"
     }
+  },
+  "offri": {
+    "title": "Offri",
+    "subtitle": "Lascia qualcosa per i cavapendoli.",
+    "initiativeLabel": "Pensiero attivo",
+    "submittedTitle": "Accolta",
+    "submittedLine1": "La tua cavapendolata è in attesa di entrare.",
+    "submittedLine2": "Sarà visibile nell'Archivio dopo essere passata per l'Anticamera.",
+    "ctaGallery": "Vai all'Archivio",
+    "ctaAnother": "Lascia un'altra"
+  },
+  "offeringDetail": {
+    "loading": "Caricamento...",
+    "notFound": "Non è stato trovato nulla.",
+    "backToArchive": "Torna all'Archivio",
+    "found": "Trovata",
+    "copied": "Copiato!",
+    "copyLink": "Copia link",
+    "another": "Un'altra",
+    "leaveOffering": "Lascia una cavapendolata"
+  },
+  "grazie": {
+    "title": "Grazie",
+    "line1": "La tua cavapendolata sta facendo il suo cammino.",
+    "line2": "Attraverserà l'Anticamera prima di entrare nell'Archivio.",
+    "ctaHome": "Torna alla soglia",
+    "ctaGallery": "Vai all'Archivio"
+  },
+  "rimozione": {
+    "title": "Rimozione",
+    "line1": "Se hai lasciato qualcosa e vuoi che venga rimosso,",
+    "line2": "scrivici a:",
+    "ctaOffer": "Lascia qualcosa"
   }
 }

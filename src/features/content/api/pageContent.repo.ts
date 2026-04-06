@@ -30,14 +30,22 @@ export const pageContentRepo = {
   },
 
   async get(slug: string, blockKey: string): Promise<PageContentBlock | null> {
-    const { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", slug)
-      .eq("block_key", blockKey)
-      .single();
-    if (error && error.code !== "PGRST116") throw error;
-    return (data as PageContentBlock) || null;
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", slug)
+        .eq("block_key", blockKey)
+        .single();
+      if (error && error.code !== "PGRST116") {
+        console.warn("[pageContentRepo] get error:", error.message);
+        return null;
+      }
+      return (data as PageContentBlock) || null;
+    } catch (e) {
+      console.warn("[pageContentRepo] get exception:", e);
+      return null;
+    }
   },
 
   async upsert(slug: string, blockKey: string, payload: { title?: string; body?: string }): Promise<void> {
@@ -51,11 +59,19 @@ export const pageContentRepo = {
   },
 
   async listSlugs(): Promise<string[]> {
-    const { data, error } = await supabase
-      .from("page_content")
-      .select("page_slug");
-    if (error) throw error;
-    const slugs = [...new Set((data || []).map((r: { page_slug: string }) => r.page_slug))];
-    return slugs;
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("page_slug");
+      if (error) {
+        console.warn("[pageContentRepo] listSlugs error:", error.message);
+        return [];
+      }
+      const slugs = [...new Set((data || []).map((r: { page_slug: string }) => r.page_slug))];
+      return slugs;
+    } catch (e) {
+      console.warn("[pageContentRepo] listSlugs exception:", e);
+      return [];
+    }
   },
 };

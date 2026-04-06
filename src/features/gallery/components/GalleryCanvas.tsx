@@ -1,3 +1,4 @@
+import React from "react";
 import { Canvas } from "@react-three/fiber";
 import type { ResolvedRenderProfile } from "@/components/cavapendo-gallery/runtime";
 import type { Offering, DepositSite } from "@/components/cavapendo-gallery/types";
@@ -10,6 +11,42 @@ import {
   VirtualJoystick,
 } from "@/components/cavapendo-gallery/gameplay";
 import { EYE_HEIGHT } from "@/components/cavapendo-gallery/config";
+
+class WebGLCrashBoundary extends React.Component<
+  React.ComponentProps<"div">,
+  { hasError: boolean }
+> {
+  constructor(props: React.ComponentProps<"div">) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.warn("[GalleryCanvas] WebGL render error:", error.message);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#efe3d7]">
+          <div className="text-center">
+            <p className="text-sm font-light tracking-widest text-[#7d5f47] uppercase">
+              WebGL non disponibile
+            </p>
+            <p className="mt-2 text-xs text-[#a08060]">
+              La grafica 3D richiede WebGL. Prova con un altro browser.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export interface GalleryCanvasProps {
   zone: "gallery" | "meadow";
@@ -117,121 +154,126 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
 
   return (
     <div className="absolute inset-0">
-      <Canvas
-        camera={{ position: [0, EYE_HEIGHT, 8], fov: isMobile ? 62 : 56 }}
-        dpr={renderProfile.dpr}
-        gl={{
-          antialias: renderProfile.antialias,
-          alpha: false,
-          powerPreference: renderProfile.powerPreference,
-          failIfMajorPerformanceCaveat: false,
-        }}
-        style={{
-          width: "100%",
-          height: "100%",
-          background: zone === "gallery" ? "#e2d5c7" : "#d1dfff",
-        }}
-      >
-        {zone === "gallery" ? (
-          <GalleryScene
-            offerings={offerings}
-            renderProfile={renderProfile}
-            onSelectOffering={onSelectOffering}
-          />
-        ) : (
-          <PremiumMeadowScene
-            renderProfile={renderProfile}
-            depositCounts={depositCounts}
-            onSelectDeposit={onSelectDeposit}
-            onSelectCreature={onSelectCreature}
-            creatureRuntimeRef={meadowCreatureRuntimeRef}
-            reactionSiteId={lastDepositSiteId}
-          />
-        )}
-
-        <RenderProfileGuardian
-          profileId={activeRenderProfileId as "desktop_showcase" | "desktop_balanced" | "mobile_balanced" | "mobile_safe"}
-          deviceClass={deviceClass}
-          allowAutoDowngrade={renderProfilePreference === "auto"}
-          locked={
-            automationProfileLock ||
-            profileShiftLocked ||
-            sceneInterrupted ||
-            guideExpanded ||
-            showOrientationOverlay
-          }
-          onDowngrade={onDowngradeProfile}
-        />
-        <WorldController
-          zone={zone}
-          modalOpen={sceneInterrupted}
-          isMobile={isMobile}
-          mouseLookSensitivity={controlProfile.mouseLookSensitivity}
-          touchLookSensitivity={controlProfile.touchLookSensitivity}
-          invertLookFactor={controlProfile.invertLookFactor}
-          reducedCameraMotion={controlProfile.reducedCameraMotion}
-          qualityTier={renderProfile.tier}
-          landmarkDrawDistance={renderProfile.landmarkDrawDistance}
-          viewport={viewport}
-          fullscreen={fullscreen}
-          keysDownRef={keysDownRef}
-          interactRequestedRef={interactRequestedRef}
-          joystickRef={joystickRef}
-          jumpRequestedRef={jumpRequestedRef}
-          onDoorTrigger={onDoorTrigger}
-          onInteraction={onInteraction}
-          onActivity={onActivity}
-          onTriggerProximityChange={onTriggerProximityChange}
-          onDepositProximityChange={onDepositProximityChange}
-          onCreatureProximityChange={onCreatureProximityChange}
-          onSectorChange={onSectorChange}
-          onVisibleLandmarksChange={onVisibleLandmarksChange}
-          onHorizonLandmarksChange={onHorizonLandmarksChange}
-          registerStep={(step) => {
-            (stepRef as React.MutableRefObject<((deltaSeconds: number) => void) | null>).current = step;
-            if (!stepReadyRef.current) {
-              stepReadyRef.current = true;
-              stepWaitersRef.current.splice(0).forEach((resolve) => resolve());
-            }
+      <WebGLCrashBoundary>
+        <Canvas
+          camera={{ position: [0, EYE_HEIGHT, 8], fov: isMobile ? 62 : 56 }}
+          dpr={renderProfile.dpr}
+          gl={{
+            antialias: renderProfile.antialias,
+            alpha: false,
+            powerPreference: renderProfile.powerPreference,
+            failIfMajorPerformanceCaveat: false,
           }}
-          debugPoseRef={meadowDebugPoseRef}
-          creatureRuntimeRef={meadowCreatureRuntimeRef}
-          snapshotRef={snapshotRef as React.MutableRefObject<{
-            zone: string;
-            sector: string | null;
-            deviceClass: string;
-            renderProfile: string;
-            resolvedRenderProfile: string;
-            renderProfilePreference: string;
-            renderProfileSource: string;
-            renderProfileAutoFloor: string;
-            renderProfileReason: string;
-            profileLocked: boolean;
-            quality: string;
-            hudMode: string;
-            mouseSensitivity: number;
-            touchSensitivity: number;
-            joystickRadius: number;
-            mouseLookSensitivity: number;
-            touchLookSensitivity: number;
-            fullscreen: boolean;
-            guideStep: string;
-            outdoorRadius: number;
-            mobileOrientationState: string;
-            controlsLayout: string;
-            viewport: { width: number; height: number; dpr: number; context: string; fullscreen: boolean };
-            modal: { type: string; id: string | null };
-            nearbyTriggerId: string | null;
-            nearbyDepositId: string | null;
-            nearbyCreatureIds: string[];
-            visibleLandmarkIds: string[];
-            horizonLandmarkIds: string[];
-            doorPrompt: string | null;
-            ambience: { activeCues: unknown[]; muted: boolean; volume: number; zone: string; galleryTrack: string | null; transition: { cue: unknown; active: boolean } };
-            player: { x: number; y: number; z: number; yaw: number; pitch: number; vy: number; grounded: boolean };
-          }>}
-        />
-      </Canvas>
+          style={{
+            width: "100%",
+            height: "100%",
+            background: zone === "gallery" ? "#e2d5c7" : "#d1dfff",
+          }}
+          onError={(error) => {
+            console.warn("[Canvas] WebGL error:", error);
+          }}
+        >
+          {zone === "gallery" ? (
+            <GalleryScene
+              offerings={offerings}
+              renderProfile={renderProfile}
+              onSelectOffering={onSelectOffering}
+            />
+          ) : (
+            <PremiumMeadowScene
+              renderProfile={renderProfile}
+              depositCounts={depositCounts}
+              onSelectDeposit={onSelectDeposit}
+              onSelectCreature={onSelectCreature}
+              creatureRuntimeRef={meadowCreatureRuntimeRef}
+              reactionSiteId={lastDepositSiteId}
+            />
+          )}
+
+          <RenderProfileGuardian
+            profileId={activeRenderProfileId as "desktop_showcase" | "desktop_balanced" | "mobile_balanced" | "mobile_safe"}
+            deviceClass={deviceClass}
+            allowAutoDowngrade={renderProfilePreference === "auto"}
+            locked={
+              automationProfileLock ||
+              profileShiftLocked ||
+              sceneInterrupted ||
+              guideExpanded ||
+              showOrientationOverlay
+            }
+            onDowngrade={onDowngradeProfile}
+          />
+          <WorldController
+            zone={zone}
+            modalOpen={sceneInterrupted}
+            isMobile={isMobile}
+            mouseLookSensitivity={controlProfile.mouseLookSensitivity}
+            touchLookSensitivity={controlProfile.touchLookSensitivity}
+            invertLookFactor={controlProfile.invertLookFactor}
+            reducedCameraMotion={controlProfile.reducedCameraMotion}
+            qualityTier={renderProfile.tier}
+            landmarkDrawDistance={renderProfile.landmarkDrawDistance}
+            viewport={viewport}
+            fullscreen={fullscreen}
+            keysDownRef={keysDownRef}
+            interactRequestedRef={interactRequestedRef}
+            joystickRef={joystickRef}
+            jumpRequestedRef={jumpRequestedRef}
+            onDoorTrigger={onDoorTrigger}
+            onInteraction={onInteraction}
+            onActivity={onActivity}
+            onTriggerProximityChange={onTriggerProximityChange}
+            onDepositProximityChange={onDepositProximityChange}
+            onCreatureProximityChange={onCreatureProximityChange}
+            onSectorChange={onSectorChange}
+            onVisibleLandmarksChange={onVisibleLandmarksChange}
+            onHorizonLandmarksChange={onHorizonLandmarksChange}
+            registerStep={(step) => {
+              (stepRef as React.MutableRefObject<((deltaSeconds: number) => void) | null>).current = step;
+              if (!stepReadyRef.current) {
+                stepReadyRef.current = true;
+                stepWaitersRef.current.splice(0).forEach((resolve) => resolve());
+              }
+            }}
+            debugPoseRef={meadowDebugPoseRef}
+            creatureRuntimeRef={meadowCreatureRuntimeRef}
+            snapshotRef={snapshotRef as React.MutableRefObject<{
+              zone: string;
+              sector: string | null;
+              deviceClass: string;
+              renderProfile: string;
+              resolvedRenderProfile: string;
+              renderProfilePreference: string;
+              renderProfileSource: string;
+              renderProfileAutoFloor: string;
+              renderProfileReason: string;
+              profileLocked: boolean;
+              quality: string;
+              hudMode: string;
+              mouseSensitivity: number;
+              touchSensitivity: number;
+              joystickRadius: number;
+              mouseLookSensitivity: number;
+              touchLookSensitivity: number;
+              fullscreen: boolean;
+              guideStep: string;
+              outdoorRadius: number;
+              mobileOrientationState: string;
+              controlsLayout: string;
+              viewport: { width: number; height: number; dpr: number; context: string; fullscreen: boolean };
+              modal: { type: string; id: string | null };
+              nearbyTriggerId: string | null;
+              nearbyDepositId: string | null;
+              nearbyCreatureIds: string[];
+              visibleLandmarkIds: string[];
+              horizonLandmarkIds: string[];
+              doorPrompt: string | null;
+              ambience: { activeCues: unknown[]; muted: boolean; volume: number; zone: string; galleryTrack: string | null; transition: { cue: unknown; active: boolean } };
+              player: { x: number; y: number; z: number; yaw: number; pitch: number; vy: number; grounded: boolean };
+            }>}
+          />
+        </Canvas>
+      </WebGLCrashBoundary>
 
       {isMobile && !sceneInterrupted && (
         <div className="pointer-events-none absolute inset-0 z-20">

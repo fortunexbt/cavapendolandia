@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float, MeshDistortMaterial, Sparkles, Stars } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
-import { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -316,7 +316,7 @@ function CavapendoWorld({ className = "" }: CavapendoWorldProps) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--trace)/0.55),transparent_36%),radial-gradient(circle_at_20%_30%,rgba(231,211,183,0.55),transparent_26%),radial-gradient(circle_at_80%_28%,rgba(202,181,155,0.32),transparent_24%),linear-gradient(180deg,#fbf4ec_0%,#efe3d7_52%,#d8c3b1_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(circle_at_center,rgba(95,58,38,0.18),transparent_58%)] blur-2xl" />
 
-      <Canvas
+      <WebGLCanvasFallback
         camera={{ position: [0, 0.4, 6.2], fov: 50 }}
         dpr={[1, 1.6]}
         gl={{
@@ -325,14 +325,65 @@ function CavapendoWorld({ className = "" }: CavapendoWorldProps) {
           powerPreference: "high-performance",
         }}
         style={{ background: "transparent" }}
-      >
-        <Scene />
-      </Canvas>
+      />
 
       {reduceMotion && (
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(231,211,183,0.45),transparent_30%),linear-gradient(180deg,#fbf4ec_0%,#efe3d7_50%,#d8c3b1_100%)]" />
       )}
     </div>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+class WebGLCrashBoundary extends React.Component<any, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.warn("[CavapendoWorld] WebGL render error:", error.message);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#efe3d7]">
+          <div className="text-center">
+            <p className="text-sm font-light tracking-widest text-[#7d5f47] uppercase">
+              WebGL non disponibile
+            </p>
+            <p className="mt-2 text-xs text-[#a08060]">
+              La grafica 3D richiede WebGL. Prova con un altro browser.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function WebGLCanvasFallback(props: React.ComponentProps<typeof Canvas>) {
+  return (
+    <WebGLCrashBoundary>
+      <Canvas
+        {...props}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x000000, 0);
+          gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        }}
+        onError={(error) => {
+          console.warn("[Canvas] WebGL error:", error);
+        }}
+      >
+        <Scene />
+      </Canvas>
+    </WebGLCrashBoundary>
   );
 }
 

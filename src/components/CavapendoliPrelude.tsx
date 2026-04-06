@@ -1,5 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+const PRELUDE_SESSION_KEY = "cavapendolandia-prelude-seen";
 
 interface CavapendoliPreludeProps {
   onComplete?: () => void;
@@ -7,10 +9,12 @@ interface CavapendoliPreludeProps {
 
 const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
   const reduceMotion = useReducedMotion();
-  const hasPlayedRef = useRef(false);
-  const [visible, setVisible] = useState(true);
+  // Use sessionStorage so prelude stays dismissed across navigations within the same browser session
+  const alreadySeen = sessionStorage.getItem(PRELUDE_SESSION_KEY) === "1";
+  const [visible, setVisible] = useState(!alreadySeen);
 
   const completePrelude = useCallback(() => {
+    sessionStorage.setItem(PRELUDE_SESSION_KEY, "1");
     setVisible(false);
     onComplete?.();
   }, [onComplete]);
@@ -21,11 +25,9 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
       return;
     }
 
-    if (hasPlayedRef.current) {
+    if (alreadySeen) {
       return;
     }
-
-    hasPlayedRef.current = true;
 
     const totalDurationMs = 4500;
 
@@ -33,7 +35,7 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
       completePrelude();
     }, totalDurationMs);
     return () => window.clearTimeout(timeoutId);
-  }, [completePrelude, reduceMotion]);
+  }, [completePrelude, reduceMotion, alreadySeen]);
 
   useEffect(() => {
     if (!visible) return;
@@ -66,13 +68,13 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
           className="pointer-events-none fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-hidden bg-background p-4"
           aria-hidden
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(232,210,185,0.54),transparent_30%),radial-gradient(circle_at_20%_30%,rgba(205,180,150,0.26),transparent_26%),linear-gradient(180deg,#fbf4ec_0%,#f2e7db_54%,#d8c3b1_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(232,210,185,0.54),transparent_30%),radial-gradient(circle_at_20%_30%,rgba(205,180,150,0.26),transparent_26%),linear-gradient(180deg,#fbf4ec_0%,#f2e7db_54%,#d8c3b1_100%),rgba(0,0,0,0.08)]" />
           <div className="absolute left-1/2 top-[14%] h-40 w-40 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,246,235,0.85),transparent_68%)] blur-3xl md:h-64 md:w-64" />
           <div className="absolute bottom-[14%] left-[18%] h-24 w-24 rounded-full bg-[radial-gradient(circle,rgba(173,140,109,0.22),transparent_70%)] blur-3xl" />
           <div className="absolute right-[16%] top-[22%] h-28 w-28 rounded-full bg-[radial-gradient(circle,rgba(236,220,199,0.4),transparent_72%)] blur-3xl" />
 
           <div className="relative z-10 flex flex-col items-center">
-            <p className="mb-6 font-mono-light text-xs uppercase tracking-[0.25em] text-muted-foreground md:mb-8">
+            <p className="mb-6 font-mono-light text-xs uppercase tracking-[0.25em] text-foreground/70 md:mb-8">
               Un luogo delicato
             </p>
 

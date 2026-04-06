@@ -1,4 +1,4 @@
-import { Suspense, lazy, type ReactNode } from "react";
+import React, { Suspense, lazy, type ReactNode, type ReactElement } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,58 @@ import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-route
 import { AnimatePresence, motion } from "framer-motion";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
 import { useThemeMode } from "@/hooks/useThemeMode";
+
+type ErrorBoundaryProps = {
+  children: ReactElement;
+};
+
+type ErrorBoundaryState = {
+  hasError: boolean;
+  error: Error | null;
+};
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.warn("[ErrorBoundary] Caught error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="relative min-h-screen overflow-hidden bg-[#120d0c] text-[#f3eadf]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(239,227,210,0.18),transparent_28%),radial-gradient(circle_at_20%_80%,rgba(156,123,85,0.14),transparent_34%),linear-gradient(180deg,rgba(255,245,232,0.06),transparent_22%,rgba(0,0,0,0.2)_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e7d8c2]/40 to-transparent" />
+          <div className="relative flex min-h-screen items-center justify-center px-6">
+            <div className="w-full max-w-md rounded-[2rem] border border-[#5b4739]/70 bg-[#140f0d]/82 px-8 py-10 shadow-[0_34px_110px_rgba(0,0,0,0.42)] backdrop-blur-xl">
+              <div className="font-mono-light text-[0.68rem] uppercase tracking-[0.26em] text-[#cbb59a]">
+                Cavapendolandia
+              </div>
+              <div className="mt-4 h-px w-20 bg-gradient-to-r from-[#f0dfc7]/75 to-transparent" />
+              <h1 className="mt-5 text-3xl font-light tracking-[0.16em] text-[#f7eee3]">
+                Qualcosa si è rotto
+              </h1>
+              <p className="mt-4 text-sm leading-relaxed text-[#dbcbbc]">
+                Un errore imprevisto ha interrotto il cammino. Ricarica la pagina per
+                ricostruire il mondo.
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 const Index = lazy(() => import("./pages/Index"));
 const Entra = lazy(() => import("./pages/Entra"));
 const OfferingDetail = lazy(() => import("./pages/OfferingDetail"));
@@ -99,9 +151,11 @@ const AnimatedRoutes = () => {
             <Route
               path="/galleria"
               element={
-                <RouteBoundary>
-                  <Galleria />
-                </RouteBoundary>
+                <ErrorBoundary>
+                  <RouteBoundary>
+                    <Galleria />
+                  </RouteBoundary>
+                </ErrorBoundary>
               }
             />
             <Route
