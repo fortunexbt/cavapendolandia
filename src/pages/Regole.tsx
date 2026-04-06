@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import PageLayout from "@/components/shared";
+import PageLayout from "@/components/shared/PageLayout";
 
 const rules = [
   "Cavapendolandia è un luogo delicato.",

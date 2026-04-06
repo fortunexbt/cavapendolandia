@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "cheCose": "Che cos'è",
+    "galleria": "Galleria",
+    "offri": "Offri",
+    "regole": "Regole",
+    "rimozione": "Rimozione",
+    "contatti": "Contatti"
+  },
+  "theme": {
+    "light": "Passa al tema chiaro",
+    "dark": "Passa al tema scuro"
+  },
+  "contatti": {
+    "title": "Contatti",
+    "subtitle": "Hai qualcosa da dire? Scrivici.",
+    "nameLabel": "Nome (opzionale)",
+    "emailLabel": "Email (opzionale)",
+    "categoryLabel": "Categoria *",
+    "messageLabel": "Messaggio *",
+    "selectCategory": "Seleziona una categoria",
+    "categoryDomanda": "Domanda",
+    "categoryRichiesta": "Richiesta",
+    "categoryFeedback": "Feedback",
+    "submit": "Invia messaggio",
+    "submitting": "Invio in corso...",
+    "sent": "Inviato",
+    "backHome": "Torna alla home",
+    "successTitle": "Messaggio inviato",
+    "successMessage": "La tua voce è stata udita. Ti risponderemo se necessario.",
+    "errorFillFields": "Per favore compila tutti i campi richiesti.",
+    "errorSendFailed": "Non è stato possibile inviare il messaggio. Riprova più tardi."
+  }
+}

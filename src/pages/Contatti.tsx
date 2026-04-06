@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 
 const Contatti = () => {
+  const { t } = useTranslation();
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [cooldown, setCooldown] = useState(false);
@@ -31,7 +33,7 @@ const Contatti = () => {
     const email = formData.get("email") as string;
 
     if (!message || !category) {
-      setErrorMessage("Per favore compila tutti i campi richiesti.");
+      setErrorMessage(t("contatti.errorFillFields"));
       setFormState("error");
       return;
     }
@@ -48,7 +50,7 @@ const Contatti = () => {
     });
 
     if (error) {
-      setErrorMessage("Non è stato possibile inviare il messaggio. Riprova più tardi.");
+      setErrorMessage(t("contatti.errorSendFailed"));
       setFormState("error");
       return;
     }
@@ -69,15 +71,15 @@ const Contatti = () => {
             transition={{ duration: 1 }}
             className="text-center max-w-md"
           >
-            <h1 className="text-3xl md:text-4xl font-light mb-6">Messaggio inviato</h1>
+            <h1 className="text-3xl md:text-4xl font-light mb-6">{t("contatti.successTitle")}</h1>
             <p className="text-lg italic text-muted-foreground mb-12">
-              La tua voce è stata udita. Ti risponderemo se necessario.
+              {t("contatti.successMessage")}
             </p>
             <Link
               to="/"
               className="inline-block font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500"
             >
-              Torna alla home
+              {t("contatti.backHome")}
             </Link>
           </motion.div>
         </main>
@@ -97,9 +99,9 @@ const Contatti = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
-          <h1 className="text-3xl md:text-4xl font-light text-center mb-2">Contatti</h1>
+          <h1 className="text-3xl md:text-4xl font-light text-center mb-2">{t("contatti.title")}</h1>
           <p className="text-center text-muted-foreground mb-10">
-            Hai qualcosa da dire? Scrivici.
+            {t("contatti.subtitle")}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -111,7 +113,7 @@ const Contatti = () => {
 
             <div>
               <label htmlFor="name" className="block font-mono-light text-xs uppercase tracking-[0.15em] mb-2">
-                Nome (opzionale)
+                {t("contatti.nameLabel")}
               </label>
               <input
                 type="text"
@@ -124,7 +126,7 @@ const Contatti = () => {
 
             <div>
               <label htmlFor="email" className="block font-mono-light text-xs uppercase tracking-[0.15em] mb-2">
-                Email (opzionale)
+                {t("contatti.emailLabel")}
               </label>
               <input
                 type="email"
@@ -137,7 +139,7 @@ const Contatti = () => {
 
             <div>
               <label htmlFor="category" className="block font-mono-light text-xs uppercase tracking-[0.15em] mb-2">
-                Categoria *
+                {t("contatti.categoryLabel")}
               </label>
               <select
                 id="category"
@@ -145,16 +147,16 @@ const Contatti = () => {
                 required
                 className="w-full px-4 py-3 bg-background border border-border/50 focus:border-foreground/50 focus:outline-none transition-colors"
               >
-                <option value="">Seleziona una categoria</option>
-                <option value="domanda">Domanda</option>
-                <option value="richiesta">Richiesta</option>
-                <option value="feedback">Feedback</option>
+                <option value="">{t("contatti.selectCategory")}</option>
+                <option value="domanda">{t("contatti.categoryDomanda")}</option>
+                <option value="richiesta">{t("contatti.categoryRichiesta")}</option>
+                <option value="feedback">{t("contatti.categoryFeedback")}</option>
               </select>
             </div>
 
             <div>
               <label htmlFor="message" className="block font-mono-light text-xs uppercase tracking-[0.15em] mb-2">
-                Messaggio *
+                {t("contatti.messageLabel")}
               </label>
               <textarea
                 id="message"
@@ -175,7 +177,7 @@ const Contatti = () => {
                 disabled={cooldown || formState === "submitting"}
                 className="w-full font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-4 border border-foreground/30 bg-background hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {formState === "submitting" ? "Invio in corso..." : cooldown ? "Inviato" : "Invia messaggio"}
+                {formState === "submitting" ? t("contatti.submitting") : cooldown ? t("contatti.sent") : t("contatti.submit")}
               </button>
             </div>
           </form>
@@ -185,7 +187,7 @@ const Contatti = () => {
               to="/"
               className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
             >
-              ← Torna alla home
+              ← {t("contatti.backHome")}
             </Link>
           </div>
         </motion.div>

@@ -1,21 +1,24 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Sun, Moon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { SeahorseIcon } from "@/components/shared/SeahorseIcon";
-
-const NAV_LINKS = [
-  { to: "/che-cose", label: "Che cos'è" },
-  { to: "/galleria", label: "Galleria" },
-  { to: "/offri", label: "Offri" },
-  { to: "/regole", label: "Regole" },
-  { to: "/rimozione", label: "Rimozione" },
-  { to: "/contatti", label: "Contatti" },
-];
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const MinimalHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { resolvedMode, setThemeMode } = useThemeMode();
+  const { t } = useTranslation();
+
+  const navLinks = [
+    { to: "/che-cose", labelKey: "nav.cheCose" },
+    { to: "/galleria", labelKey: "nav.galleria" },
+    { to: "/offri", labelKey: "nav.offri" },
+    { to: "/regole", labelKey: "nav.regole" },
+    { to: "/rimozione", labelKey: "nav.rimozione" },
+    { to: "/contatti", labelKey: "nav.contatti" },
+  ];
 
   const toggleTheme = () => {
     setThemeMode(resolvedMode === "dark" ? "light" : "dark");
@@ -31,9 +34,9 @@ const MinimalHeader = () => {
           
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-6 font-mono-light text-base">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-foreground transition-colors">
-                  {link.label}
+                  {t(link.labelKey)}
                 </Link>
               ))}
             </nav>
@@ -41,10 +44,12 @@ const MinimalHeader = () => {
             <button
               onClick={toggleTheme}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={resolvedMode === "dark" ? "Passa al tema chiaro" : "Passa al tema scuro"}
+              aria-label={resolvedMode === "dark" ? t("theme.light") : t("theme.dark")}
             >
               {resolvedMode === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
+
+            <LanguageSwitcher />
 
             <button 
               onClick={() => setMenuOpen(!menuOpen)}
@@ -60,14 +65,14 @@ const MinimalHeader = () => {
 
         {menuOpen && (
           <nav className="mt-4 pb-4 flex flex-col gap-4 font-mono-light text-lg md:hidden border-t border-border/30 pt-4">
-            {NAV_LINKS.map((link) => (
-              <Link 
+            {navLinks.map((link) => (
+              <Link
                 key={link.to}
-                to={link.to} 
+                to={link.to}
                 className="text-foreground/80 hover:text-foreground transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             ))}
           </nav>

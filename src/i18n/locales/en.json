@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "cheCose": "What is it",
+    "galleria": "Gallery",
+    "offri": "Offer",
+    "regole": "Rules",
+    "rimozione": "Removal",
+    "contatti": "Contact"
+  },
+  "theme": {
+    "light": "Switch to light theme",
+    "dark": "Switch to dark theme"
+  },
+  "contatti": {
+    "title": "Contact",
+    "subtitle": "Have something to say? Write to us.",
+    "nameLabel": "Name (optional)",
+    "emailLabel": "Email (optional)",
+    "categoryLabel": "Category *",
+    "messageLabel": "Message *",
+    "selectCategory": "Select a category",
+    "categoryDomanda": "Question",
+    "categoryRichiesta": "Request",
+    "categoryFeedback": "Feedback",
+    "submit": "Send message",
+    "submitting": "Sending...",
+    "sent": "Sent",
+    "backHome": "Back to home",
+    "successTitle": "Message sent",
+    "successMessage": "Your voice has been heard. We will respond if necessary.",
+    "errorFillFields": "Please fill in all required fields.",
+    "errorSendFailed": "Unable to send message. Please try again later."
+  }
+}
