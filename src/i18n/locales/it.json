@@ -30,5 +30,103 @@
     "successMessage": "La tua voce è stata udita. Ti risponderemo se necessario.",
     "errorFillFields": "Per favore compila tutti i campi richiesti.",
     "errorSendFailed": "Non è stato possibile inviare il messaggio. Riprova più tardi."
+  },
+  "index": {
+    "subtitleThreshold": "Soglia di Cavapendolandia",
+    "subtitleMaterials": "carta, rame, vento",
+    "subtitle": "Una soglia esplorabile",
+    "subtitleFallback": "Una soglia esplorabile",
+    "descriptionFallback": "Una stanza che si apre nel prato, un archivio che respira, una soglia dove i cavapendoli si fanno vedere solo per poco.",
+    "ctaEnter": "Entra",
+    "initiativeBanner": "Un pensiero",
+    "mysticalOpening1": "I Cavapendoli scendono a spirale, quasi velici.",
+    "mysticalOpening2": "Prima erano ovunque, nei magazzini del mondo impalpabile.",
+    "mysticalOpening3": "Lentamente, nel tempo, hanno assunto forma.",
+    "mysticalOpening4": "Prima immagini, poi dipinti, poi parole.",
+    "mysticalOpening5": "Ma non si lasciavano fissare volentieri.",
+    "mysticalOpening6": "Nel tempo che passa, hanno accettato di essere esposti allo sguardo degli estranei.",
+    "mysticalOpening7": "Ora tentennano, forse non vogliono essere fermati su carta.",
+    "mysticalOpening8": "Sfuggono, perché vivono di libertà.",
+    "mysticalOpening9": "Sono bonari, ilari, sfuggenti e spiritosi.",
+    "mysticalOpening10": "Vanno e vengono, svolacchiano, si posano e se ne vanno.",
+    "mysticalOpening11": "Chi sa cosa fanno quando non si mostrano.",
+    "mysticalOpening12": "Li invito con umiltà a entrare nel cannello della penna...",
+    "mysticalOpening13": "e mi ridacchiano addosso."
+  },
+  "cheCose": {
+    "title": "Che cos'è",
+    "linkRules": "Leggi le regole",
+    "linkRemoval": "Info rimozione"
+  },
+  "regole": {
+    "title": "Regole",
+    "linkOffer": "Lascia una cavapendolata",
+    "linkRemoval": "Info rimozione"
+  },
+  "gallery": {
+    "preload": {
+      "header": "Cavapendolandia / Galleria",
+      "title": "Sto preparando il mondo.",
+      "description": "Caricamento progressivo del globo, delle superfici dipinte e dell'ambiente sonoro. L'ingresso parte solo quando il primo frame è stabile.",
+      "stage": "Fase {{index}}/{{total}}"
+    },
+    "mobileOrientation": {
+      "header": "Esperienza mobile",
+      "title": "Ruota in orizzontale.",
+      "description": "Il globo esterno e i controlli twin-stick sono progettati per il paesaggio. In verticale puoi continuare, ma perderai spazio, visione e comfort.",
+      "left": "Sinistra",
+      "right": "Destra",
+      "movement": "Movimento",
+      "lookActions": "Sguardo + azioni",
+      "continueAnyway": "Continua comunque",
+      "gotIt": "Ho capito"
+    },
+    "zone": {
+      "interior": "Interno",
+      "exterior": "Esterno"
+    },
+    "playerHud": {
+      "currentObjective": "Obiettivo attuale",
+      "lookAt": "Sguardo: {{label}}",
+      "ritualPlace": "Luogo rituale",
+      "reopenNote": "Riapri appunto"
+    },
+    "debugHud": {
+      "nearbyCreatures": "Creature vicine {{count}}"
+    },
+    "settings": {
+      "renderProfile": "Profilo di rendering",
+      "activeNow": "Attivo ora",
+      "controls": "Controlli",
+      "mouse": "Mouse",
+      "lookTouch": "Look touch",
+      "joystickRadius": "Raggio joystick",
+      "invertedLook": "Look invertito",
+      "normalLook": "Look normale",
+      "softCamera": "Camera morbida",
+      "fullCamera": "Camera piena",
+      "hudAudio": "HUD e audio",
+      "hudMode": "HUD {{mode}}",
+      "muteAudio": "Muta audio",
+      "unmuteAudio": "Riattiva audio",
+      "ambienceVolume": "Volume ambiente",
+      "reopenGuide": "Riapri guida",
+      "exitFullscreen": "Esci dal fullscreen",
+      "enterFullscreen": "Entra in fullscreen"
+    },
+    "guide": {
+      "fieldNote": "Appunto di campo",
+      "close": "Chiudi",
+      "open": "Apri",
+      "hide": "Togli",
+      "note": "Nota"
+    },
+    "deposit": {
+      "leftIn": "Una cavapendolata è stata lasciata in {{siteId}}."
+    },
+    "actions": {
+      "settings": "Impostazioni",
+      "offer": "+ Offri"
+    }
   }
 }

@@ -30,5 +30,103 @@
     "successMessage": "Your voice has been heard. We will respond if necessary.",
     "errorFillFields": "Please fill in all required fields.",
     "errorSendFailed": "Unable to send message. Please try again later."
+  },
+  "index": {
+    "subtitleThreshold": "Cavapendolandia Threshold",
+    "subtitleMaterials": "paper, copper, wind",
+    "subtitle": "An explorable threshold",
+    "subtitleFallback": "An explorable threshold",
+    "descriptionFallback": "A room that opens in the meadow, an archive that breathes, a threshold where the cavapendoli show themselves only briefly.",
+    "ctaEnter": "Enter",
+    "initiativeBanner": "A thought",
+    "mysticalOpening1": "The Cavapendoli descend in a spiral, almost swift.",
+    "mysticalOpening2": "They were once everywhere, in the warehouses of the intangible world.",
+    "mysticalOpening3": "Slowly, over time, they took shape.",
+    "mysticalOpening4": "First images, then paintings, then words.",
+    "mysticalOpening5": "But they didn't like to be fixed in place.",
+    "mysticalOpening6": "As time passed, they accepted being exposed to the gaze of strangers.",
+    "mysticalOpening7": "Now they hesitate, perhaps they don't want to be stopped on paper.",
+    "mysticalOpening8": "They slip away, because they live in freedom.",
+    "mysticalOpening9": "They are benign, hilarious, slippery and witty.",
+    "mysticalOpening10": "They come and go, flutter about, land and leave.",
+    "mysticalOpening11": "Who knows what they do when they're not showing themselves.",
+    "mysticalOpening12": "I invite them with humility to enter the barrel of the pen...",
+    "mysticalOpening13": "and they giggle at me."
+  },
+  "cheCose": {
+    "title": "What is it",
+    "linkRules": "Read the rules",
+    "linkRemoval": "Removal info"
+  },
+  "regole": {
+    "title": "Rules",
+    "linkOffer": "Leave a cavapendolata",
+    "linkRemoval": "Removal info"
+  },
+  "gallery": {
+    "preload": {
+      "header": "Cavapendolandia / Gallery",
+      "title": "Preparing the world.",
+      "description": "Progressive loading of the globe, painted surfaces, and sound environment. Entry starts only when the first frame is stable.",
+      "stage": "Stage {{index}}/{{total}}"
+    },
+    "mobileOrientation": {
+      "header": "Mobile experience",
+      "title": "Rotate to landscape.",
+      "description": "The outer globe and twin-stick controls are designed for landscape. In portrait you can continue, but you'll lose space, vision, and comfort.",
+      "left": "Left",
+      "right": "Right",
+      "movement": "Movement",
+      "lookActions": "Look + actions",
+      "continueAnyway": "Continue anyway",
+      "gotIt": "Got it"
+    },
+    "zone": {
+      "interior": "Interior",
+      "exterior": "Exterior"
+    },
+    "playerHud": {
+      "currentObjective": "Current objective",
+      "lookAt": "Looking at: {{label}}",
+      "ritualPlace": "Ritual place",
+      "reopenNote": "Reopen note"
+    },
+    "debugHud": {
+      "nearbyCreatures": "Nearby creatures {{count}}"
+    },
+    "settings": {
+      "renderProfile": "Rendering profile",
+      "activeNow": "Active now",
+      "controls": "Controls",
+      "mouse": "Mouse",
+      "lookTouch": "Look touch",
+      "joystickRadius": "Joystick radius",
+      "invertedLook": "Inverted look",
+      "normalLook": "Normal look",
+      "softCamera": "Soft camera",
+      "fullCamera": "Full camera",
+      "hudAudio": "HUD & audio",
+      "hudMode": "HUD {{mode}}",
+      "muteAudio": "Mute audio",
+      "unmuteAudio": "Unmute audio",
+      "ambienceVolume": "Ambience volume",
+      "reopenGuide": "Reopen guide",
+      "exitFullscreen": "Exit fullscreen",
+      "enterFullscreen": "Enter fullscreen"
+    },
+    "guide": {
+      "fieldNote": "Field note",
+      "close": "Close",
+      "open": "Open",
+      "hide": "Hide",
+      "note": "Note"
+    },
+    "deposit": {
+      "leftIn": "A cavapendolata has been left at {{siteId}}."
+    },
+    "actions": {
+      "settings": "Settings",
+      "offer": "+ Offer"
+    }
   }
 }

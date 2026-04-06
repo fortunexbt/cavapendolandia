@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 import OfferingSubmissionWizard from "@/components/OfferingSubmissionWizard";
 import { useActiveInitiative } from "@/hooks/useActiveInitiative";
 
 const Offri = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const { data: initiative } = useActiveInitiative();
@@ -28,25 +30,25 @@ const Offri = () => {
             transition={{ duration: 1.5 }}
             className="text-center"
           >
-            <h1 className="text-3xl md:text-4xl font-light mb-6">Accolta</h1>
+            <h1 className="text-3xl md:text-4xl font-light mb-6">{t("offri.submittedTitle")}</h1>
             <p className="text-lg italic text-muted-foreground mb-2">
-              La tua cavapendolata è stata accolta.
+              {t("offri.submittedLine1")}
             </p>
             <p className="text-lg italic text-muted-foreground mb-12">
-              Ora è in attesa di entrare.
+              {t("offri.submittedLine2")}
             </p>
             <div className="flex flex-col items-center gap-4">
               <Link
                 to="/galleria"
                 className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500"
               >
-                Vai alla Galleria →
+                {t("offri.ctaGallery")}
               </Link>
               <button
                 onClick={() => setSubmitted(false)}
                 className="font-mono-light text-xs uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
               >
-                Lascia un'altra cavapendolata
+                {t("offri.ctaAnother")}
               </button>
             </div>
           </motion.div>
@@ -70,7 +72,7 @@ const Offri = () => {
             {initiative && (
               <div className="mb-8 text-center">
                 <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-accent mb-2">
-                  Un pensiero
+                  {t("offri.initiativeLabel")}
                 </p>
                 <h1 className="text-2xl md:text-3xl font-light text-foreground mb-2">
                   {initiative.prompt}
@@ -83,8 +85,8 @@ const Offri = () => {
               </div>
             )}
             <OfferingSubmissionWizard
-              title="Lascia una cavapendolata"
-              subtitle="Qualcosa che possa stare qui."
+              title={t("offri.title")}
+              subtitle={t("offri.subtitle")}
               onSubmitted={() => setSubmitted(true)}
             />
           </motion.div>

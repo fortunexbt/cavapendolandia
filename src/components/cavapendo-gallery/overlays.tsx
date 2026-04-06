@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   RENDER_PROFILE_OPTIONS,
   type ControlProfile,
@@ -19,6 +20,7 @@ export function PreloadOverlay({
   stageIndex: number;
   totalStages: number;
 }) {
+  const { t } = useTranslation();
   const progress = Math.min(
     100,
     Math.max(12, (stageIndex / totalStages) * 100),
@@ -28,15 +30,13 @@ export function PreloadOverlay({
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#110d0c] px-4">
       <div className="w-full max-w-xl rounded-[2rem] border border-[#4d3d32] bg-[radial-gradient(circle_at_top,_rgba(116,151,193,0.22),_rgba(20,15,12,0.96)_64%)] px-6 py-8 text-[#f3eadf] shadow-[0_28px_120px_rgba(0,0,0,0.48)] backdrop-blur-xl">
         <div className="text-[0.68rem] uppercase tracking-[0.28em] text-[#ceb89f]">
-          Cavapendolandia / Galleria
+          {t("gallery.preload.header")}
         </div>
         <h1 className="mt-3 text-3xl font-light tracking-[-0.03em] text-[#fbf5ec]">
-          Sto preparando il mondo.
+          {t("gallery.preload.title")}
         </h1>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#dbcfc0]">
-          Caricamento progressivo del globo, delle superfici dipinte e
-          dell&apos;ambiente sonoro. L&apos;ingresso parte solo quando il primo
-          frame e stabile.
+          {t("gallery.preload.description")}
         </p>
         <div className="mt-6 rounded-full border border-[#5f4f43] bg-black/20 p-1">
           <div
@@ -46,7 +46,7 @@ export function PreloadOverlay({
         </div>
         <div className="mt-4 flex items-center justify-between gap-4 text-[0.72rem] uppercase tracking-[0.14em] text-[#c9b39c]">
           <span>
-            Fase {stageIndex}/{totalStages}
+            {t("gallery.preload.stage", { index: stageIndex, total: totalStages })}
           </span>
           <span>{stageLabel}</span>
         </div>
@@ -62,34 +62,33 @@ export function MobileOrientationOverlay({
   orientationState: MobileOrientationState;
   onDismiss: () => void;
 }) {
+  const { t } = useTranslation();
   if (orientationState !== "portrait_hint") return null;
 
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(198,223,255,0.26),_rgba(9,7,7,0.95)_64%)] px-5">
       <div className="w-full max-w-md rounded-[2.2rem] border border-[#8a6c59] bg-[linear-gradient(180deg,_rgba(27,20,17,0.98),_rgba(13,10,9,0.95))] p-6 text-[#fbf3e8] shadow-[0_36px_110px_rgba(0,0,0,0.56)] backdrop-blur-2xl">
         <div className="text-[0.68rem] uppercase tracking-[0.24em] text-[#dec5ab]">
-          Esperienza mobile
+          {t("gallery.mobileOrientation.header")}
         </div>
         <h2 className="mt-3 text-3xl font-light tracking-[-0.04em] text-[#fff9f0]">
-          Ruota in orizzontale.
+          {t("gallery.mobileOrientation.title")}
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-[#f0dfd1]">
-          Il globo esterno e i controlli twin-stick sono progettati per il
-          paesaggio. In verticale puoi continuare, ma perderai spazio, visione
-          e comfort.
+          {t("gallery.mobileOrientation.description")}
         </p>
         <div className="mt-5 rounded-[1.5rem] border border-[#3c2f28] bg-[radial-gradient(circle_at_top,_rgba(145,185,255,0.14),_rgba(255,255,255,0.03)_58%)] p-4">
           <div className="grid grid-cols-2 gap-3 text-[0.68rem] uppercase tracking-[0.16em] text-[#e6d8c9]">
             <div className="rounded-[1.25rem] border border-[#4a3a32] bg-[#1b1411] px-3 py-3 text-center">
-              Sinistra
+              {t("gallery.mobileOrientation.left")}
               <div className="mt-2 text-[0.8rem] normal-case tracking-normal text-[#fff7ee]">
-                Movimento
+                {t("gallery.mobileOrientation.movement")}
               </div>
             </div>
             <div className="rounded-[1.25rem] border border-[#4a3a32] bg-[#1b1411] px-3 py-3 text-center">
-              Destra
+              {t("gallery.mobileOrientation.right")}
               <div className="mt-2 text-[0.8rem] normal-case tracking-normal text-[#fff7ee]">
-                Sguardo + azioni
+                {t("gallery.mobileOrientation.lookActions")}
               </div>
             </div>
           </div>
@@ -99,13 +98,13 @@ export function MobileOrientationOverlay({
             onClick={onDismiss}
             className="flex-1 rounded-full border border-[#8b7461] bg-[#221915] px-4 py-3 text-[0.72rem] uppercase tracking-[0.18em] text-[#f6eadc]"
           >
-            Continua comunque
+            {t("gallery.mobileOrientation.continueAnyway")}
           </button>
           <button
             onClick={onDismiss}
             className="flex-1 rounded-full bg-[linear-gradient(180deg,_#f6eee5,_#eadbc9)] px-4 py-3 text-[0.72rem] uppercase tracking-[0.18em] text-[#241913]"
           >
-            Ho capito
+            {t("gallery.mobileOrientation.gotIt")}
           </button>
         </div>
       </div>

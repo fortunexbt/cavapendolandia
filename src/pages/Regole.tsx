@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import PageLayout from "@/components/shared/PageLayout";
+import { usePageBlocks } from "@/features/content/hooks/usePageBlocks";
 
-const rules = [
+const FALLBACK_RULES = [
   "Cavapendolandia è un luogo delicato.",
   "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
   "Niente odio, molestie o contenuti violenti espliciti.",
@@ -13,6 +15,19 @@ const rules = [
 ];
 
 const Regole = () => {
+  const { t } = useTranslation();
+  const { getBlock } = usePageBlocks("regole");
+
+  const titleBlock = getBlock("title");
+  const title = titleBlock?.body ?? t("regole.title");
+
+  // Load up to 7 rules from CMS
+  const rules: string[] = [];
+  for (let i = 0; i < 7; i++) {
+    const block = getBlock(`rule-${i}`);
+    rules.push(block?.body ?? FALLBACK_RULES[i]);
+  }
+
   return (
     <PageLayout>
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-24">
@@ -22,7 +37,7 @@ const Regole = () => {
           transition={{ duration: 0.35 }}
           className="max-w-lg text-center"
         >
-          <h1 className="text-4xl md:text-5xl font-light mb-10">Regole</h1>
+          <h1 className="text-4xl md:text-5xl font-light mb-10">{title}</h1>
 
           <ul className="space-y-5 text-left mb-12">
             {rules.map((rule, i) => (
@@ -40,7 +55,7 @@ const Regole = () => {
               to="/offri"
               className="inline-block border-2 border-foreground/20 bg-background/80 px-10 py-4 text-lg uppercase tracking-[0.25em] font-mono-light hover:bg-foreground hover:text-primary-foreground transition-all duration-300"
             >
-              Lascia una cavapendolata
+              {t("regole.linkOffer")}
             </Link>
           </div>
 
@@ -49,7 +64,7 @@ const Regole = () => {
               to="/rimozione"
               className="font-mono-light text-base text-muted-foreground/80 hover:text-foreground transition-colors"
             >
-              Info rimozione
+              {t("regole.linkRemoval")}
             </Link>
           </div>
         </motion.div>

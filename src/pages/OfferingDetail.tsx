@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
@@ -10,6 +11,7 @@ import { withSignedFileUrl } from "@/lib/offeringMedia";
 import EntraComingSoon from "@/components/EntraComingSoon";
 
 const OfferingDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [copied, setCopied] = useState(false);
 
@@ -57,12 +59,12 @@ const OfferingDetail = () => {
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
         {isLoading ? (
-          <p className="font-mono-light text-muted-foreground/40 animate-pulse">...</p>
+          <p className="font-mono-light text-muted-foreground/40 animate-pulse">{t("offeringDetail.loading")}</p>
         ) : !offering ? (
           <div className="text-center">
-            <p className="text-lg italic text-muted-foreground/60 mb-4">Cavapendolata non trovata.</p>
+            <p className="text-lg italic text-muted-foreground/60 mb-4">{t("offeringDetail.notFound")}</p>
             <EntraComingSoon
-              label="torna all'Archivio"
+              label={t("offeringDetail.backToArchive")}
               className="font-mono-light text-muted-foreground/45 underline underline-offset-4"
             />
           </div>
@@ -73,7 +75,7 @@ const OfferingDetail = () => {
             transition={{ duration: 0.35 }}
             className="ritual-container max-w-3xl"
           >
-            <p className="ritual-label text-center mb-8">Cavapendolata trovata</p>
+            <p className="ritual-label text-center mb-8">{t("offeringDetail.found")}</p>
             <OfferingCard
               id={offering.id}
               mediaType={offering.media_type}
@@ -94,25 +96,25 @@ const OfferingDetail = () => {
                 onClick={handleCopyLink}
                 className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
               >
-                {copied ? "copiato ✓" : "copia link"}
+                {copied ? t("offeringDetail.copied") : t("offeringDetail.copyLink")}
               </button>
               {randomOffering && (
                 <Link
                   to={`/o/${randomOffering.id}`}
                   className="rounded-full border border-foreground/25 px-7 py-2 font-mono-light text-xs uppercase tracking-[0.13em] text-foreground/85 hover:bg-foreground hover:text-primary-foreground"
                 >
-                  un altro
+                  {t("offeringDetail.another")}
                 </Link>
               )}
               <EntraComingSoon
-                label="torna all'Archivio"
+                label={t("offeringDetail.backToArchive")}
                 className="font-mono-light text-xs text-muted-foreground/45"
               />
               <Link
                 to="/offri"
                 className="font-mono-light text-xs text-muted-foreground/65 hover:text-foreground transition-colors"
               >
-                lascia una cavapendolata
+                {t("offeringDetail.leaveOffering")}
               </Link>
             </div>
           </motion.div>
