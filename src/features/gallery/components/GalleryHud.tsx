@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { GuideDescriptor } from "@/components/cavapendo-gallery/runtime";
 import {
   ZoneTransitionOverlay,
@@ -81,6 +82,7 @@ export interface GalleryHudProps {
 }
 
 export function GalleryHud(props: GalleryHudProps) {
+  const { t } = useTranslation();
   const {
     zone,
     isMobile,

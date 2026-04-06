@@ -188,6 +188,7 @@ export function ZoneTransitionOverlay({
       }
     | null;
 }) {
+  const { t } = useTranslation();
   return (
     <AnimatePresence>
       {transition && (
@@ -229,7 +230,7 @@ export function ZoneTransitionOverlay({
             />
             <div className="relative z-10 flex flex-col items-center">
               <div className="mb-4 text-[0.68rem] uppercase tracking-[0.26em] text-[#dec7ac]">
-                Cavapendolandia
+                {t("gallery.zoneTransition.header")}
               </div>
               <TransitionLogo />
               <div className="mt-5 text-2xl font-light tracking-[0.22em] text-[#fff4e4] md:text-[2rem]">
@@ -299,6 +300,7 @@ export function PlayerHud({
   showGuideButton: boolean;
   onOpenGuide: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <>
       <div
@@ -322,7 +324,7 @@ export function PlayerHud({
           {objectiveLabel && (
             <>
               <div className="mt-2.5 text-[0.58rem] uppercase tracking-[0.22em] text-[#ecd2b3]">
-                Obiettivo attuale
+                {t("gallery.playerHud.currentObjective")}
               </div>
               <div
                 className={`mt-1.5 leading-relaxed text-[#fff9f1] ${
@@ -338,7 +340,7 @@ export function PlayerHud({
           <div className="mt-2.5 flex flex-wrap gap-1.5 text-[0.58rem] uppercase tracking-[0.16em] text-[#f6ebdb]">
             {landmarkLabel && (
               <span className="rounded-full border border-[#6f5d50] bg-[#171110] px-2.5 py-1 text-[#fff1e2]">
-                Sguardo: {landmarkLabel}
+                {t("gallery.playerHud.lookAt", { label: landmarkLabel })}
               </span>
             )}
             {ambienceLabel && (
@@ -348,7 +350,7 @@ export function PlayerHud({
             )}
             {depositReady && (
               <span className="rounded-full border border-[#b08c52] bg-[#3d2b16] px-2.5 py-1 text-[#fff0bc]">
-                Luogo rituale
+                {t("gallery.playerHud.ritualPlace")}
               </span>
             )}
           </div>
@@ -359,7 +361,7 @@ export function PlayerHud({
             onClick={onOpenGuide}
             className="pointer-events-auto inline-flex w-fit items-center rounded-full border border-[#7e6956] bg-[#130d0c]/92 px-3 py-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-[#fff5e8] shadow-[0_14px_34px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-colors hover:bg-[#281b16]"
           >
-            Riapri appunto
+            {t("gallery.playerHud.reopenNote")}
           </button>
         )}
       </div>
@@ -401,6 +403,7 @@ export function DebugHud({
   nearbyTriggerLabel: string | null;
   nearbyCreatureCount: number;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="pointer-events-none absolute inset-x-4 bottom-4 z-20 flex flex-wrap justify-between gap-3">
       <div className="flex flex-wrap gap-2">
@@ -422,7 +425,7 @@ export function DebugHud({
           ))}
         {nearbyCreatureCount > 0 && (
           <div className="rounded-full border border-[#655447] bg-[#16110f]/88 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.16em] text-[#f2e6d7] backdrop-blur-md">
-            Creature vicine {nearbyCreatureCount}
+            {t("gallery.debugHud.nearbyCreatures", { count: nearbyCreatureCount })}
           </div>
         )}
       </div>
@@ -484,6 +487,7 @@ export function SettingsPanel({
   onToggleFullscreen: () => void;
   onOpenGuide: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="pointer-events-auto absolute right-4 top-16 z-20 w-[min(26rem,calc(100%-2rem))] rounded-[1.9rem] border border-[#624f43] bg-[linear-gradient(180deg,_rgba(18,13,12,0.96),_rgba(10,8,8,0.94))] p-5 text-[#f6ede2] shadow-[0_32px_96px_rgba(0,0,0,0.46)] backdrop-blur-2xl"
@@ -493,7 +497,7 @@ export function SettingsPanel({
       <div className="space-y-5">
         <div>
           <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[#c9b29b]">
-            Profilo di rendering
+            {t("gallery.settings.renderProfile")}
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2">
             {RENDER_PROFILE_OPTIONS.map((option) => {
@@ -516,7 +520,7 @@ export function SettingsPanel({
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
             <span className="text-[0.68rem] uppercase tracking-[0.14em] text-[#c9b29b]">
-              Attivo ora
+              {t("gallery.settings.activeNow")}
             </span>
             <span className="rounded-full border border-[#6a5748] bg-[#201713] px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.14em] text-[#d9c5b1]">
               {resolvedProfile.label}
@@ -529,12 +533,12 @@ export function SettingsPanel({
 
         <div>
           <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[#c9b29b]">
-            Controlli
+            {t("gallery.settings.controls")}
           </p>
           <div className="mt-3 space-y-3 text-sm text-[#f6ede2]">
             <label className="block">
               <div className="flex items-center justify-between text-[0.72rem] uppercase tracking-[0.14em] text-[#d6c5b4]">
-                <span>Mouse</span>
+                <span>{t("gallery.settings.mouse")}</span>
                 <span>{mouseSensitivity.toFixed(2)}</span>
               </div>
               <input
@@ -552,7 +556,7 @@ export function SettingsPanel({
 
             <label className="block">
               <div className="flex items-center justify-between text-[0.72rem] uppercase tracking-[0.14em] text-[#d6c5b4]">
-                <span>Look touch</span>
+                <span>{t("gallery.settings.lookTouch")}</span>
                 <span>{touchSensitivity.toFixed(2)}</span>
               </div>
               <input
@@ -571,7 +575,7 @@ export function SettingsPanel({
             {isMobile && (
               <label className="block">
                 <div className="flex items-center justify-between text-[0.72rem] uppercase tracking-[0.14em] text-[#d6c5b4]">
-                  <span>Raggio joystick</span>
+                  <span>{t("gallery.settings.joystickRadius")}</span>
                   <span>{Math.round(joystickRadius)}px</span>
                 </div>
                 <input
@@ -593,20 +597,20 @@ export function SettingsPanel({
               onClick={onToggleInvertLook}
               className="rounded-full border border-[#665244] bg-[#1b1411] px-3 py-2 text-[0.68rem] uppercase tracking-[0.14em] text-[#f4e8da]"
             >
-              {invertLook ? "Look invertito" : "Look normale"}
+              {invertLook ? t("gallery.settings.invertedLook") : t("gallery.settings.normalLook")}
             </button>
             <button
               onClick={onToggleReducedCameraMotion}
               className="rounded-full border border-[#665244] bg-[#1b1411] px-3 py-2 text-[0.68rem] uppercase tracking-[0.14em] text-[#f4e8da]"
             >
-              {reducedCameraMotion ? "Camera morbida" : "Camera piena"}
+              {reducedCameraMotion ? t("gallery.settings.softCamera") : t("gallery.settings.fullCamera")}
             </button>
           </div>
         </div>
 
         <div>
           <p className="text-[0.62rem] uppercase tracking-[0.18em] text-[#c9b29b]">
-            HUD e audio
+            {t("gallery.settings.hudAudio")}
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <button
@@ -615,18 +619,18 @@ export function SettingsPanel({
               }
               className="rounded-full border border-[#665244] bg-[#1b1411] px-3 py-2 text-[0.68rem] uppercase tracking-[0.14em] text-[#f4e8da]"
             >
-              HUD {hudMode === "player" ? "player" : "debug"}
+              {t("gallery.settings.hudMode", { mode: hudMode === "player" ? "player" : "debug" })}
             </button>
             <button
               onClick={onToggleAmbienceMuted}
               className="rounded-full border border-[#665244] bg-[#1b1411] px-3 py-2 text-[0.68rem] uppercase tracking-[0.14em] text-[#f4e8da]"
             >
-              {ambienceMuted ? "Riattiva audio" : "Muta audio"}
+              {ambienceMuted ? t("gallery.settings.unmuteAudio") : t("gallery.settings.muteAudio")}
             </button>
           </div>
           <label className="mt-3 block">
             <div className="flex items-center justify-between text-[0.72rem] uppercase tracking-[0.14em] text-[#d6c5b4]">
-              <span>Volume ambiente</span>
+              <span>{t("gallery.settings.ambienceVolume")}</span>
               <span>{Math.round(ambienceVolume * 100)}%</span>
             </div>
             <input
@@ -648,13 +652,13 @@ export function SettingsPanel({
             onClick={onOpenGuide}
             className="rounded-full border border-[#665244] bg-[#1b1411] px-4 py-2.5 text-left text-[0.72rem] uppercase tracking-[0.14em] text-[#f4e8da]"
           >
-            Riapri guida
+            {t("gallery.settings.reopenGuide")}
           </button>
           <button
             onClick={onToggleFullscreen}
             className="rounded-full border border-[#665244] bg-[#1b1411] px-4 py-2.5 text-left text-[0.72rem] uppercase tracking-[0.14em] text-[#f4e8da]"
           >
-            {fullscreen ? "Esci dal fullscreen" : "Entra in fullscreen"}
+            {fullscreen ? t("gallery.settings.exitFullscreen") : t("gallery.settings.enterFullscreen")}
           </button>
         </div>
       </div>
@@ -675,6 +679,7 @@ export function GuidePanel({
   onToggleExpanded: () => void;
   onHide: () => void;
 }) {
+  const { t } = useTranslation();
   if (!descriptor) return null;
   const guideCopy = isMobile
     ? descriptor.compactLabel
@@ -697,7 +702,7 @@ export function GuidePanel({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[0.62rem] uppercase tracking-[0.22em] text-[#efd3b4]">
-              Appunto di campo
+              {t("gallery.guide.fieldNote")}
             </p>
             <h2
               className={`mt-1.5 font-light leading-tight text-[#fff8ef] ${
@@ -724,15 +729,15 @@ export function GuidePanel({
           <div className="flex shrink-0 items-center gap-2">
             <button
               onClick={onToggleExpanded}
-              className="rounded-full border border-[#8e7560] bg-[#241814] px-3 py-1.5 text-[0.56rem] uppercase tracking-[0.18em] text-[#fff6e9] transition-colors hover:bg-[#32211b]"
+              className="rounded-full border border-[#8e7560] bg-[#241814] px-3 py-1.5 text-[0.56rem] uppercase tracking-[0.18em] text-[#fff6e9] transition-colors hover:bg-[#32221b]"
             >
-              {expanded ? "Chiudi" : "Apri"}
+              {expanded ? t("gallery.guide.close") : t("gallery.guide.open")}
             </button>
             <button
               onClick={onHide}
               className="rounded-full border border-[#8e7560] bg-[#241814] px-3 py-1.5 text-[0.56rem] uppercase tracking-[0.18em] text-[#fff6e9] transition-colors hover:bg-[#32211b]"
             >
-              Togli
+              {t("gallery.guide.hide")}
             </button>
           </div>
         </div>
@@ -763,6 +768,7 @@ export function GuideObjectivePill({
   isMobile: boolean;
   onOpen: () => void;
 }) {
+  const { t } = useTranslation();
   if (!descriptor) return null;
 
   return (
@@ -783,9 +789,9 @@ export function GuideObjectivePill({
         {!isMobile && (
           <button
             onClick={onOpen}
-            className="rounded-full border border-[#8e7560] bg-[#241814] px-3 py-1 text-[0.56rem] uppercase tracking-[0.18em] text-[#fff6e9] transition-colors hover:bg-[#32211b]"
+            className="rounded-full border border-[#8e7560] bg-[#241814] px-3 py-1 text-[0.56rem] uppercase tracking-[0.18em] text-[#fff6e9] transition-colors hover:bg-[#32221b]"
           >
-            Nota
+            {t("gallery.guide.note")}
           </button>
         )}
       </div>
@@ -794,12 +800,13 @@ export function GuideObjectivePill({
 }
 
 export function MobileActionLink() {
+  const { t } = useTranslation();
   return (
     <Link
       to="/offri"
       className="absolute right-4 top-14 z-20 rounded-full border border-[#ded2c2] bg-[linear-gradient(180deg,_rgba(244,236,226,0.94),_rgba(235,223,207,0.88))] px-4 py-2 text-[0.58rem] uppercase tracking-[0.18em] text-[#261c15] shadow-[0_12px_28px_rgba(0,0,0,0.18)] backdrop-blur-xl"
     >
-      + Offri
+      {t("gallery.actions.offer")}
     </Link>
   );
 }

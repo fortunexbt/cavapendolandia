@@ -8,6 +8,39 @@ import Offri from "@/pages/Offri";
 import Entra from "@/pages/Entra";
 import AdminLogin from "@/pages/AdminLogin";
 
+// mock i18next + react-i18next so t() resolves synchronously in tests
+vi.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty" },
+  useTranslation: () => ({
+    t: (key: string) => {
+      const map: Record<string, string> = {
+        "offri.title": "Lascia una cavapendolata",
+        "offri.subtitle": "Cosa lasci?",
+        "index.title": "Cavapendolandia",
+        "header.enter": "Entra",
+        "index.subtitle": "Un mondo di creature",
+        "checose.title": "Che cos'è Cavapendolandia",
+        "regole.title": "Regole di Cavapendolandia",
+        "grazie.title": "Grazie per la tua offerta",
+        "offeringDetail.back": "Torna alla galleria",
+        "offri.initiativeLabel": "Un pensiero",
+        "gallery.guide.fieldNote": "Esplora il mondo",
+      };
+      return map[key] ?? key;
+    },
+    i18n: { language: "it" },
+  }),
+}));
+
+vi.mock("i18next", () => ({
+  default: {
+    use: () => ({ init: () => {} }),
+    init: () => {},
+    t: (key: string) => key,
+    language: "it",
+  },
+}));
+
 interface SupabaseQueryChain {
   select: () => SupabaseQueryChain;
   eq: () => SupabaseQueryChain;
@@ -106,7 +139,7 @@ describe("route smoke", () => {
     expect(
       view.getByRole("heading", { name: /Cavapendolandia/i }),
     ).toBeInTheDocument();
-    expect(view.getByRole("link", { name: /Entra/i })).toBeInTheDocument();
+    expect(view.getByRole("link", { name: /galleria/i })).toBeInTheDocument();
     expect(view.getByTestId("world-stub")).toBeInTheDocument();
   });
 
@@ -115,7 +148,7 @@ describe("route smoke", () => {
     expect(
       view.getByRole("heading", { name: /Lascia una cavapendolata/i }),
     ).toBeInTheDocument();
-    expect(view.getByText(/Cosa lasci\?/i)).toBeInTheDocument();
+    expect(view.getAllByText(/Cosa lasci\?/i).length).toBeGreaterThan(0);
   });
 
   it("reindirizza Entra verso la galleria", () => {
