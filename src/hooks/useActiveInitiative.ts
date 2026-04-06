@@ -13,19 +13,25 @@ export const useActiveInitiative = () => {
   return useQuery({
     queryKey: ["active-initiative"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("initiatives")
-        .select("*")
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("initiatives")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
 
-      if (error && error.code !== "PGRST116") {
-        throw error;
+        if (error && error.code !== "PGRST116") {
+          console.warn("[useActiveInitiative]", error.message);
+          return null;
+        }
+
+        return data as Initiative | null;
+      } catch (e) {
+        console.warn("[useActiveInitiative] exception:", e);
+        return null;
       }
-
-      return data as Initiative | null;
     },
     staleTime: 1000 * 60 * 5,
   });

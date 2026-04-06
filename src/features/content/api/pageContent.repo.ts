@@ -12,13 +12,21 @@ export type PageContentBlock = {
 
 export const pageContentRepo = {
   async listBySlug(slug: string): Promise<PageContentBlock[]> {
-    const { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", slug)
-      .order("block_key");
-    if (error) throw error;
-    return (data || []) as PageContentBlock[];
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", slug)
+        .order("block_key");
+      if (error && error.code !== "PGRST116") {
+        console.warn("[pageContentRepo] listBySlug error:", error.message);
+        return [];
+      }
+      return (data || []) as PageContentBlock[];
+    } catch (e) {
+      console.warn("[pageContentRepo] listBySlug exception:", e);
+      return [];
+    }
   },
 
   async get(slug: string, blockKey: string): Promise<PageContentBlock | null> {
