@@ -1,0 +1,53 @@
+import { supabase } from "@/integrations/supabase/client";
+
+export type PageContentBlock = {
+  id: string;
+  page_slug: string;
+  block_key: string;
+  title: string | null;
+  body: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export const pageContentRepo = {
+  async listBySlug(slug: string): Promise<PageContentBlock[]> {
+    const { data, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", slug)
+      .order("block_key");
+    if (error) throw error;
+    return (data || []) as PageContentBlock[];
+  },
+
+  async get(slug: string, blockKey: string): Promise<PageContentBlock | null> {
+    const { data, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", slug)
+      .eq("block_key", blockKey)
+      .single();
+    if (error && error.code !== "PGRST116") throw error;
+    return (data as PageContentBlock) || null;
+  },
+
+  async upsert(slug: string, blockKey: string, payload: { title?: string; body?: string }): Promise<void> {
+    const { error } = await supabase
+      .from("page_content")
+      .upsert(
+        { page_slug: slug, block_key: blockKey, title: payload.title || null, body: payload.body || null },
+        { onConflict: "page_slug,block_key" },
+      );
+    if (error) throw error;
+  },
+
+  async listSlugs(): Promise<string[]> {
+    const { data, error } = await supabase
+      .from("page_content")
+      .select("page_slug");
+    if (error) throw error;
+    const slugs = [...new Set((data || []).map((r: { page_slug: string }) => r.page_slug))];
+    return slugs;
+  },
+};

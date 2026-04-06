@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
 import { useThemeMode } from "@/hooks/useThemeMode";
@@ -15,10 +15,17 @@ const CheCose = lazy(() => import("./pages/CheCose"));
 const Regole = lazy(() => import("./pages/Regole"));
 const Rimozione = lazy(() => import("./pages/Rimozione"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const Anticamera = lazy(() => import("./pages/admin/Anticamera"));
+const OfferingsPending = lazy(() => import("./pages/admin/OfferingsPending"));
+const OfferingsApproved = lazy(() => import("./pages/admin/OfferingsApproved"));
+const OfferingsHidden = lazy(() => import("./pages/admin/OfferingsHidden"));
+const OfferingsRejected = lazy(() => import("./pages/admin/OfferingsRejected"));
 const AdminOfferingDetail = lazy(
   () => import("./pages/admin/AdminOfferingDetail"),
 );
+const Iniziative = lazy(() => import("./pages/admin/Iniziative"));
+const Messages = lazy(() => import("./pages/admin/Messages"));
+const PagesEditor = lazy(() => import("./pages/admin/PagesEditor"));
+const PratoEditor = lazy(() => import("./pages/admin/PratoEditor"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Galleria = lazy(() => import("./pages/Galleria"));
 const Grazie = lazy(() => import("./pages/Grazie"));
@@ -144,6 +151,7 @@ const AnimatedRoutes = () => {
                 </RouteBoundary>
               }
             />
+            {/* Admin auth — redirect to offerings if already logged in */}
             <Route
               path="/admin"
               element={
@@ -152,43 +160,95 @@ const AnimatedRoutes = () => {
                 </RouteBoundary>
               }
             />
+            {/* Legacy redirects */}
             <Route
               path="/admin/anticamera"
-              element={
-                <RouteBoundary>
-                  <Anticamera statusFilter="pending" />
-                </RouteBoundary>
-              }
+              element={<Navigate to="/admin/offerings/pending" replace />}
             />
             <Route
               path="/admin/archivio"
-              element={
-                <RouteBoundary>
-                  <Anticamera statusFilter="approved" />
-                </RouteBoundary>
-              }
+              element={<Navigate to="/admin/offerings/approved" replace />}
             />
             <Route
               path="/admin/nascosti"
+              element={<Navigate to="/admin/offerings/hidden" replace />}
+            />
+            <Route
+              path="/admin/rifiutati"
+              element={<Navigate to="/admin/offerings/rejected" replace />}
+            />
+            {/* Admin offerings */}
+            <Route
+              path="/admin/offerings/pending"
               element={
                 <RouteBoundary>
-                  <Anticamera statusFilter="hidden" />
+                  <OfferingsPending />
                 </RouteBoundary>
               }
             />
             <Route
-              path="/admin/rifiutati"
+              path="/admin/offerings/approved"
               element={
                 <RouteBoundary>
-                  <Anticamera statusFilter="rejected" />
+                  <OfferingsApproved />
                 </RouteBoundary>
               }
             />
+            <Route
+              path="/admin/offerings/hidden"
+              element={
+                <RouteBoundary>
+                  <OfferingsHidden />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/offerings/rejected"
+              element={
+                <RouteBoundary>
+                  <OfferingsRejected />
+                </RouteBoundary>
+              }
+            />
+            {/* Admin offering detail */}
             <Route
               path="/admin/o/:id"
               element={
                 <RouteBoundary>
                   <AdminOfferingDetail />
+                </RouteBoundary>
+              }
+            />
+            {/* Admin sections */}
+            <Route
+              path="/admin/iniziative"
+              element={
+                <RouteBoundary>
+                  <Iniziative />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/pagine"
+              element={
+                <RouteBoundary>
+                  <PagesEditor />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/prato"
+              element={
+                <RouteBoundary>
+                  <PratoEditor />
+                </RouteBoundary>
+              }
+            />
+            <Route
+              path="/admin/messaggi"
+              element={
+                <RouteBoundary>
+                  <Messages />
                 </RouteBoundary>
               }
             />
