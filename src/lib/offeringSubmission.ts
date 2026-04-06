@@ -164,7 +164,7 @@ export const canProceedSubmissionStep = (
 
 export async function submitOfferingSubmission(
   draft: OfferingSubmissionDraft,
-  client: OfferingSubmissionClient = supabase,
+  client: OfferingSubmissionClient = supabase as unknown as OfferingSubmissionClient,
 ): Promise<OfferingSubmissionResult> {
   if (!draft.mediaType) {
     return {
