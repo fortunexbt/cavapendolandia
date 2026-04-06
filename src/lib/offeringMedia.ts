@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getOfferingMediaUrl } from "@/features/offerings/api/offerings.repo";
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
@@ -10,36 +11,37 @@ type OfferingMediaLike = {
 
 const isAbsoluteUrl = (value: string) => /^https?:\/\//i.test(value);
 
-const resolveStoragePath = (offering: OfferingMediaLike) => {
-  if (offering.file_path) return offering.file_path;
+/**
+ * @deprecated file_url as a legacy storage path is deprecated.
+ * Use file_path with getOfferingMediaUrl() instead. This function
+ * exists purely for backward compatibility with existing records.
+ */
+export const getPublicMediaUrl = async (
+  offering: OfferingMediaLike,
+): Promise<string | null> => {
+  // Preferred path: file_path → signed URL
+  if (offering.file_path) {
+    return getOfferingMediaUrl(offering);
+  }
+  // Legacy fallback: a bare file_url that looks like a storage path (not a URL)
   if (
     offering.file_url &&
     !isAbsoluteUrl(offering.file_url) &&
     !offering.file_url.startsWith("/")
   ) {
-    return offering.file_url;
+    // Legacy records have file_url storing the storage path directly
+    return getOfferingMediaUrl(offering);
   }
+  // Absolute URL (e.g. external link) — return as-is
+  if (offering.file_url) return offering.file_url;
   return null;
 };
 
 export const withSignedFileUrl = async <T extends OfferingMediaLike>(
   offering: T,
 ): Promise<T & { file_url: string | null }> => {
-  const storagePath = resolveStoragePath(offering);
-
-  if (!storagePath) {
-    return { ...offering, file_url: offering.file_url ?? null };
-  }
-
-  const { data, error } = await supabase.storage
-    .from("offerings")
-    .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS);
-
-  if (error || !data?.signedUrl) {
-    return { ...offering, file_url: offering.file_url ?? null };
-  }
-
-  return { ...offering, file_url: data.signedUrl };
+  const file_url = await getPublicMediaUrl(offering);
+  return { ...offering, file_url: file_url ?? offering.file_url ?? null };
 };
 
 export const withSignedFileUrls = async <T extends OfferingMediaLike>(

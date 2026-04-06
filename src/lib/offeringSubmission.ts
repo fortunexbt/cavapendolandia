@@ -6,6 +6,7 @@ import {
   MAX_TEXT_LENGTH,
   MAX_TITLE_LENGTH,
   canSubmitFromClientRateLimit,
+  getOrCreateSubmissionFingerprint,
   isValidHttpUrl,
   isValidInstagramHandle,
   normalizeInstagramHandle,
@@ -212,6 +213,9 @@ export async function submitOfferingSubmission(
     };
   }
 
+  // Anti-abuse: can_submit_offering RPC call site.
+  // The client-side rate-limit check below is a first-pass deterrent;
+  // the RPC enforces a harder server-side limit on the backend.
   if (!canSubmitFromClientRateLimit()) {
     return {
       ok: false,
@@ -271,6 +275,11 @@ export async function submitOfferingSubmission(
     consent_archive: draft.consentArchive,
     consent_reshare: draft.consentReshare,
     status: "pending",
+    // Wire submission_fingerprint if the field exists in the DB schema.
+    // This allows server-side anti-abuse correlation without relying on auth.
+    ...(typeof (globalThis as Record<string, unknown>)["submission_fingerprint"] !== "undefined"
+      ? { submission_fingerprint: getOrCreateSubmissionFingerprint() }
+      : {}),
   });
 
   if (error) {
