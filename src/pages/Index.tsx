@@ -6,6 +6,7 @@ import MinimalFooter from "@/components/MinimalFooter";
 import InitiativeHint from "@/components/InitiativeHint";
 import CavapendoWorld from "@/components/CavapendoWorld";
 import { SeahorseIcon } from "@/components/shared/SeahorseIcon";
+import { useActiveInitiative } from "@/hooks/useActiveInitiative";
 
 const MYSTICAL_OPENING = `I Cavapendoli scendono a spirale, quasi veloci.
 Prima erano ovunque, nei magazzini del mondo impalpabile.
@@ -48,6 +49,31 @@ const itemVariants: Variants = {
     y: 0,
     transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
+};
+
+const InitiativeBanner = () => {
+  const { data: initiative, isLoading } = useActiveInitiative();
+
+  if (isLoading || !initiative) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="relative mx-auto mt-6 max-w-xl rounded-2xl border border-accent/25 bg-accent/8 px-6 py-4 text-center backdrop-blur-sm"
+    >
+      <p className="font-mono-light text-[0.58rem] uppercase tracking-[0.18em] text-accent mb-1.5">
+        Un pensiero
+      </p>
+      <p className="text-sm italic text-foreground/88 leading-relaxed">
+        {initiative.prompt}
+      </p>
+      {initiative.details && (
+        <p className="mt-2 text-xs text-muted-foreground">{initiative.details}</p>
+      )}
+    </motion.div>
+  );
 };
 
 const Index = () => {
@@ -101,6 +127,8 @@ const Index = () => {
               dove i cavapendoli si fanno vedere solo per poco.
             </p>
           </motion.div>
+
+          <InitiativeBanner />
 
           <motion.div variants={itemVariants} className="relative mt-8">
             <div className="absolute -left-3 bottom-0 top-0 w-px bg-gradient-to-b from-transparent via-foreground/18 to-transparent" />

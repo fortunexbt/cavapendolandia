@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import CavapendoGalleryShell from "@/components/CavapendoGalleryShell";
+import GalleryHud from "@/components/GalleryHud";
 
 const Galleria = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Galleria = () => {
       <div className="pointer-events-none absolute inset-x-8 bottom-6 h-px bg-gradient-to-r from-transparent via-[#4f3b2d]/45 to-transparent" />
       <div className="pointer-events-none absolute inset-y-10 left-5 w-px bg-gradient-to-b from-transparent via-[#5a4737]/35 to-transparent" />
       <div className="pointer-events-none absolute inset-y-10 right-5 w-px bg-gradient-to-b from-transparent via-[#5a4737]/35 to-transparent" />
+      <GalleryHud />
       <main className="relative h-dvh w-full">
         <CavapendoGalleryShell
           className="h-full w-full"
