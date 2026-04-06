@@ -6,10 +6,8 @@ import {
   useState,
   useCallback,
 } from "react";
-import { Canvas } from "@react-three/fiber";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import * as THREE from "three";
 import {
   CREATURES,
@@ -22,7 +20,6 @@ import {
   UP_VECTOR,
 } from "@/components/cavapendo-gallery/config";
 import { useAmbientAudio } from "@/components/cavapendo-gallery/audio";
-import { GalleryScene } from "@/components/cavapendo-gallery/gallery-scene";
 import {
   RenderProfileGuardian,
   VirtualJoystick,
@@ -48,20 +45,18 @@ import {
   MeadowScene as PremiumMeadowScene,
 } from "@/components/cavapendo-gallery/meadow-scene";
 import {
-  AMBIENCE_MUTED_STORAGE_KEY,
-  AMBIENCE_VOLUME_STORAGE_KEY,
-  DEFAULT_JOYSTICK_RADIUS,
-  DEFAULT_MOUSE_SENSITIVITY,
-  DEFAULT_TOUCH_SENSITIVITY,
-  GUIDE_COMPLETED_STORAGE_KEY,
-  HUD_MODE_STORAGE_KEY,
-  INVERT_LOOK_STORAGE_KEY,
-  JOYSTICK_RADIUS_STORAGE_KEY,
-  MOBILE_LANDSCAPE_HINT_STORAGE_KEY,
-  MOUSE_SENSITIVITY_STORAGE_KEY,
-  REDUCED_CAMERA_MOTION_STORAGE_KEY,
-  RENDER_PROFILE_STORAGE_KEY,
-  TOUCH_SENSITIVITY_STORAGE_KEY,
+  type ControlProfile,
+  type GuideStep,
+  type HudMode,
+  type MeadowSector,
+  type MobileControlsLayout,
+  type MobileOrientationState,
+  type QualityTier,
+  type RenderProfile,
+  type RenderProfilePreference,
+  type ResolvedRenderProfile,
+  type ViewportMetrics,
+  type WorldZone,
   getAutoDowngradeFloor,
   getControlProfile,
   getDeviceClass,
@@ -74,17 +69,19 @@ import {
   usePersistedPreference,
   useResolvedRenderProfile,
   useViewportMetrics,
-  type ControlProfile,
-  type GuideStep,
-  type HudMode,
-  type MobileControlsLayout,
-  type MobileOrientationState,
-  type QualityTier,
-  type RenderProfile,
-  type RenderProfilePreference,
-  type ResolvedRenderProfile,
-  type ViewportMetrics,
-  type WorldZone,
+  GUIDE_COMPLETED_STORAGE_KEY,
+  MOBILE_LANDSCAPE_HINT_STORAGE_KEY,
+  AMBIENCE_MUTED_STORAGE_KEY,
+  AMBIENCE_VOLUME_STORAGE_KEY,
+  DEFAULT_JOYSTICK_RADIUS,
+  DEFAULT_MOUSE_SENSITIVITY,
+  DEFAULT_TOUCH_SENSITIVITY,
+  HUD_MODE_STORAGE_KEY,
+  INVERT_LOOK_STORAGE_KEY,
+  JOYSTICK_RADIUS_STORAGE_KEY,
+  MOUSE_SENSITIVITY_STORAGE_KEY,
+  REDUCED_CAMERA_MOTION_STORAGE_KEY,
+  RENDER_PROFILE_STORAGE_KEY,
 } from "@/components/cavapendo-gallery/runtime";
 import {
   type DepositSite,
@@ -107,9 +104,12 @@ import {
   MEADOW_SKYLINE_LANDMARKS,
   MEADOW_SPAWN,
   type MeadowCreatureDefinition,
-  type MeadowSector,
 } from "@/lib/meadowWorld";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
+import { useGalleryController } from "@/features/gallery/hooks/useGalleryController";
+import { useGalleryData } from "@/features/gallery/hooks/useGalleryData";
+import { GalleryHud } from "@/features/gallery/components/GalleryHud";
+import { GalleryCanvas } from "@/features/gallery/components/GalleryCanvas";
 
 type FullscreenDocument = Document & {
   webkitExitFullscreen?: () => Promise<void> | void;
@@ -240,7 +240,6 @@ function CavapendoGallery({
     },
   });
 
-  const [zone, setZone] = useState<WorldZone>("gallery");
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(
     null,
   );
@@ -417,6 +416,8 @@ function CavapendoGallery({
   const showOrientationOverlay =
     isMobile && mobileOrientationState === "portrait_hint";
 
+  const [zone, setZone] = useState<WorldZone>("gallery");
+
   useEffect(() => {
     setActiveRenderProfileId(resolvedPreferredProfile.id);
   }, [resolvedPreferredProfile.id]);
@@ -517,24 +518,7 @@ function CavapendoGallery({
       Boolean(ritualSiteId) ||
       Boolean(activeDepositId));
 
-  const { data: liveOfferings } = useQuery({
-    queryKey: ["gallery-offerings"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("offerings")
-        .select(
-          "id, title, note, text_content, media_type, file_url, link_url, author_name, author_type, created_at, approved_at",
-        )
-        .eq("status", "approved")
-        .order("approved_at", { ascending: false })
-        .limit(24);
-
-      if (error) throw error;
-      if (!data?.length) return null;
-      return withSignedFileUrls(data);
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data: liveOfferings } = useGalleryData({ quality });
 
   const offerings = useMemo(() => {
     const source =
@@ -793,7 +777,8 @@ function CavapendoGallery({
     const toggleFullscreen = async () => {
       if (
         fullscreenElement &&
-        (fullscreenElement === wrapper || fullscreenElement.contains(wrapper))
+        (fullscreenElement === wrapper ||
+          fullscreenElement.contains(wrapper))
       ) {
         await exitElementFullscreen(ownerDocument);
         screen.orientation?.unlock?.();
@@ -881,9 +866,9 @@ function CavapendoGallery({
     activeDepositId,
     handleToggleFullscreen,
     ritualSiteId,
-    settingsOpen,
     selectedCreatureId,
     selectedOffering,
+    settingsOpen,
   ]);
 
   useEffect(() => {
@@ -935,8 +920,9 @@ function CavapendoGallery({
     };
   }, [
     activeDepositId,
-    ambienceState,
     activeRenderProfile.id,
+    ambienceState,
+    autoDowngradeFloor,
     controlProfile.mouseLookSensitivity,
     controlProfile.touchLookSensitivity,
     currentSector,
@@ -953,11 +939,9 @@ function CavapendoGallery({
     playerPromptLabel,
     profileShiftLocked,
     quality,
-    autoDowngradeFloor,
     renderProfilePreference,
     renderProfileReason,
     renderProfileSource,
-    resolvedPreferredProfile.id,
     ritualSiteId,
     selectedCreatureId,
     selectedOffering,
@@ -968,6 +952,7 @@ function CavapendoGallery({
     viewport.fullscreen,
     viewport.height,
     viewport.width,
+    resolvedPreferredProfile.id,
     zone,
   ]);
 
@@ -1135,6 +1120,20 @@ function CavapendoGallery({
     };
   }, [depositCounts]);
 
+  const handleJoystickInput = useCallback(
+    (axis: "move" | "look", x: number, y: number) => {
+      if (axis === "move") {
+        joystickRef.current.moveX = x;
+        joystickRef.current.moveZ = y;
+      } else {
+        joystickRef.current.lookX = x;
+        joystickRef.current.lookY = y;
+      }
+      handleActivity();
+    },
+    [handleActivity],
+  );
+
   return (
     <div
       ref={wrapperRef}
@@ -1150,348 +1149,148 @@ function CavapendoGallery({
       onPointerDown={handleActivity}
     >
       <div className="absolute inset-0">
-        <Canvas
-          camera={{ position: [0, EYE_HEIGHT, 8], fov: isMobile ? 62 : 56 }}
-          dpr={activeRenderProfile.dpr}
-          gl={{
-            antialias: activeRenderProfile.antialias,
-            alpha: false,
-            powerPreference: activeRenderProfile.powerPreference,
-            failIfMajorPerformanceCaveat: false,
-          }}
-          style={{
-            width: "100%",
-            height: "100%",
-            background: zone === "gallery" ? "#e2d5c7" : "#d1dfff",
-          }}
-        >
-          {zone === "gallery" ? (
-            <GalleryScene
-              offerings={offerings}
-              renderProfile={activeRenderProfile}
-              onSelectOffering={setSelectedOffering}
-            />
-          ) : (
-            <PremiumMeadowScene
-              renderProfile={activeRenderProfile}
-              depositCounts={depositCounts}
-              onSelectDeposit={(site) => setRitualSiteId(site.id)}
-              onSelectCreature={revealMeadowCreature}
-              creatureRuntimeRef={meadowCreatureRuntimeRef}
-              reactionSiteId={lastDepositSiteId}
-            />
-          )}
-
-          <RenderProfileGuardian
-            profileId={activeRenderProfile.id}
-            deviceClass={deviceClass}
-            allowAutoDowngrade={renderProfilePreference === "auto"}
-            locked={
-              automationProfileLock ||
-              profileShiftLocked ||
-              sceneInterrupted ||
-              guideExpanded ||
-              showOrientationOverlay
-            }
-            onDowngrade={setActiveRenderProfileId}
-          />
-          <WorldController
-            zone={zone}
-            modalOpen={sceneInterrupted}
-            isMobile={isMobile}
-            mouseLookSensitivity={controlProfile.mouseLookSensitivity}
-            touchLookSensitivity={controlProfile.touchLookSensitivity}
-            invertLookFactor={controlProfile.invertLookFactor}
-            reducedCameraMotion={controlProfile.reducedCameraMotion}
-            qualityTier={quality}
-            landmarkDrawDistance={activeRenderProfile.landmarkDrawDistance}
-            viewport={viewport}
-            fullscreen={fullscreen}
-            keysDownRef={keysDownRef}
-            interactRequestedRef={interactRequestedRef}
-            joystickRef={joystickRef}
-            jumpRequestedRef={jumpRequestedRef}
-            onDoorTrigger={handleDoorTrigger}
-            onInteraction={handleInteraction}
-            onActivity={handleActivity}
-            onTriggerProximityChange={setNearbyTriggerId}
-            onDepositProximityChange={setNearbyDepositId}
-            onCreatureProximityChange={setNearbyCreatureIds}
-            onSectorChange={setCurrentSector}
-            onVisibleLandmarksChange={setVisibleLandmarkIds}
-            onHorizonLandmarksChange={setHorizonLandmarkIds}
-            registerStep={(step) => {
-              stepRef.current = step;
-              if (!stepReadyRef.current) {
-                stepReadyRef.current = true;
-                stepWaitersRef.current.splice(0).forEach((resolve) => resolve());
-              }
-            }}
-            debugPoseRef={meadowDebugPoseRef}
-            creatureRuntimeRef={meadowCreatureRuntimeRef}
-            snapshotRef={snapshotRef}
-          />
-        </Canvas>
+        <GalleryCanvas
+          zone={zone}
+          isMobile={isMobile}
+          offerings={offerings}
+          renderProfile={activeRenderProfile}
+          depositCounts={depositCounts}
+          activeRenderProfileId={activeRenderProfile.id}
+          deviceClass={deviceClass}
+          renderProfilePreference={renderProfilePreference}
+          sceneInterrupted={sceneInterrupted}
+          guideExpanded={guideExpanded}
+          showOrientationOverlay={showOrientationOverlay}
+          mobileControlsLandscape={mobileControlsLandscape}
+          controlProfile={controlProfile}
+          viewport={viewport}
+          fullscreen={fullscreen}
+          keysDownRef={keysDownRef}
+          interactRequestedRef={interactRequestedRef}
+          joystickRef={joystickRef}
+          jumpRequestedRef={jumpRequestedRef}
+          meadowCreatureRuntimeRef={meadowCreatureRuntimeRef}
+          meadowDebugPoseRef={meadowDebugPoseRef}
+          snapshotRef={snapshotRef as React.MutableRefObject<Record<string, unknown>>}
+          stepRef={stepRef}
+          stepReadyRef={stepReadyRef}
+          stepWaitersRef={stepWaitersRef}
+          onSelectOffering={setSelectedOffering}
+          onSelectDeposit={(site) => setRitualSiteId(site.id)}
+          onSelectCreature={revealMeadowCreature}
+          onDoorTrigger={handleDoorTrigger}
+          onInteraction={handleInteraction}
+          onActivity={handleActivity}
+          onTriggerProximityChange={setNearbyTriggerId}
+          onDepositProximityChange={setNearbyDepositId}
+          onCreatureProximityChange={setNearbyCreatureIds}
+          onSectorChange={setCurrentSector}
+          onVisibleLandmarksChange={setVisibleLandmarkIds}
+          onHorizonLandmarksChange={setHorizonLandmarkIds}
+          onDowngradeProfile={setActiveRenderProfileId}
+          onJoystickInput={handleJoystickInput}
+          nearbyDeposit={nearbyDeposit}
+          ritualSiteId={ritualSiteId}
+          lastDepositSiteId={lastDepositSiteId}
+          mobilePrimaryAction={mobilePrimaryAction}
+          automationProfileLock={automationProfileLock}
+          profileShiftLocked={profileShiftLocked}
+        />
       </div>
+
       <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_center,_rgba(255,248,240,0)_42%,_rgba(11,8,7,0.08)_74%,_rgba(5,4,4,0.28)_100%)]" />
       <div className="pointer-events-none absolute inset-0 z-[1] shadow-[inset_0_0_0_1px_rgba(255,245,232,0.08),inset_0_70px_90px_rgba(0,0,0,0.14),inset_0_-110px_130px_rgba(0,0,0,0.24)]" />
-      <ZoneTransitionOverlay transition={zoneTransition} />
 
-      <AnimatePresence>
-        {showGuideUi &&
-          !isMobile &&
-          !guideHidden &&
-          guideDescriptor &&
-          guideExpanded && (
-          <GuidePanel
-            descriptor={guideDescriptor}
-            expanded={guideExpanded}
-            isMobile={isMobile}
-            onToggleExpanded={() => setGuideExpanded((current) => !current)}
-            onHide={() => setGuideHidden(true)}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showGuidePill &&
-          guideDescriptor &&
-          (guideHidden || !guideExpanded || isMobile) && (
-          <GuideObjectivePill
-            descriptor={guideDescriptor}
-            isMobile={isMobile}
-            onOpen={() => {
-              setGuideHidden(false);
-              setGuideExpanded(!isMobile);
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {hudMode === "player" &&
-      showGuideUi &&
-      (!guideDescriptor || guideHidden || !guideExpanded) ? (
-        <PlayerHud
-          zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
-          sectorLabel={
-            zone === "meadow" ? currentSectorDescriptor?.label || null : null
+      <GalleryHud
+        zone={zone}
+        isMobile={isMobile}
+        hudMode={hudMode}
+        guideStep={guideStep}
+        guideDescriptor={guideDescriptor}
+        guideHidden={guideHidden}
+        guideExpanded={guideExpanded}
+        currentSectorDescriptor={currentSectorDescriptor}
+        visibleLandmarkLabel={visibleLandmarkLabel}
+        ambienceLabel={ambienceLabel}
+        nearbyCreatureDefinitions={nearbyCreatureDefinitions}
+        nearbyDeposit={nearbyDeposit}
+        nearbyTriggerLabel={nearbyTriggerLabel}
+        mouseSensitivity={mouseSensitivity}
+        touchSensitivity={touchSensitivity}
+        joystickRadius={joystickRadius}
+        playerPromptLabel={playerPromptLabel}
+        modalOpen={modalOpen}
+        settingsOpen={settingsOpen}
+        sceneInterrupted={sceneInterrupted}
+        showOrientationOverlay={showOrientationOverlay}
+        mobileOrientationState={mobileOrientationState}
+        landscapeHintAcknowledged={landscapeHintAcknowledged}
+        guideCompleted={guideCompleted}
+        lastDepositSiteId={lastDepositSiteId}
+        depositCounts={depositCounts}
+        activeDepositId={activeDepositId}
+        ritualSiteId={ritualSiteId}
+        selectedOffering={selectedOffering}
+        selectedCreatureId={selectedCreatureId}
+        activeCreature={activeCreature}
+        activeRitualSite={activeRitualSite}
+        activeDeposit={activeDeposit}
+        ambientCreatureCue={ambientCreatureCue}
+        showGuidePill={showGuidePill}
+        showGuideUi={showGuideUi}
+        zoneTransition={zoneTransition}
+        activeRenderProfile={activeRenderProfile}
+        renderProfilePreference={renderProfilePreference}
+        ambienceVolume={ambienceVolume}
+        ambienceMuted={ambienceMuted}
+        invertLook={invertLook}
+        reducedCameraMotion={reducedCameraMotion}
+        isFullscreen={fullscreen}
+        onToggleFullscreen={handleToggleFullscreen}
+        onOpenGuide={() => {
+          setGuideHidden(false);
+          setGuideExpanded(true);
+        }}
+        onHideGuide={() => setGuideHidden(true)}
+        onToggleGuideExpanded={() => setGuideExpanded((current) => !current)}
+        onDismissLandscapeHint={() => setLandscapeHintAcknowledged(true)}
+        onSetRitualSiteId={setRitualSiteId}
+        onSetActiveDepositId={setActiveDepositId}
+        onSetSelectedOffering={setSelectedOffering}
+        onSetSelectedCreatureId={setSelectedCreatureId}
+        onDepositSubmitted={(siteId) => {
+          setDepositCounts((current) => ({
+            ...current,
+            [siteId]: (current[siteId] || 0) + 1,
+          }));
+          setLastDepositSiteId(siteId);
+          const reactedCreature = MEADOW_CREATURES.find(
+            (creature) => creature.reactsToDepositId === siteId,
+          );
+          if (reactedCreature) {
+            setAmbientCreatureCue({
+              id: reactedCreature.id,
+              label: reactedCreature.label,
+              caption:
+                "Il luogo trattiene un'eco per qualche istante: qualcosa, li vicino, ha sentito la traccia lasciata.",
+            });
           }
-          objectiveLabel={null}
-          promptLabel={!modalOpen ? playerPromptLabel : null}
-          landmarkLabel={zone === "gallery" ? visibleLandmarkLabel : null}
-          ambienceLabel={ambienceLabel}
-          creatureCount={nearbyCreatureDefinitions.length}
-          depositReady={Boolean(nearbyDeposit)}
-          isMobile={isMobile}
-          showGuideButton={guideHidden}
-          onOpenGuide={() => {
-            setGuideHidden(false);
-            setGuideExpanded(true);
-          }}
-        />
-      ) : hudMode === "debug" ? (
-        <DebugHud
-          zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
-          sectorLabel={currentSectorDescriptor?.label || null}
-          renderProfile={activeRenderProfile.label}
-          ambienceLabel={ambienceLabel}
-          sensitivitySummary={`Mouse ${mouseSensitivity.toFixed(2)} • touch ${touchSensitivity.toFixed(2)} • joy ${Math.round(joystickRadius)}px`}
-          nearbyTriggerLabel={
-            nearbyTriggerLabel ? `Vicino a ${nearbyTriggerLabel}` : null
-          }
-          nearbyCreatureCount={nearbyCreatureDefinitions.length}
-        />
-      ) : null}
-
-      {!showOrientationOverlay && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute right-4 top-4 z-20 flex items-center gap-2"
-        >
-          <button
-            onClick={() => setSettingsOpen((open) => !open)}
-            className="pointer-events-auto rounded-full border border-[#7d6857] bg-[#17110f] px-3 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#fff7ea] shadow-[0_18px_46px_rgba(0,0,0,0.34)] hover:bg-[#281c17]"
-          >
-            Impostazioni
-          </button>
-          {!isMobile && (
-            <Link
-              to="/offri"
-              className="pointer-events-auto rounded-full border border-[#f2e4d3] bg-[#f7efe4] px-4 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#221710] shadow-[0_18px_46px_rgba(0,0,0,0.24)]"
-            >
-              + Offri
-            </Link>
-          )}
-        </motion.div>
-      )}
-
-      {settingsOpen && (
-        <SettingsPanel
-          renderProfilePreference={renderProfilePreference}
-          onRenderProfilePreferenceChange={setRenderProfilePreference}
-          resolvedProfile={activeRenderProfile}
-          mouseSensitivity={mouseSensitivity}
-          touchSensitivity={touchSensitivity}
-          joystickRadius={joystickRadius}
-          invertLook={invertLook}
-          reducedCameraMotion={reducedCameraMotion}
-          hudMode={hudMode}
-          isMobile={isMobile}
-          onMouseSensitivityChange={setMouseSensitivity}
-          onTouchSensitivityChange={setTouchSensitivity}
-          onJoystickRadiusChange={setJoystickRadius}
-          onToggleInvertLook={() => setInvertLook((current) => !current)}
-          onToggleReducedCameraMotion={() =>
-            setReducedCameraMotion((current) => !current)
-          }
-          onHudModeChange={setHudMode}
-          ambienceVolume={ambienceVolume}
-          ambienceMuted={ambienceMuted}
-          onAmbienceVolumeChange={setAmbienceVolume}
-          onToggleAmbienceMuted={() => setAmbienceMuted((current) => !current)}
-          fullscreen={fullscreen}
-          onToggleFullscreen={handleToggleFullscreen}
-          onOpenGuide={() => {
-            setGuideHidden(false);
-            setGuideExpanded(true);
-          }}
-        />
-      )}
-
-      <MobileOrientationOverlay
-        orientationState={mobileOrientationState}
-        onDismiss={() => setLandscapeHintAcknowledged(true)}
+        }}
+        onRenderProfilePreferenceChange={setRenderProfilePreference}
+        onMouseSensitivityChange={setMouseSensitivity}
+        onTouchSensitivityChange={setTouchSensitivity}
+        onJoystickRadiusChange={setJoystickRadius}
+        onToggleInvertLook={() => setInvertLook((current) => !current)}
+        onToggleReducedCameraMotion={() =>
+          setReducedCameraMotion((current) => !current)
+        }
+        onHudModeChange={setHudMode}
+        onAmbienceVolumeChange={setAmbienceVolume}
+        onToggleAmbienceMuted={() => setAmbienceMuted((current) => !current)}
+        onSetSettingsOpen={setSettingsOpen}
       />
 
-      {!isMobile && !sceneInterrupted && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <div className="h-1.5 w-1.5 rounded-full bg-foreground/45" />
-        </div>
-      )}
-
-      {isMobile && !sceneInterrupted && (
-        <div className="pointer-events-none absolute inset-0 z-20">
-          <VirtualJoystick
-            label="PASSI"
-            hint={mobileControlsLandscape ? "movimento" : "muovi"}
-            deadZone={0.08}
-            curveExponent={1.15}
-            radius={controlProfile.moveJoystickRadius}
-            className="left-0"
-            style={{
-              left: "calc(env(safe-area-inset-left, 0px) + 0.9rem)",
-              bottom: mobileControlsLandscape
-                ? "calc(env(safe-area-inset-bottom, 0px) + 1rem)"
-                : "calc(env(safe-area-inset-bottom, 0px) + 0.85rem)",
-            }}
-            onInput={(x, y) => {
-              joystickRef.current.moveX = x;
-              joystickRef.current.moveZ = y;
-              handleActivity();
-            }}
-          />
-          <VirtualJoystick
-            label="CAMERA"
-            hint={
-              mobileControlsLandscape
-                ? `sguardo ${controlProfile.touchLookSensitivity.toFixed(2)}`
-                : "sguardo"
-            }
-            deadZone={0.14}
-            curveExponent={1.75}
-            radius={controlProfile.lookJoystickRadius}
-            className="right-0"
-            style={{
-              right: "calc(env(safe-area-inset-right, 0px) + 0.9rem)",
-              bottom: mobileControlsLandscape
-                ? "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)"
-                : "calc(env(safe-area-inset-bottom, 0px) + 5.85rem)",
-            }}
-            onInput={(x, y) => {
-              joystickRef.current.lookX = x;
-              joystickRef.current.lookY = y;
-              handleActivity();
-            }}
-          />
-
-          <div
-            className="absolute right-0 flex flex-col items-end gap-3"
-            style={{
-              right: "calc(env(safe-area-inset-right, 0px) + 1rem)",
-              bottom: mobileControlsLandscape
-                ? "calc(env(safe-area-inset-bottom, 0px) + 1.5rem)"
-                : "calc(env(safe-area-inset-bottom, 0px) + 13.25rem)",
-            }}
-          >
-            {mobilePrimaryAction && (
-              <button
-                onClick={() => {
-                  if (nearbyDeposit) {
-                    setRitualSiteId(nearbyDeposit.id);
-                  }
-                  handleActivity();
-                }}
-                className="pointer-events-auto min-w-[8.8rem] rounded-[1.3rem] border border-[#d1c0ab] bg-[#f3eadf] px-4 py-3 text-left text-[#241a14] shadow-[0_18px_42px_rgba(0,0,0,0.24)]"
-              >
-                <div className="text-[0.62rem] uppercase tracking-[0.18em] text-[#6b5544]">
-                  Azione
-                </div>
-                <div className="mt-1 text-sm font-medium uppercase tracking-[0.1em]">
-                  {mobilePrimaryAction.label}
-                </div>
-                <div className="mt-0.5 text-[0.72rem] text-[#4d3a2e]">
-                  {mobilePrimaryAction.detail}
-                </div>
-              </button>
-            )}
-            <button
-              onPointerDown={() => {
-                jumpRequestedRef.current = true;
-                handleActivity();
-              }}
-              className="pointer-events-auto rounded-full border border-white/10 bg-[#17110f]/88 px-5 py-3 text-[0.68rem] uppercase tracking-[0.18em] text-[#f7eee3] shadow-[0_18px_42px_rgba(0,0,0,0.3)] backdrop-blur-xl"
-            >
-              Salta
-            </button>
-          </div>
-
-          <MobileActionLink />
-        </div>
-      )}
-
-      <AnimatePresence>
-        {lastDepositSiteId && (
-          <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 rounded-full border border-[#816d5b] bg-[#130d0c]/94 px-4 py-2 text-sm italic text-[#fff3e6] backdrop-blur-xl"
-          >
-            Una cavapendolata è stata lasciata in{" "}
-            {DEPOSIT_SITES.find((site) => site.id === lastDepositSiteId)?.label}
-            .
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {!modalOpen && ambientCreatureCue && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            className="pointer-events-none absolute bottom-32 left-1/2 z-20 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 rounded-3xl border border-[#816c58] bg-[#130d0c]/95 px-5 py-4 text-[#fff6eb] shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl"
-          >
-            <div className="font-mono-light text-[0.62rem] uppercase tracking-[0.18em] text-[#ebd0b3]">
-              {ambientCreatureCue.label}
-            </div>
-            <div className="mt-1 text-sm leading-relaxed text-[#fff1e0]">
-              {ambientCreatureCue.caption}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isMobile && !sceneInterrupted && <MobileActionLink />}
 
       <OfferingModal
         offering={selectedOffering}
