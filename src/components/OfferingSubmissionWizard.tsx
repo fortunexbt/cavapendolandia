@@ -62,8 +62,8 @@ const OfferingSubmissionWizard = ({
     setSubmitting(false);
 
     if (!result.ok) {
-      if (result.reason !== "honeypot") {
-        toast.error(result.message);
+      if ("reason" in result && result.reason !== "honeypot") {
+        toast.error("message" in result ? result.message : "Errore durante l'invio.");
       }
       return;
     }
