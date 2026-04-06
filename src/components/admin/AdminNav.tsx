@@ -40,4 +40,4 @@ const AdminNav = ({ className }: AdminNavProps) => {
   );
 };
 
-export { AdminNav, ADMIN_NAV_ITEMS };
+export { AdminNav };

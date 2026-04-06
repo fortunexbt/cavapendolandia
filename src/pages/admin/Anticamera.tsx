@@ -12,6 +12,7 @@ import AdminThemeToggle from "@/components/admin/AdminThemeToggle";
 import AnticameraOfferingRow from "@/components/admin/AnticameraOfferingRow";
 import IniziativePanel from "@/components/admin/IniziativePanel";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { AdminShell } from "@/components/admin/AdminShell";
 
 type StatusFilter = "pending" | "approved" | "rejected" | "hidden";
 type MediaFilter = "all" | "image" | "video" | "audio" | "text" | "pdf" | "link";
@@ -46,7 +47,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   const queryClient = useQueryClient();
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  
+
 
   const DEMO_OFFERINGS: AdminOffering[] = [
     {
@@ -238,119 +239,98 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,hsl(var(--trace)/0.45),transparent_35%),radial-gradient(circle_at_bottom_right,hsl(var(--whisper)/0.22),transparent_38%)]" />
+    <AdminShell rightContent={<AdminThemeToggle mode={mode} onChange={setThemeMode} />}>
+      <div className="mb-4 flex flex-wrap items-center gap-4 md:gap-6">
+        {STATUS_TABS.map((tab) => (
+          <Link
+            key={tab.value}
+            to={tab.path}
+            className={`font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 ${
+              statusFilter === tab.value
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+            {statusCounts && statusCounts[tab.value] > 0 && (
+              <Badge variant={tab.value === "pending" ? "default" : "secondary"} className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
+                {statusCounts[tab.value]}
+              </Badge>
+            )}
+          </Link>
+        ))}
+      </div>
 
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 px-4 py-4 backdrop-blur md:px-6">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap items-center gap-4 md:gap-6">
-            <Link to="/" className="font-mono-light text-xs text-muted-foreground hover:text-foreground">
-              ← Sito
-            </Link>
-            {STATUS_TABS.map((tab) => (
-              <Link
-                key={tab.value}
-                to={tab.path}
-                className={`font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 ${
-                  statusFilter === tab.value
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+      <section className="mb-6 grid gap-4 md:grid-cols-[2fr_1fr]">
+        <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-sm backdrop-blur">
+          <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
+            Moderazione live
+          </p>
+          <h1 className="mt-2 text-3xl leading-tight md:text-4xl">Anticamera curatoriale</h1>
+          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+            Filtra, scorri e modera velocemente: ogni cavapendolata può essere approvata, rifiutata o nascosta in un click.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {MEDIA_FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setMediaFilter(f)}
+                className={`rounded-full border px-3 py-1 text-[0.62rem] uppercase tracking-[0.12em] font-mono-light ${
+                  mediaFilter === f
+                    ? "border-foreground bg-foreground text-primary-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {tab.label}
-                {statusCounts && statusCounts[tab.value] > 0 && (
-                  <Badge variant={tab.value === "pending" ? "default" : "secondary"} className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
-                    {statusCounts[tab.value]}
-                  </Badge>
-                )}
-              </Link>
+                {f === "all" ? "Tutti" : f}
+              </button>
             ))}
           </div>
-
-          <div className="flex items-center gap-3">
-            <AdminThemeToggle mode={mode} onChange={setThemeMode} />
-            <button
-              onClick={signOut}
-              className="rounded-full border border-border px-4 py-2 font-mono-light text-[0.62rem] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
-            >
-              Esci
-            </button>
-          </div>
         </div>
-      </header>
 
-      <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <section className="mb-6 grid gap-4 md:grid-cols-[2fr_1fr]">
-          <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-sm backdrop-blur">
-            <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
-              Moderazione live
-            </p>
-            <h1 className="mt-2 text-3xl leading-tight md:text-4xl">Anticamera curatoriale</h1>
-            <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-              Filtra, scorri e modera velocemente: ogni cavapendolata può essere approvata, rifiutata o nascosta in un click.
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              {MEDIA_FILTERS.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setMediaFilter(f)}
-                  className={`rounded-full border px-3 py-1 text-[0.62rem] uppercase tracking-[0.12em] font-mono-light ${
-                    mediaFilter === f
-                      ? "border-foreground bg-foreground text-primary-foreground"
-                      : "border-border text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {f === "all" ? "Tutti" : f}
-                </button>
-              ))}
-            </div>
-          </div>
+        <IniziativePanel
+          initiatives={initiatives}
+          loading={initiativesLoading}
+          busy={createInitiative.isPending}
+          onCreate={(payload) => createInitiative.mutate(payload)}
+          onToggle={(id, isActive) => toggleInitiative.mutate({ id, isActive })}
+          onDelete={(id) => deleteInitiative.mutate(id)}
+        />
+      </section>
 
-          <IniziativePanel
-            initiatives={initiatives}
-            loading={initiativesLoading}
-            busy={createInitiative.isPending}
-            onCreate={(payload) => createInitiative.mutate(payload)}
-            onToggle={(id, isActive) => toggleInitiative.mutate({ id, isActive })}
-            onDelete={(id) => deleteInitiative.mutate(id)}
+      <section className="rounded-2xl border border-border bg-card/70 p-4 shadow-sm md:p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <Input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Cerca titolo, nota o firma"
+            className="max-w-sm border-input bg-background"
           />
-        </section>
+          <p className="font-mono-light text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
+            {filteredOfferings.length} risultati
+          </p>
+        </div>
 
-        <section className="rounded-2xl border border-border bg-card/70 p-4 shadow-sm md:p-5">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <Input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Cerca titolo, nota o firma"
-              className="max-w-sm border-input bg-background"
-            />
-            <p className="font-mono-light text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-              {filteredOfferings.length} risultati
-            </p>
+        {isLoading ? (
+          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Carico cavapendolate…</p>
+        ) : filteredOfferings.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Nessuna cavapendolata in questa vista.</p>
+        ) : (
+          <div className="space-y-3">
+            {filteredOfferings.map((offering) => (
+              <AnticameraOfferingRow
+                key={offering.id}
+                offering={offering}
+                statusFilter={statusFilter}
+                loading={updateStatus.isPending}
+                onModerate={(offeringId, status) =>
+                  updateStatus.mutate({ id: offeringId, status })
+                }
+              />
+            ))}
           </div>
-
-          {isLoading ? (
-            <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Carico cavapendolate…</p>
-          ) : filteredOfferings.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Nessuna cavapendolata in questa vista.</p>
-          ) : (
-            <div className="space-y-3">
-              {filteredOfferings.map((offering) => (
-                <AnticameraOfferingRow
-                  key={offering.id}
-                  offering={offering}
-                  statusFilter={statusFilter}
-                  loading={updateStatus.isPending}
-                  onModerate={(offeringId, status) =>
-                    updateStatus.mutate({ id: offeringId, status })
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
-    </div>
+        )}
+      </section>
+    </AdminShell>
   );
 };
 
