@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import OfferingSubmissionWizard from "@/components/OfferingSubmissionWizard";
 import {
   type DepositSite,
@@ -15,10 +16,11 @@ export function OfferingModal({
   offering: Offering | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const authorDisplay =
     offering?.author_type === "anonymous"
-      ? "Anonimo"
-      : offering?.author_name || "Artista";
+      ? t("gallery.offeringModal.authorAnonymous")
+      : offering?.author_name || t("gallery.offeringModal.authorArtist");
 
   return (
     <AnimatePresence>
@@ -46,7 +48,7 @@ export function OfferingModal({
               ×
             </button>
             <h2 className="mb-4 text-2xl font-serif text-foreground">
-              {offering.title || "Senza titolo"}
+              {offering.title || t("gallery.offeringModal.untitled")}
             </h2>
             {offering.text_content && (
               <p className="mb-4 font-serif text-lg italic leading-relaxed text-foreground/80">
@@ -61,7 +63,7 @@ export function OfferingModal({
             {offering.media_type === "image" && offering.file_url && (
               <img
                 src={offering.file_url}
-                alt={offering.title || "Immagine"}
+                alt={offering.title || t("gallery.offeringModal.imageAlt")}
                 className="mb-4 max-h-[360px] w-full rounded-md bg-muted object-contain"
               />
             )}
@@ -82,7 +84,7 @@ export function OfferingModal({
                 rel="noreferrer"
                 className="mb-4 block text-sm text-foreground underline underline-offset-4"
               >
-                Apri il link in una nuova scheda
+                {t("gallery.offeringModal.openLinkNewTab")}
               </a>
             )}
             {offering.media_type === "pdf" &&
@@ -93,15 +95,15 @@ export function OfferingModal({
                   rel="noreferrer"
                   className="mb-4 block text-sm text-foreground underline underline-offset-4"
                 >
-                  Apri il PDF
+                  {t("gallery.offeringModal.openPdf")}
                 </a>
               )}
             <div className="mt-6 border-t border-border/30 pt-4 text-xs uppercase tracking-[0.14em] text-muted-foreground">
               <p>
-                Di <span className="text-foreground">{authorDisplay}</span>
+                {t("gallery.offeringModal.authorPrefix")} <span className="text-foreground">{authorDisplay}</span>
               </p>
               <p className="mt-1">
-                Inviata:{" "}
+                {t("gallery.offeringModal.sentPrefix")}{" "}
                 {new Date(offering.created_at).toLocaleDateString("it-IT")}
               </p>
               {!offering.id.startsWith("demo-") && (
@@ -110,7 +112,7 @@ export function OfferingModal({
                   className="mt-3 inline-block border border-border/40 px-4 py-1.5 hover:border-foreground/30 hover:text-foreground"
                   onClick={onClose}
                 >
-                  Apri dettaglio →
+                  {t("gallery.offeringModal.openDetail")}
                 </Link>
               )}
             </div>
@@ -181,6 +183,7 @@ export function RitualPrompt({
   onClose: () => void;
   onBeginOffering: () => void;
 }) {
+  const { t } = useTranslation();
   if (!site) return null;
 
   return (

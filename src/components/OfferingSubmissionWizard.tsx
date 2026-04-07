@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -15,14 +16,29 @@ import {
 } from "@/lib/offeringValidation";
 import {
   ACCEPT_MAP,
-  MEDIA_LABELS,
-  STEP_LABELS,
   type AuthorType,
   canProceedSubmissionStep,
   createInitialSubmissionDraft,
   type MediaType,
   submitOfferingSubmission,
 } from "@/lib/offeringSubmission";
+
+const MEDIA_TYPE_KEYS: Record<MediaType, string> = {
+  image: "wizard.mediaTypeImage",
+  video: "wizard.mediaTypeVideo",
+  audio: "wizard.mediaTypeAudio",
+  text: "wizard.mediaTypeText",
+  pdf: "wizard.mediaTypePdf",
+  link: "wizard.mediaTypeLink",
+};
+
+const STEP_KEYS: Record<number, string> = {
+  1: "wizard.stepChoice",
+  2: "wizard.stepDeposit",
+  3: "wizard.stepName",
+  4: "wizard.stepSignature",
+  5: "wizard.stepConsent",
+};
 
 interface OfferingSubmissionWizardProps {
   title: string;
@@ -36,11 +52,13 @@ interface OfferingSubmissionWizardProps {
 const OfferingSubmissionWizard = ({
   title,
   subtitle,
-  submitLabel = "Invia all'Anticamera",
+  submitLabel,
   onCancel,
   onSubmitted,
   renderSuccess,
 }: OfferingSubmissionWizardProps) => {
+  const { t } = useTranslation();
+  const defaultSubmitLabel = t("wizard.submitLabel");
   const [step, setStep] = useState(1);
   const [draft, setDraft] = useState(createInitialSubmissionDraft);
   const [submitting, setSubmitting] = useState(false);
@@ -63,7 +81,7 @@ const OfferingSubmissionWizard = ({
 
     if (!result.ok) {
       if ("reason" in result && result.reason !== "honeypot") {
-        toast.error("message" in result ? result.message : "Errore durante l'invio.");
+        toast.error("message" in result ? result.message : t("wizard.submittingError"));
       }
       return;
     }
@@ -79,9 +97,9 @@ const OfferingSubmissionWizard = ({
           renderSuccess({ resetForm })
         ) : (
           <div className="text-center">
-            <h2 className="text-2xl font-light mb-4">Accolta</h2>
+            <h2 className="text-2xl font-light mb-4">{t("wizard.successTitle")}</h2>
             <p className="text-muted-foreground italic">
-              La tua cavapendolata è in attesa di entrare.
+              {t("wizard.successMessage")}
             </p>
           </div>
         )}
@@ -120,7 +138,7 @@ const OfferingSubmissionWizard = ({
           ))}
         </div>
         <p className="font-mono-light text-[0.6rem] uppercase tracking-[0.15em] text-muted-foreground/60">
-          {step} — {STEP_LABELS[step]}
+          {step} — {t(STEP_KEYS[step])}
         </p>
       </div>
 
@@ -136,10 +154,10 @@ const OfferingSubmissionWizard = ({
           {step === 1 && (
             <div className="space-y-4">
               <p className="font-mono-light text-muted-foreground text-center mb-6 uppercase tracking-[0.13em] text-lg">
-                Cosa lasci?
+                {t("wizard.step1Prompt")}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {(Object.keys(MEDIA_LABELS) as MediaType[]).map((type) => (
+                {(Object.keys(MEDIA_TYPE_KEYS) as MediaType[]).map((type) => (
                   <button
                     key={type}
                     onClick={() => {
@@ -152,7 +170,7 @@ const OfferingSubmissionWizard = ({
                         : "border-border hover:border-foreground/30"
                     }`}
                   >
-                    {MEDIA_LABELS[type]}
+                    {t(MEDIA_TYPE_KEYS[type])}
                   </button>
                 ))}
               </div>
@@ -170,7 +188,7 @@ const OfferingSubmissionWizard = ({
                       textContent: e.target.value,
                     }))
                   }
-                  placeholder="Scrivi qui..."
+                  placeholder={t("wizard.step2TextPlaceholder")}
                   className="min-h-[160px] bg-transparent border-border/50 focus:border-foreground/30 font-serif text-lg resize-none p-4"
                   maxLength={MAX_TEXT_LENGTH}
                 />
@@ -184,7 +202,7 @@ const OfferingSubmissionWizard = ({
                       linkUrl: e.target.value,
                     }))
                   }
-                  placeholder="https://..."
+                  placeholder={t("wizard.step2LinkPlaceholder")}
                   className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light text-lg p-4"
                   maxLength={2048}
                 />
@@ -208,22 +226,22 @@ const OfferingSubmissionWizard = ({
                       </span>
                     ) : (
                       <span className="font-mono-light text-lg text-muted-foreground/50">
-                        Scegli un file
+                        {t("wizard.step2FilePlaceholder")}
                       </span>
                     )}
                   </label>
                   <p className="font-mono-light text-muted-foreground/40 text-center">
-                    Max {(MAX_FILE_BYTES / (1024 * 1024)).toFixed(0)} MB.
+                    {t("wizard.step2FileSize", { size: (MAX_FILE_BYTES / (1024 * 1024)).toFixed(0) })}
                   </p>
                 </>
               )}
 
               <div className="pt-3 space-y-1">
                 <p className="font-mono-light text-muted-foreground/55 text-center text-xs">
-                  Piccolo va bene.
+                  {t("wizard.step2HintSmall")}
                 </p>
                 <p className="font-mono-light text-muted-foreground/45 text-center text-xs">
-                  Non deve spiegare tutto.
+                  {t("wizard.step2HintNoExplain")}
                 </p>
               </div>
             </div>
@@ -239,7 +257,7 @@ const OfferingSubmissionWizard = ({
                     title: e.target.value,
                   }))
                 }
-                placeholder="Titolo (opzionale)"
+                placeholder={t("wizard.step3TitlePlaceholder")}
                 className="bg-transparent border-border/50 focus:border-foreground/30 font-serif"
                 maxLength={MAX_TITLE_LENGTH}
               />
@@ -251,7 +269,7 @@ const OfferingSubmissionWizard = ({
                     note: e.target.value,
                   }))
                 }
-                placeholder="Due righe, se vuoi."
+                placeholder={t("wizard.step3NotePlaceholder")}
                 className="min-h-[80px] bg-transparent border-border/50 focus:border-foreground/30 font-serif resize-none"
                 maxLength={MAX_NOTE_LENGTH}
               />
@@ -261,7 +279,7 @@ const OfferingSubmissionWizard = ({
           {step === 4 && (
             <div className="space-y-6">
               <p className="font-mono-light text-muted-foreground text-center mb-4 uppercase tracking-[0.13em] text-xs">
-                Come vuoi apparire?
+                {t("wizard.step4Prompt")}
               </p>
               <RadioGroup
                 value={draft.authorType}
@@ -279,7 +297,7 @@ const OfferingSubmissionWizard = ({
                     htmlFor="anonymous"
                     className="font-mono-light text-sm cursor-pointer"
                   >
-                    Anonimo
+                    {t("wizard.step4AuthorAnonymous")}
                   </Label>
                 </div>
                 <div className="flex items-center gap-3">
@@ -288,7 +306,7 @@ const OfferingSubmissionWizard = ({
                     htmlFor="name"
                     className="font-mono-light text-sm cursor-pointer"
                   >
-                    Nome o pseudonimo
+                    {t("wizard.step4AuthorName")}
                   </Label>
                 </div>
                 <div className="flex items-center gap-3">
@@ -297,7 +315,7 @@ const OfferingSubmissionWizard = ({
                     htmlFor="instagram"
                     className="font-mono-light text-sm cursor-pointer"
                   >
-                    @Instagram (opzionale)
+                    {t("wizard.step4AuthorInstagram")}
                   </Label>
                 </div>
               </RadioGroup>
@@ -313,8 +331,8 @@ const OfferingSubmissionWizard = ({
                   }
                   placeholder={
                     draft.authorType === "instagram"
-                      ? "@tuonome"
-                      : "come vuoi essere chiamato/a"
+                      ? t("wizard.step4InstagramPlaceholder")
+                      : t("wizard.step4NamePlaceholder")
                   }
                   className="bg-transparent border-border/50 focus:border-foreground/30 font-mono-light"
                   maxLength={MAX_AUTHOR_LENGTH + 1}
@@ -340,7 +358,7 @@ const OfferingSubmissionWizard = ({
                   htmlFor="rights"
                   className="font-mono-light text-xs leading-relaxed cursor-pointer"
                 >
-                  Questo contenuto e mio, oppure posso condividerlo.
+                  {t("wizard.consentRights")}
                 </Label>
               </div>
               <div className="flex items-start gap-3">
@@ -358,7 +376,7 @@ const OfferingSubmissionWizard = ({
                   htmlFor="archive"
                   className="font-mono-light text-xs leading-relaxed cursor-pointer"
                 >
-                  Va bene se entra in Archivio, dopo l'Anticamera.
+                  {t("wizard.consentArchive")}
                 </Label>
               </div>
               <div className="flex items-start gap-3">
@@ -376,7 +394,7 @@ const OfferingSubmissionWizard = ({
                   htmlFor="reshare"
                   className="font-mono-light text-xs leading-relaxed cursor-pointer text-muted-foreground"
                 >
-                  Se necessario, puo essere ricondivisa nei canali del progetto.
+                  {t("wizard.consentReshare")}
                 </Label>
               </div>
             </div>
@@ -390,14 +408,14 @@ const OfferingSubmissionWizard = ({
             onClick={() => setStep((current) => current - 1)}
             className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            ← torna
+            {t("wizard.back")}
           </button>
         ) : onCancel ? (
           <button
             onClick={onCancel}
             className="font-mono-light text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            chiudi
+            {t("wizard.close")}
           </button>
         ) : (
           <div />
@@ -409,7 +427,7 @@ const OfferingSubmissionWizard = ({
             disabled={!canProceed}
             className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            avanti
+            {t("wizard.next")}
           </button>
         )}
 
@@ -419,7 +437,7 @@ const OfferingSubmissionWizard = ({
             disabled={!canProceed || submitting}
             className="font-mono-light text-sm uppercase tracking-[0.15em] px-8 py-3 border border-foreground/30 hover:bg-foreground hover:text-primary-foreground transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            {submitting ? "..." : submitLabel}
+            {submitting ? "..." : (submitLabel || defaultSubmitLabel)}
           </button>
         )}
       </div>
