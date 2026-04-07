@@ -237,7 +237,7 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
             }}
             debugPoseRef={meadowDebugPoseRef}
             creatureRuntimeRef={meadowCreatureRuntimeRef}
-            snapshotRef={snapshotRef as unknown as React.MutableRefObject<Record<string, unknown>>}
+            snapshotRef={snapshotRef}
           />
         </Canvas>
       </WebGLCrashBoundary>

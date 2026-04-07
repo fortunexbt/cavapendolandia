@@ -1172,7 +1172,7 @@ function CavapendoGallery({
           jumpRequestedRef={jumpRequestedRef}
           meadowCreatureRuntimeRef={meadowCreatureRuntimeRef}
           meadowDebugPoseRef={meadowDebugPoseRef}
-          snapshotRef={snapshotRef as unknown as React.MutableRefObject<Record<string, unknown>>}
+          snapshotRef={snapshotRef}
           stepRef={stepRef}
           stepReadyRef={stepReadyRef}
           stepWaitersRef={stepWaitersRef}
