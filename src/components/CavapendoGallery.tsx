@@ -48,7 +48,7 @@ import {
   type ControlProfile,
   type GuideStep,
   type HudMode,
-  type MeadowSector,
+  
   type MobileControlsLayout,
   type MobileOrientationState,
   type QualityTier,
@@ -519,7 +519,7 @@ function CavapendoGallery({
       Boolean(ritualSiteId) ||
       Boolean(activeDepositId));
 
-  const { data: liveOfferings } = useGalleryData({ quality });
+  const { offerings: liveOfferings } = useGalleryData({ quality });
 
   const offerings = useMemo(() => {
     const source =
@@ -1172,7 +1172,7 @@ function CavapendoGallery({
           jumpRequestedRef={jumpRequestedRef}
           meadowCreatureRuntimeRef={meadowCreatureRuntimeRef}
           meadowDebugPoseRef={meadowDebugPoseRef}
-          snapshotRef={snapshotRef as React.MutableRefObject<Record<string, unknown>>}
+          snapshotRef={snapshotRef as unknown as React.MutableRefObject<Record<string, unknown>>}
           stepRef={stepRef}
           stepReadyRef={stepReadyRef}
           stepWaitersRef={stepWaitersRef}
@@ -1188,7 +1188,7 @@ function CavapendoGallery({
           onSectorChange={setCurrentSector}
           onVisibleLandmarksChange={setVisibleLandmarkIds}
           onHorizonLandmarksChange={setHorizonLandmarkIds}
-          onDowngradeProfile={setActiveRenderProfileId}
+          onDowngradeProfile={(profile: string) => setActiveRenderProfileId(profile as RenderProfile)}
           onJoystickInput={handleJoystickInput}
           nearbyDeposit={nearbyDeposit}
           ritualSiteId={ritualSiteId}
@@ -1257,7 +1257,7 @@ function CavapendoGallery({
         onDismissLandscapeHint={() => setLandscapeHintAcknowledged(true)}
         onSetRitualSiteId={setRitualSiteId}
         onSetActiveDepositId={setActiveDepositId}
-        onSetSelectedOffering={setSelectedOffering}
+        onSetSelectedOffering={(offering: { id: string }) => setSelectedOffering(offering as Offering)}
         onSetSelectedCreatureId={setSelectedCreatureId}
         onDepositSubmitted={(siteId) => {
           setDepositCounts((current) => ({

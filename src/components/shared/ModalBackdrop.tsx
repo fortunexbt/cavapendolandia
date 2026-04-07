@@ -16,7 +16,7 @@ interface ModalBackdropProps {
 }
 
 const springTransition = (damping: number) => ({
-  type: "spring",
+  type: "spring" as const,
   damping,
 });
 

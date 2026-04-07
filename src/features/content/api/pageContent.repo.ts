@@ -13,7 +13,7 @@ export type PageContentBlock = {
 export const pageContentRepo = {
   async listBySlug(slug: string): Promise<PageContentBlock[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("page_content")
         .select("*")
         .eq("page_slug", slug)
@@ -31,7 +31,7 @@ export const pageContentRepo = {
 
   async get(slug: string, blockKey: string): Promise<PageContentBlock | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("page_content")
         .select("*")
         .eq("page_slug", slug)
@@ -49,7 +49,7 @@ export const pageContentRepo = {
   },
 
   async upsert(slug: string, blockKey: string, payload: { title?: string; body?: string }): Promise<void> {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("page_content")
       .upsert(
         { page_slug: slug, block_key: blockKey, title: payload.title || null, body: payload.body || null },
@@ -60,7 +60,7 @@ export const pageContentRepo = {
 
   async listSlugs(): Promise<string[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("page_content")
         .select("page_slug");
       if (error) {

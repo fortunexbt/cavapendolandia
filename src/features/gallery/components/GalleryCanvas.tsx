@@ -69,7 +69,7 @@ export interface GalleryCanvasProps {
     invertLookFactor: 1 | -1;
     reducedCameraMotion: boolean;
   };
-  viewport: { width: number; height: number; dpr: number; context: string; fullscreen: boolean };
+  viewport: { width: number; height: number; shortSide: number; longSide: number; dpr: number; context: string; fullscreen: boolean };
   fullscreen: boolean;
   keysDownRef: React.MutableRefObject<Set<string>>;
   interactRequestedRef: React.MutableRefObject<boolean>;
@@ -237,40 +237,7 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
             }}
             debugPoseRef={meadowDebugPoseRef}
             creatureRuntimeRef={meadowCreatureRuntimeRef}
-            snapshotRef={snapshotRef as React.MutableRefObject<{
-              zone: string;
-              sector: string | null;
-              deviceClass: string;
-              renderProfile: string;
-              resolvedRenderProfile: string;
-              renderProfilePreference: string;
-              renderProfileSource: string;
-              renderProfileAutoFloor: string;
-              renderProfileReason: string;
-              profileLocked: boolean;
-              quality: string;
-              hudMode: string;
-              mouseSensitivity: number;
-              touchSensitivity: number;
-              joystickRadius: number;
-              mouseLookSensitivity: number;
-              touchLookSensitivity: number;
-              fullscreen: boolean;
-              guideStep: string;
-              outdoorRadius: number;
-              mobileOrientationState: string;
-              controlsLayout: string;
-              viewport: { width: number; height: number; dpr: number; context: string; fullscreen: boolean };
-              modal: { type: string; id: string | null };
-              nearbyTriggerId: string | null;
-              nearbyDepositId: string | null;
-              nearbyCreatureIds: string[];
-              visibleLandmarkIds: string[];
-              horizonLandmarkIds: string[];
-              doorPrompt: string | null;
-              ambience: { activeCues: unknown[]; muted: boolean; volume: number; zone: string; galleryTrack: string | null; transition: { cue: unknown; active: boolean } };
-              player: { x: number; y: number; z: number; yaw: number; pitch: number; vy: number; grounded: boolean };
-            }>}
+            snapshotRef={snapshotRef as unknown as React.MutableRefObject<Record<string, unknown>>}
           />
         </Canvas>
       </WebGLCrashBoundary>

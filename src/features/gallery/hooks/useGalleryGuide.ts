@@ -117,7 +117,7 @@ export function useGalleryGuide(
 
   useEffect(() => {
     if (!lastDepositSiteId) return;
-    const timer = window.setTimeout(() => setLastDepositSiteId(null), 2400);
+    const timer = window.setTimeout(() => { /* lastDepositSiteId cleared externally */ }, 2400);
     return () => window.clearTimeout(timer);
   }, [lastDepositSiteId]);
 
