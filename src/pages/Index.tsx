@@ -56,6 +56,7 @@ const itemVariants: Variants = {
 };
 
 const InitiativeBanner = () => {
+  const { t } = useTranslation();
   const { data: initiative, isLoading } = useActiveInitiative();
 
   if (isLoading || !initiative) return null;
@@ -132,7 +133,7 @@ const Index = () => {
             <p className="font-mono-light text-[0.72rem] uppercase tracking-[0.22em] text-muted-foreground/75">
               {t("index.subtitle")}
             </p>
-            <h1 className="mt-3 text-4xl font-light tracking-[0.14em] md:text-6xl">
+            <h1 className="mt-3 text-[1.65rem] font-light tracking-[0.08em] sm:text-4xl sm:tracking-[0.14em] md:text-6xl">
               CAVAPENDOLANDIA
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base italic text-foreground/70 md:text-lg">

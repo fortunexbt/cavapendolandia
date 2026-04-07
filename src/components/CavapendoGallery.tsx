@@ -48,7 +48,7 @@ import {
   type ControlProfile,
   type GuideStep,
   type HudMode,
-  type MeadowSector,
+  
   type MobileControlsLayout,
   type MobileOrientationState,
   type QualityTier,
@@ -285,7 +285,7 @@ function CavapendoGallery({
   const [nearbyCreatureIds, setNearbyCreatureIds] = useState<string[]>([]);
   const [visibleLandmarkIds, setVisibleLandmarkIds] = useState<string[]>([]);
   const [horizonLandmarkIds, setHorizonLandmarkIds] = useState<string[]>([]);
-  const [currentSector, setCurrentSector] = useState<MeadowSector | null>(null);
+  const [currentSector, setCurrentSector] = useState<string | null>(null);
   const [zoneTransition, setZoneTransition] = useState<{
     label: string;
     detail: string;
@@ -451,7 +451,7 @@ function CavapendoGallery({
   const ambienceState = useAmbientAudio({
     enabled: hasInteracted,
     zone,
-    sector: currentSector,
+    sector: currentSector as any,
     nearbyTriggerId,
     nearbyDepositId,
     volume: ambienceVolume,
@@ -519,7 +519,7 @@ function CavapendoGallery({
       Boolean(ritualSiteId) ||
       Boolean(activeDepositId));
 
-  const { data: liveOfferings } = useGalleryData({ quality });
+  const { offerings: liveOfferings } = useGalleryData({ quality });
 
   const offerings = useMemo(() => {
     const source =
@@ -876,7 +876,7 @@ function CavapendoGallery({
     snapshotRef.current = {
       ...snapshotRef.current,
       zone,
-      sector: currentSector,
+      sector: currentSector as any,
       deviceClass,
       renderProfile: activeRenderProfile.id,
       resolvedRenderProfile: resolvedPreferredProfile.id,
@@ -1172,7 +1172,7 @@ function CavapendoGallery({
           jumpRequestedRef={jumpRequestedRef}
           meadowCreatureRuntimeRef={meadowCreatureRuntimeRef}
           meadowDebugPoseRef={meadowDebugPoseRef}
-          snapshotRef={snapshotRef as React.MutableRefObject<Record<string, unknown>>}
+          snapshotRef={snapshotRef}
           stepRef={stepRef}
           stepReadyRef={stepReadyRef}
           stepWaitersRef={stepWaitersRef}
@@ -1188,7 +1188,7 @@ function CavapendoGallery({
           onSectorChange={setCurrentSector}
           onVisibleLandmarksChange={setVisibleLandmarkIds}
           onHorizonLandmarksChange={setHorizonLandmarkIds}
-          onDowngradeProfile={setActiveRenderProfileId}
+          onDowngradeProfile={(profile: string) => setActiveRenderProfileId(profile as RenderProfile)}
           onJoystickInput={handleJoystickInput}
           nearbyDeposit={nearbyDeposit}
           ritualSiteId={ritualSiteId}
@@ -1257,7 +1257,7 @@ function CavapendoGallery({
         onDismissLandscapeHint={() => setLandscapeHintAcknowledged(true)}
         onSetRitualSiteId={setRitualSiteId}
         onSetActiveDepositId={setActiveDepositId}
-        onSetSelectedOffering={setSelectedOffering}
+        onSetSelectedOffering={(offering: { id: string }) => setSelectedOffering(offering as Offering)}
         onSetSelectedCreatureId={setSelectedCreatureId}
         onDepositSubmitted={(siteId) => {
           setDepositCounts((current) => ({

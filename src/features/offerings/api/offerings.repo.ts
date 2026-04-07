@@ -22,7 +22,7 @@ const SIGNED_URL_TTL_SECONDS = 60 * 60;
  * treat file_url as the storage path and generate a signed URL from it.
  */
 export async function getOfferingMediaUrl(
-  offering: Pick<OfferingRow, "file_path" | "file_url">,
+  offering: { file_path?: string | null; file_url?: string | null },
 ): Promise<string | null> {
   const storagePath = resolveStoragePath(offering);
   if (!storagePath) return null;
@@ -36,12 +36,11 @@ export async function getOfferingMediaUrl(
 }
 
 function resolveStoragePath(
-  offering: Pick<OfferingRow, "file_path" | "file_url">,
+  offering: { file_path?: string | null; file_url?: string | null },
 ): string | null {
   if (offering.file_path) return offering.file_path;
 
   // Legacy: file_url was stored as a bare storage path (not an absolute URL)
-  // e.g. "2025-04-01/abc123.jpg" — detect this by checking it doesn't look like a URL
   if (offering.file_url && !/^https?:\/\//i.test(offering.file_url) && !offering.file_url.startsWith("/")) {
     return offering.file_url;
   }

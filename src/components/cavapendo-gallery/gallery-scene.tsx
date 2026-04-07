@@ -1441,7 +1441,7 @@ function GalleryArchitecture({
           </mesh>
           <pointLight
             position={[0.9, GALLERY_FLOOR_Y + 3.24, -ROOM_HALF + 0.9]}
-            intensity={quality === "low" ? 0.34 : quality === "medium" ? 0.52 : 0.72}
+            intensity={quality === "medium" ? 0.52 : 0.72}
             color="#fff1c8"
             distance={7}
             decay={2}

@@ -6,10 +6,8 @@ import type {
   WorldStateSnapshot,
 } from "@/components/cavapendo-gallery/types";
 import type { WorldZone } from "@/components/cavapendo-gallery/runtime";
-import {
-  MEADOW_PLANET_RADIUS,
-  GALLERY_SPAWN,
-} from "@/components/cavapendo-gallery/config";
+import { GALLERY_SPAWN } from "@/components/cavapendo-gallery/config";
+import { MEADOW_PLANET_RADIUS } from "@/lib/meadowWorld";
 
 export interface GalleryControllerState {
   scene: WorldZone;

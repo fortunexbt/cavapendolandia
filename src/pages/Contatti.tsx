@@ -41,7 +41,7 @@ const Contatti = () => {
     setFormState("submitting");
     setErrorMessage("");
 
-    const { error } = await supabase.from("visitor_messages").insert({
+    const { error } = await (supabase as any).from("visitor_messages").insert({
       name: name || null,
       email: email || null,
       message,

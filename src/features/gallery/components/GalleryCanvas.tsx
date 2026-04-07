@@ -1,7 +1,7 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import type { ResolvedRenderProfile } from "@/components/cavapendo-gallery/runtime";
-import type { Offering, DepositSite } from "@/components/cavapendo-gallery/types";
+import type { ResolvedRenderProfile, ViewportMetrics } from "@/components/cavapendo-gallery/runtime";
+import type { Offering, DepositSite, WorldStateSnapshot } from "@/components/cavapendo-gallery/types";
 import type { MeadowCreatureRuntimeSnapshot } from "@/components/cavapendo-gallery/types";
 import { GalleryScene } from "@/components/cavapendo-gallery/gallery-scene";
 import { MeadowScene as PremiumMeadowScene } from "@/components/cavapendo-gallery/meadow-scene";
@@ -69,7 +69,7 @@ export interface GalleryCanvasProps {
     invertLookFactor: 1 | -1;
     reducedCameraMotion: boolean;
   };
-  viewport: { width: number; height: number; dpr: number; context: string; fullscreen: boolean };
+  viewport: ViewportMetrics;
   fullscreen: boolean;
   keysDownRef: React.MutableRefObject<Set<string>>;
   interactRequestedRef: React.MutableRefObject<boolean>;
@@ -77,7 +77,7 @@ export interface GalleryCanvasProps {
   jumpRequestedRef: React.MutableRefObject<boolean>;
   meadowCreatureRuntimeRef: React.MutableRefObject<Record<string, MeadowCreatureRuntimeSnapshot>>;
   meadowDebugPoseRef: React.MutableRefObject<((pose: { planarX: number; planarZ: number; yaw?: number; pitch?: number; jumpHeight?: number }) => void) | null>;
-  snapshotRef: React.MutableRefObject<Record<string, unknown>>;
+  snapshotRef: React.MutableRefObject<WorldStateSnapshot>;
   stepRef: React.RefObject<((deltaSeconds: number) => void) | null>;
   stepReadyRef: React.MutableRefObject<boolean>;
   stepWaitersRef: React.MutableRefObject<Array<() => void>>;
@@ -237,40 +237,7 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
             }}
             debugPoseRef={meadowDebugPoseRef}
             creatureRuntimeRef={meadowCreatureRuntimeRef}
-            snapshotRef={snapshotRef as React.MutableRefObject<{
-              zone: string;
-              sector: string | null;
-              deviceClass: string;
-              renderProfile: string;
-              resolvedRenderProfile: string;
-              renderProfilePreference: string;
-              renderProfileSource: string;
-              renderProfileAutoFloor: string;
-              renderProfileReason: string;
-              profileLocked: boolean;
-              quality: string;
-              hudMode: string;
-              mouseSensitivity: number;
-              touchSensitivity: number;
-              joystickRadius: number;
-              mouseLookSensitivity: number;
-              touchLookSensitivity: number;
-              fullscreen: boolean;
-              guideStep: string;
-              outdoorRadius: number;
-              mobileOrientationState: string;
-              controlsLayout: string;
-              viewport: { width: number; height: number; dpr: number; context: string; fullscreen: boolean };
-              modal: { type: string; id: string | null };
-              nearbyTriggerId: string | null;
-              nearbyDepositId: string | null;
-              nearbyCreatureIds: string[];
-              visibleLandmarkIds: string[];
-              horizonLandmarkIds: string[];
-              doorPrompt: string | null;
-              ambience: { activeCues: unknown[]; muted: boolean; volume: number; zone: string; galleryTrack: string | null; transition: { cue: unknown; active: boolean } };
-              player: { x: number; y: number; z: number; yaw: number; pitch: number; vy: number; grounded: boolean };
-            }>}
+            snapshotRef={snapshotRef}
           />
         </Canvas>
       </WebGLCrashBoundary>
