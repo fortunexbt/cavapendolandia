@@ -1,4 +1,5 @@
 import { useEffect, useState, type ComponentType } from "react";
+import { useTranslation } from "react-i18next";
 import { preloadCavapendoGalleryAssets } from "@/components/cavapendo-gallery/assets";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getDeviceClass } from "@/components/cavapendo-gallery/runtime";
@@ -13,11 +14,11 @@ type GalleryModule = {
   default: ComponentType<GallerySurfaceProps>;
 };
 
-const LOADING_STAGES = [
-  "Carico il bundle della galleria",
-  "Scaldo superfici e materiali",
-  "Precarico l'ambiente sonoro",
-  "Stabilizzo il primo frame",
+const LOADING_STAGE_KEYS = [
+  "gallery.shell.loadingStage0",
+  "gallery.shell.loadingStage1",
+  "gallery.shell.loadingStage2",
+  "gallery.shell.loadingStage3",
 ] as const;
 
 const waitForAnimationFrames = async (count: number) => {
@@ -32,6 +33,7 @@ const CavapendoGalleryShell = ({
   className = "",
   onExit,
 }: GallerySurfaceProps) => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [SurfaceComponent, setSurfaceComponent] =
     useState<ComponentType<GallerySurfaceProps> | null>(null);
@@ -66,7 +68,7 @@ const CavapendoGalleryShell = ({
       } catch (error) {
         if (cancelled) return;
         setLoadError(
-          error instanceof Error ? error.message : "Errore di caricamento",
+          error instanceof Error ? error.message : t("gallery.shell.loadError"),
         );
       }
     };
@@ -84,10 +86,10 @@ const CavapendoGalleryShell = ({
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#110d0c] px-4">
           <div className="max-w-lg rounded-[2rem] border border-[#4f4036] bg-[#150f0d]/94 px-6 py-8 text-[#f7eee4] shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl">
             <div className="text-[0.68rem] uppercase tracking-[0.22em] text-[#cdb69d]">
-              Caricamento interrotto
+              {t("gallery.shell.loadErrorTitle")}
             </div>
             <p className="mt-3 text-sm leading-relaxed text-[#eadccc]">
-              {loadError}. Ricarica la pagina per ricostruire il mondo.
+              {loadError}. {t("gallery.shell.loadErrorRetry")}
             </p>
           </div>
         </div>
@@ -100,11 +102,11 @@ const CavapendoGalleryShell = ({
       <div className={`relative w-full ${className}`}>
         <PreloadOverlay
           stageLabel={
-            LOADING_STAGES[loadingStage] ||
-            LOADING_STAGES[LOADING_STAGES.length - 1]
+            t(LOADING_STAGE_KEYS[loadingStage] ||
+            LOADING_STAGE_KEYS[LOADING_STAGE_KEYS.length - 1])
           }
           stageIndex={loadingStage + 1}
-          totalStages={LOADING_STAGES.length}
+          totalStages={LOADING_STAGE_KEYS.length}
         />
       </div>
     );

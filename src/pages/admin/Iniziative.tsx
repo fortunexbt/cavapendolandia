@@ -1,4 +1,5 @@
 import { Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useThemeMode } from "@/hooks/useThemeMode";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -7,6 +8,7 @@ import IniziativePanel from "@/components/admin/IniziativePanel";
 import { useInitiatives } from "@/features/initiatives/hooks/useInitiatives";
 
 const Iniziative = () => {
+  const { t } = useTranslation();
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const { initiatives, isLoading, createInitiative, toggleInitiative, deleteInitiative, isCreating } =
@@ -18,9 +20,9 @@ const Iniziative = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-6">
         <div className="max-w-md rounded-2xl border border-border bg-card/70 p-8 text-center">
-          <p className="text-base text-foreground">Accesso non autorizzato.</p>
+          <p className="text-base text-foreground">{t("admin.unauthorized")}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Il tuo account è autenticato, ma non ha ancora permessi admin.
+            {t("admin.noPermissions")}
           </p>
         </div>
       </div>
@@ -31,11 +33,11 @@ const Iniziative = () => {
     <AdminShell rightContent={<AdminThemeToggle mode={mode} onChange={setThemeMode} />}>
       <div className="mb-6 rounded-2xl border border-border bg-card/70 p-5 shadow-sm backdrop-blur">
         <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
-          Semi curatoriali
+          {t("admin.curatorialSeeds")}
         </p>
-        <h1 className="mt-2 text-3xl leading-tight md:text-4xl">Iniziative</h1>
+        <h1 className="mt-2 text-3xl leading-tight md:text-4xl">{t("admin.initiativesTitle")}</h1>
         <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-          Crea e gestisci le iniziative — i semi tematici che guidano nuove cavapendolate.
+          {t("admin.initiativesHint")}
         </p>
       </div>
 

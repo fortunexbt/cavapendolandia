@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useActiveInitiative } from "@/hooks/useActiveInitiative";
 
 const GALLERY_HUD_KEY = "gallery-hud-dismissed";
 
 const GalleryHud = () => {
+  const { t } = useTranslation();
   const { data: initiative, isLoading } = useActiveInitiative();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -73,7 +75,7 @@ const GalleryHud = () => {
             className="pointer-events-auto absolute left-1/2 top-6 z-50 -translate-x-1/2 cursor-pointer rounded-full border border-[#4f3c2a]/50 bg-[#1a1410]/85 px-4 py-2 font-mono-light text-[0.62rem] uppercase tracking-[0.16em] text-[#e8d9c3] shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md transition-colors hover:border-[#6b5744]/60 hover:bg-[#241c16]/90"
           >
             <span className="mr-2 opacity-60">[i]</span>
-            <span>Un pensiero</span>
+            <span>{t('gallery.hudBanner.pillLabel')}</span>
           </motion.button>
         )}
       </AnimatePresence>
@@ -90,7 +92,7 @@ const GalleryHud = () => {
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
                 <p className="font-mono-light text-[0.55rem] uppercase tracking-[0.18em] text-[#c4a97d] mb-1.5">
-                  Un pensiero
+                  {t('gallery.hudBanner.pillLabel')}
                 </p>
                 <p className="text-sm italic leading-relaxed text-[#f0e6d8]">
                   {initiative.prompt}

@@ -1,18 +1,19 @@
 import { Link, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
-  label: string;
+  labelKey: string;
   to: string;
 };
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
-  { label: "Offerings", to: "/admin/offerings/pending" },
-  { label: "Iniziative", to: "/admin/iniziative" },
-  { label: "Pagine", to: "/admin/pagine" },
-  { label: "Prato", to: "/admin/prato" },
-  { label: "Messaggi", to: "/admin/messaggi" },
+  { labelKey: "admin.navOfferings", to: "/admin/offerings/pending" },
+  { labelKey: "admin.navIniziative", to: "/admin/iniziative" },
+  { labelKey: "admin.navPagine", to: "/admin/pagine" },
+  { labelKey: "admin.navPrato", to: "/admin/prato" },
+  { labelKey: "admin.navMessaggi", to: "/admin/messaggi" },
 ];
 
 interface AdminNavProps {
@@ -20,6 +21,7 @@ interface AdminNavProps {
 }
 
 const AdminNav = ({ className }: AdminNavProps) => {
+  const { t } = useTranslation();
   return (
     <nav className={cn("flex flex-wrap items-center gap-4 md:gap-6", className)}>
       {ADMIN_NAV_ITEMS.map((item) => (
@@ -33,7 +35,7 @@ const AdminNav = ({ className }: AdminNavProps) => {
             )
           }
         >
-          {item.label}
+          {t(item.labelKey)}
         </NavLink>
       ))}
     </nav>

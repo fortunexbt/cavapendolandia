@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   DepositSite,
   DoorTrigger,
@@ -130,6 +131,7 @@ export function useGalleryController({
   isMobile: boolean;
   viewport: { width: number; height: number };
 }): GalleryController {
+  const { t } = useTranslation();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const keysDownRef = useRef(new Set<string>());
   const interactRequestedRef = useRef(false);
@@ -334,8 +336,8 @@ export function useGalleryController({
       if (id === "return") {
         startTransition(
           "gallery",
-          "Rientro nella galleria",
-          "La luce si richiude e il padiglione torna a respirare attorno alle opere.",
+          t("gallery.zoneTransition.transitionToGallery"),
+          t("gallery.zoneTransition.transitionToGalleryDetail"),
         );
       }
     },

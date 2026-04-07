@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Initiative = {
   id: string;
@@ -25,6 +26,7 @@ const IniziativePanel = ({
   onToggle,
   onDelete,
 }: IniziativePanelProps) => {
+  const { t } = useTranslation();
   const [prompt, setPrompt] = useState("");
   const [details, setDetails] = useState("");
 
@@ -40,16 +42,16 @@ const IniziativePanel = ({
     <section className="rounded-2xl border border-border bg-card/70 p-5 shadow-sm backdrop-blur">
       <div className="mb-4">
         <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
-          Iniziative
+          {t("admin.initiatives")}
         </p>
-        <h2 className="text-2xl leading-tight mt-2">Semi curatoriali per nuove cavapendolate</h2>
+        <h2 className="text-2xl leading-tight mt-2">{t("admin.initiativesTitle")}</h2>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <input
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
-          placeholder="Es. I cavapendoli oggi necessitano scarpe"
+          placeholder={t("admin.initiativePromptPlaceholder")}
           maxLength={180}
           className="h-11 rounded-xl border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
@@ -59,23 +61,23 @@ const IniziativePanel = ({
           disabled={busy || !prompt.trim()}
           className="h-11 rounded-xl border border-foreground/30 bg-foreground px-4 text-[0.7rem] uppercase tracking-[0.12em] font-mono-light text-primary-foreground disabled:opacity-40"
         >
-          Pubblica iniziativa
+          {t("admin.publishInitiative")}
         </button>
       </div>
 
       <textarea
         value={details}
         onChange={(event) => setDetails(event.target.value)}
-        placeholder="Dettaglio opzionale (es. disegni, canzoni, tracce sonore)."
+        placeholder={t("admin.initiativeDetailsPlaceholder")}
         maxLength={320}
         className="mt-3 min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
       />
 
       <div className="mt-4 space-y-2">
         {loading ? (
-          <p className="text-sm text-muted-foreground/70 italic">Carico iniziative…</p>
+          <p className="text-sm text-muted-foreground/70 italic">{t("admin.loadingInitiatives")}</p>
         ) : initiatives.length === 0 ? (
-          <p className="text-sm text-muted-foreground/70 italic">Nessuna iniziativa ancora.</p>
+          <p className="text-sm text-muted-foreground/70 italic">{t("admin.noInitiatives")}</p>
         ) : (
           initiatives.map((initiative) => (
             <div
@@ -90,14 +92,14 @@ const IniziativePanel = ({
                     onClick={() => onToggle(initiative.id, !initiative.is_active)}
                     className="rounded-full border border-border px-3 py-1 text-[0.62rem] uppercase tracking-[0.12em] font-mono-light text-muted-foreground hover:text-foreground"
                   >
-                    {initiative.is_active ? "Attiva" : "Disattiva"}
+                    {initiative.is_active ? t("admin.activate") : t("admin.deactivate")}
                   </button>
                   <button
                     type="button"
                     onClick={() => onDelete(initiative.id)}
                     className="rounded-full border border-destructive/40 px-3 py-1 text-[0.62rem] uppercase tracking-[0.12em] font-mono-light text-destructive"
                   >
-                    Elimina
+                    {t("admin.delete")}
                   </button>
                 </div>
               </div>

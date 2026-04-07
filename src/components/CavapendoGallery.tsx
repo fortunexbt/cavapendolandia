@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import * as THREE from "three";
@@ -159,6 +160,7 @@ function CavapendoGallery({
   className?: string;
   onExit?: () => void;
 }) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const reduceMotion = useReducedMotion();
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -487,13 +489,13 @@ function CavapendoGallery({
     : null;
   const doorPromptLabel = useMemo(() => {
     if (!nearbyTriggerId || modalOpen) return null;
-    if (nearbyTriggerId === "outdoor") return "Varco · ESTERNO";
-    if (nearbyTriggerId === "return") return "Rientro · GALLERIA";
-    return "Soglia · USCITA";
-  }, [modalOpen, nearbyTriggerId]);
+    if (nearbyTriggerId === "outdoor") return t("gallery.zoneTransition.doorOutdoor");
+    if (nearbyTriggerId === "return") return t("gallery.zoneTransition.doorReturn");
+    return t("gallery.zoneTransition.doorDefault");
+  }, [modalOpen, nearbyTriggerId, t]);
   const ritualPromptLabel =
     zone === "meadow" && nearbyDeposit && !modalOpen
-      ? `Sosta rituale · ${nearbyDeposit.label}`
+      ? `${t('gallery.ritualPrompt.ritualStop')} · ${nearbyDeposit.label}`
       : null;
   const playerPromptLabel = ritualPromptLabel || doorPromptLabel;
   const mobileControlsLandscape = controlsLayout === "mobile_landscape";
@@ -501,15 +503,15 @@ function CavapendoGallery({
     if (modalOpen) return null;
     if (zone === "meadow" && nearbyDeposit) {
       return {
-        label: "Apri rito",
+        label: t("gallery.zoneTransition.openRitual"),
         detail: nearbyDeposit.label,
       };
     }
     return null;
-  }, [modalOpen, nearbyDeposit, zone]);
+  }, [modalOpen, nearbyDeposit, zone, t]);
   const ambienceLabel =
     !ambienceMuted && ambienceState.activeCues.length > 0
-      ? `Ambiente ${ambienceState.activeCues.length > 1 ? "vivo" : "attivo"}`
+      ? t(ambienceState.activeCues.length > 1 ? "gallery.zoneTransition.ambienceAlive" : "gallery.zoneTransition.ambienceActive")
       : null;
   const showGuidePill =
     showGuideUi &&
@@ -731,16 +733,16 @@ function CavapendoGallery({
       if (id === "outdoor") {
         startTransition(
           "meadow",
-          "Attraverso ESTERNO",
-          "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
+          t("gallery.zoneTransition.transitionToMeadow"),
+          t("gallery.zoneTransition.transitionToMeadowDetail"),
         );
         return;
       }
       if (id === "return") {
         startTransition(
           "gallery",
-          "Rientro nella galleria",
-          "La luce si richiude e il padiglione torna a respirare attorno alle opere.",
+          t("gallery.zoneTransition.transitionToGallery"),
+          t("gallery.zoneTransition.transitionToGalleryDetail"),
         );
       }
     },

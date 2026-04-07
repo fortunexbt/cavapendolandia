@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { AdminNav } from "./AdminNav";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -9,6 +10,7 @@ interface AdminShellProps {
 }
 
 const AdminShell = ({ children, rightContent }: AdminShellProps) => {
+  const { t } = useTranslation();
   const { signOut } = useAdmin();
 
   return (
@@ -19,7 +21,7 @@ const AdminShell = ({ children, rightContent }: AdminShellProps) => {
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-4 md:gap-6">
             <Link to="/" className="font-mono-light text-xs text-muted-foreground hover:text-foreground">
-              ← Torna al sito
+              ← {t("admin.backToSite")}
             </Link>
             <AdminNav />
           </div>
@@ -30,7 +32,7 @@ const AdminShell = ({ children, rightContent }: AdminShellProps) => {
               onClick={signOut}
               className="rounded-full border border-border px-4 py-2 font-mono-light text-[0.62rem] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
             >
-              SignOut
+              {t("admin.signOut")}
             </button>
           </div>
         </div>

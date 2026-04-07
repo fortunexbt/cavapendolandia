@@ -82,7 +82,7 @@ const OfferingDetail = () => {
               fileUrl={offering.file_url}
               textContent={offering.text_content}
               linkUrl={offering.link_url}
-              title={offering.title || "Cavapendolata"}
+              title={offering.title || t("offeringDetail.untitled")}
               note={offering.note}
               authorType={offering.author_type}
               authorName={offering.author_name}

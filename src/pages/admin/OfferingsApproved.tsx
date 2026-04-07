@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -29,6 +30,7 @@ const CATEGORY_FILTERS = ["all", "natura", "pensiero", "suono", "corpo", "altro"
 type CategoryFilter = (typeof CATEGORY_FILTERS)[number];
 
 const OfferingsApproved = () => {
+  const { t } = useTranslation();
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const queryClient = useQueryClient();
@@ -123,9 +125,9 @@ const OfferingsApproved = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-offerings"] });
       queryClient.invalidateQueries({ queryKey: ["offerings-approved"] });
-      toast.success("Moderazione aggiornata");
+      toast.success(t("admin.moderationUpdated"));
     },
-    onError: () => toast.error("Errore durante l'aggiornamento"),
+    onError: () => toast.error(t("admin.moderationError")),
   });
 
   if (loading) return <div className="min-h-screen bg-background" />;
@@ -134,9 +136,9 @@ const OfferingsApproved = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-6">
         <div className="max-w-md rounded-2xl border border-border bg-card/70 p-8 text-center">
-          <p className="text-base text-foreground">Accesso non autorizzato.</p>
+          <p className="text-base text-foreground">{t("admin.unauthorized")}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Il tuo account è autenticato, ma non ha ancora permessi admin.
+            {t("admin.noPermissions")}
           </p>
         </div>
       </div>
@@ -150,7 +152,7 @@ const OfferingsApproved = () => {
           to="/admin/offerings/pending"
           className="font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
         >
-          Anticamera
+          {t("admin.anticamera")}
           {statusCounts && statusCounts["pending"] > 0 && (
             <Badge variant="secondary" className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
               {statusCounts["pending"]}
@@ -161,7 +163,7 @@ const OfferingsApproved = () => {
           to="/admin/offerings/approved"
           className="font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 text-foreground"
         >
-          Archivio
+          {t("admin.archivio")}
           {statusCounts && statusCounts["approved"] > 0 && (
             <Badge variant="default" className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
               {statusCounts["approved"]}
@@ -172,7 +174,7 @@ const OfferingsApproved = () => {
           to="/admin/offerings/hidden"
           className="font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
         >
-          Nascosti
+          {t("admin.nascosti")}
           {statusCounts && statusCounts["hidden"] > 0 && (
             <Badge variant="secondary" className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
               {statusCounts["hidden"]}
@@ -183,7 +185,7 @@ const OfferingsApproved = () => {
           to="/admin/offerings/rejected"
           className="font-mono-light text-[0.67rem] uppercase tracking-[0.12em] flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
         >
-          Rifiutati
+          {t("admin.rifiutati")}
           {statusCounts && statusCounts["rejected"] > 0 && (
             <Badge variant="secondary" className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
               {statusCounts["rejected"]}
@@ -194,11 +196,11 @@ const OfferingsApproved = () => {
 
       <section className="mb-6 rounded-2xl border border-border bg-card/70 p-5 shadow-sm backdrop-blur">
         <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
-          Archivio approvato
+          {t("admin.approvedArchive")}
         </p>
-        <h1 className="mt-2 text-3xl leading-tight md:text-4xl">Cavapendolate in galleria</h1>
+        <h1 className="mt-2 text-3xl leading-tight md:text-4xl">{t("admin.approvedArchiveTitle")}</h1>
         <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-          Le cavapendolate approvate appaiono nella galleria pubblica. Qui puoi nasconderle temporaneamente.
+          {t("admin.approvedArchiveHint")}
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {MEDIA_FILTERS.map((f) => (
@@ -211,7 +213,7 @@ const OfferingsApproved = () => {
                   : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {f === "all" ? "Tutti" : f}
+              {f === "all" ? t("admin.tutti") : f}
             </button>
           ))}
         </div>
@@ -226,7 +228,7 @@ const OfferingsApproved = () => {
                   : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {c === "all" ? "Tutti" : c}
+              {c === "all" ? t("admin.tutti") : c}
             </button>
           ))}
         </div>
@@ -237,18 +239,18 @@ const OfferingsApproved = () => {
           <Input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Cerca titolo, nota o firma"
+            placeholder={t("admin.searchPlaceholder")}
             className="max-w-sm border-input bg-background"
           />
           <p className="font-mono-light text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-            {filteredOfferings.length} risultati
+            {filteredOfferings.length} {t("admin.results")}
           </p>
         </div>
 
         {isLoading ? (
-          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Carico cavapendolate…</p>
+          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">{t("admin.loadingOfferings")}</p>
         ) : filteredOfferings.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Nessuna cavapendolata in questa vista.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">{t("admin.noOfferings")}</p>
         ) : (
           <div className="space-y-3">
             {filteredOfferings.map((offering) => (

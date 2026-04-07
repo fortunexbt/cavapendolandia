@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -32,16 +33,17 @@ type AdminOffering = Pick<
   file_path?: string | null;
 };
 
-const STATUS_TABS: { value: StatusFilter; label: string; path: string }[] = [
-  { value: "pending", label: "Anticamera", path: "/admin/anticamera" },
-  { value: "approved", label: "Archivio", path: "/admin/archivio" },
-  { value: "hidden", label: "Nascosti", path: "/admin/nascosti" },
-  { value: "rejected", label: "Rifiutati", path: "/admin/rifiutati" },
+const STATUS_TABS: { value: StatusFilter; labelKey: string; path: string }[] = [
+  { value: "pending", labelKey: "admin.anticamera", path: "/admin/anticamera" },
+  { value: "approved", labelKey: "admin.archivio", path: "/admin/archivio" },
+  { value: "hidden", labelKey: "admin.nascosti", path: "/admin/nascosti" },
+  { value: "rejected", labelKey: "admin.rifiutati", path: "/admin/rifiutati" },
 ];
 
 const MEDIA_FILTERS: MediaFilter[] = ["all", "image", "video", "audio", "text", "pdf", "link"];
 
 const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter }) => {
+  const { t } = useTranslation();
   const { user, isAdmin, loading, signOut, isDemo } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const queryClient = useQueryClient();
@@ -174,9 +176,9 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-offerings"] });
       queryClient.invalidateQueries({ queryKey: ["offerings-approved"] });
-      toast.success("Moderazione aggiornata");
+      toast.success(t("admin.moderationUpdated"));
     },
-    onError: () => toast.error("Errore durante l'aggiornamento"),
+    onError: () => toast.error(t("admin.moderationError")),
   });
 
   const createInitiative = useMutation({
@@ -192,9 +194,9 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa pubblicata");
+      toast.success(t("admin.initiativePublished"));
     },
-    onError: () => toast.error("Impossibile pubblicare l'iniziativa"),
+    onError: () => toast.error(t("admin.initiativePublishError")),
   });
 
   const toggleInitiative = useMutation({
@@ -219,7 +221,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa eliminata");
+      toast.success(t("admin.initiativeDeleted"));
     },
   });
 
@@ -229,9 +231,9 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-6">
         <div className="max-w-md rounded-2xl border border-border bg-card/70 p-8 text-center">
-          <p className="text-base text-foreground">Accesso non autorizzato.</p>
+          <p className="text-base text-foreground">{t("admin.unauthorized")}</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Il tuo account è autenticato, ma non ha ancora permessi admin.
+            {t("admin.noPermissions")}
           </p>
         </div>
       </div>
@@ -251,7 +253,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
             {statusCounts && statusCounts[tab.value] > 0 && (
               <Badge variant={tab.value === "pending" ? "default" : "secondary"} className="text-[0.55rem] px-1.5 py-0 h-4 min-w-[1.2rem] justify-center">
                 {statusCounts[tab.value]}
@@ -264,11 +266,11 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
       <section className="mb-6 grid gap-4 md:grid-cols-[2fr_1fr]">
         <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-sm backdrop-blur">
           <p className="font-mono-light text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
-            Moderazione live
+            {t("admin.moderationLive")}
           </p>
-          <h1 className="mt-2 text-3xl leading-tight md:text-4xl">Anticamera curatoriale</h1>
+          <h1 className="mt-2 text-3xl leading-tight md:text-4xl">{t("admin.anticameraCuratoriale")}</h1>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-            Filtra, scorri e modera velocemente: ogni cavapendolata può essere approvata, rifiutata o nascosta in un click.
+            {t("admin.moderationHint")}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {MEDIA_FILTERS.map((f) => (
@@ -281,7 +283,7 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
                     : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {f === "all" ? "Tutti" : f}
+                {f === "all" ? t("admin.tutti") : f}
               </button>
             ))}
           </div>
@@ -302,18 +304,18 @@ const Anticamera = ({ statusFilter = "pending" }: { statusFilter?: StatusFilter 
           <Input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Cerca titolo, nota o firma"
+            placeholder={t("admin.searchPlaceholder")}
             className="max-w-sm border-input bg-background"
           />
           <p className="font-mono-light text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground">
-            {filteredOfferings.length} risultati
+            {filteredOfferings.length} {t("admin.results")}
           </p>
         </div>
 
         {isLoading ? (
-          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Carico cavapendolate…</p>
+          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">{t("admin.loadingOfferings")}</p>
         ) : filteredOfferings.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">Nessuna cavapendolata in questa vista.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground/70 italic">{t("admin.noOfferings")}</p>
         ) : (
           <div className="space-y-3">
             {filteredOfferings.map((offering) => (

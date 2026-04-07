@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Sparkles, Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -895,6 +896,7 @@ function getFrameSize(offering: Offering) {
 }
 
 function FramePreview({ offering }: { offering: Offering }) {
+  const { t } = useTranslation();
   const { width, height } = getFrameSize(offering);
   const previewTexture = useImageTexture(
     offering.media_type === "image" ? offering.file_url : null,
@@ -920,7 +922,7 @@ function FramePreview({ offering }: { offering: Offering }) {
   }
 
   if (offering.media_type === "text") {
-    const content = offering.text_content || offering.title || "Cavapendolata";
+    const content = offering.text_content || offering.title || t("gallery.framePreview.fallbackTitle");
     const clipped =
       content.length > 110 ? `${content.slice(0, 108).trim()}…` : content;
 
@@ -936,7 +938,7 @@ function FramePreview({ offering }: { offering: Offering }) {
     return (
       <PreviewLabel
         width={width - 0.35}
-        lines={["♪", offering.title || "Audio", "Da ascoltare vicino"]}
+        lines={["♪", offering.title || t("gallery.framePreview.audio"), t("gallery.framePreview.audioHint")]}
       />
     );
   }
@@ -948,7 +950,7 @@ function FramePreview({ offering }: { offering: Offering }) {
     return (
       <PreviewLabel
         width={width - 0.35}
-        lines={["↗", offering.title || "Link", domain || "apri fuori stanza"]}
+        lines={["↗", offering.title || t("gallery.framePreview.link"), domain || t("gallery.framePreview.linkHint")]}
       />
     );
   }
@@ -957,7 +959,7 @@ function FramePreview({ offering }: { offering: Offering }) {
     return (
       <PreviewLabel
         width={width - 0.35}
-        lines={["PDF", offering.title || "Documento", "prima pagina sospesa"]}
+        lines={["PDF", offering.title || t("gallery.framePreview.pdf"), t("gallery.framePreview.pdfHint")]}
       />
     );
   }
@@ -965,7 +967,7 @@ function FramePreview({ offering }: { offering: Offering }) {
   return (
     <PreviewLabel
       width={width - 0.35}
-      lines={[offering.title || "Cavapendolata"]}
+      lines={[offering.title || t("gallery.framePreview.fallbackTitle")]}
     />
   );
 }
