@@ -67,7 +67,7 @@ export const pageContentRepo = {
         console.warn("[pageContentRepo] listSlugs error:", error.message);
         return [];
       }
-      const slugs = [...new Set((data || []).map((r: { page_slug: string }) => r.page_slug))];
+      const slugs = [...new Set((data || []).map((r: any) => r.page_slug))] as string[];
       return slugs;
     } catch (e) {
       console.warn("[pageContentRepo] listSlugs exception:", e);

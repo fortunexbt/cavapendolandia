@@ -69,7 +69,7 @@ export interface GalleryCanvasProps {
     invertLookFactor: 1 | -1;
     reducedCameraMotion: boolean;
   };
-  viewport: { width: number; height: number; shortSide: number; longSide: number; dpr: number; context: string; fullscreen: boolean };
+  viewport: ViewportMetrics;
   fullscreen: boolean;
   keysDownRef: React.MutableRefObject<Set<string>>;
   interactRequestedRef: React.MutableRefObject<boolean>;
@@ -77,7 +77,7 @@ export interface GalleryCanvasProps {
   jumpRequestedRef: React.MutableRefObject<boolean>;
   meadowCreatureRuntimeRef: React.MutableRefObject<Record<string, MeadowCreatureRuntimeSnapshot>>;
   meadowDebugPoseRef: React.MutableRefObject<((pose: { planarX: number; planarZ: number; yaw?: number; pitch?: number; jumpHeight?: number }) => void) | null>;
-  snapshotRef: React.MutableRefObject<Record<string, unknown>>;
+  snapshotRef: React.MutableRefObject<WorldStateSnapshot>;
   stepRef: React.RefObject<((deltaSeconds: number) => void) | null>;
   stepReadyRef: React.MutableRefObject<boolean>;
   stepWaitersRef: React.MutableRefObject<Array<() => void>>;

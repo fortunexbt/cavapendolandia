@@ -56,6 +56,7 @@ const itemVariants: Variants = {
 };
 
 const InitiativeBanner = () => {
+  const { t } = useTranslation();
   const { data: initiative, isLoading } = useActiveInitiative();
 
   if (isLoading || !initiative) return null;

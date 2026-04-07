@@ -22,7 +22,7 @@ const springTransition = (damping: number) => ({
 
 const tweenTransition = {
   duration: 0.25,
-  ease: "easeOut",
+  ease: "easeOut" as const,
 };
 
 export const ModalBackdrop: FC<ModalBackdropProps> = ({

@@ -285,7 +285,7 @@ function CavapendoGallery({
   const [nearbyCreatureIds, setNearbyCreatureIds] = useState<string[]>([]);
   const [visibleLandmarkIds, setVisibleLandmarkIds] = useState<string[]>([]);
   const [horizonLandmarkIds, setHorizonLandmarkIds] = useState<string[]>([]);
-  const [currentSector, setCurrentSector] = useState<MeadowSector | null>(null);
+  const [currentSector, setCurrentSector] = useState<string | null>(null);
   const [zoneTransition, setZoneTransition] = useState<{
     label: string;
     detail: string;
