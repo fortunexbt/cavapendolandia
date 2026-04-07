@@ -451,7 +451,7 @@ function CavapendoGallery({
   const ambienceState = useAmbientAudio({
     enabled: hasInteracted,
     zone,
-    sector: currentSector,
+    sector: currentSector as any,
     nearbyTriggerId,
     nearbyDepositId,
     volume: ambienceVolume,
@@ -876,7 +876,7 @@ function CavapendoGallery({
     snapshotRef.current = {
       ...snapshotRef.current,
       zone,
-      sector: currentSector,
+      sector: currentSector as any,
       deviceClass,
       renderProfile: activeRenderProfile.id,
       resolvedRenderProfile: resolvedPreferredProfile.id,

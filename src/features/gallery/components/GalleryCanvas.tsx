@@ -1,7 +1,7 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import type { ResolvedRenderProfile } from "@/components/cavapendo-gallery/runtime";
-import type { Offering, DepositSite } from "@/components/cavapendo-gallery/types";
+import type { ResolvedRenderProfile, ViewportMetrics } from "@/components/cavapendo-gallery/runtime";
+import type { Offering, DepositSite, WorldStateSnapshot } from "@/components/cavapendo-gallery/types";
 import type { MeadowCreatureRuntimeSnapshot } from "@/components/cavapendo-gallery/types";
 import { GalleryScene } from "@/components/cavapendo-gallery/gallery-scene";
 import { MeadowScene as PremiumMeadowScene } from "@/components/cavapendo-gallery/meadow-scene";
