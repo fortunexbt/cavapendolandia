@@ -32,7 +32,14 @@ const PratoEditorContent = () => {
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const { elements, isLoading, createElement, updateElement, deleteElement, isCreating } =
-    useMeadowElements();
+    useMeadowElements({
+      created: t("admin.meadowElementCreated"),
+      updated: t("admin.meadowElementUpdated"),
+      deleted: t("admin.meadowElementDeleted"),
+      createError: t("admin.meadowElementCreateError"),
+      updateError: t("admin.meadowElementUpdateError"),
+      deleteError: t("admin.meadowElementDeleteError"),
+    });
 
   const [form, setForm] = useState({
     element_type: "tree" as ElementType,

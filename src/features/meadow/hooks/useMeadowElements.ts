@@ -2,8 +2,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { meadowElementsRepo } from "../api/meadowElements.repo";
 import { toast } from "sonner";
 
-export const useMeadowElements = () => {
+export type MeadowToastMessages = {
+  created: string;
+  updated: string;
+  deleted: string;
+  createError: string;
+  updateError: string;
+  deleteError: string;
+};
+
+const DEFAULT_MESSAGES: MeadowToastMessages = {
+  created: "Elemento creato",
+  updated: "Elemento aggiornato",
+  deleted: "Elemento eliminato",
+  createError: "Errore durante la creazione",
+  updateError: "Errore durante l'aggiornamento",
+  deleteError: "Errore durante l'eliminazione",
+};
+
+export const useMeadowElements = (messages: Partial<MeadowToastMessages> = {}) => {
   const queryClient = useQueryClient();
+  const msgs = { ...DEFAULT_MESSAGES, ...messages };
 
   const { data: elements = [], isLoading } = useQuery({
     queryKey: ["meadow-elements"],
@@ -15,9 +34,9 @@ export const useMeadowElements = () => {
       meadowElementsRepo.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meadow-elements"] });
-      toast.success("Elemento creato");
+      toast.success(msgs.created);
     },
-    onError: () => toast.error("Errore durante la creazione"),
+    onError: () => toast.error(msgs.createError),
   });
 
   const updateMutation = useMutation({
@@ -25,18 +44,18 @@ export const useMeadowElements = () => {
       meadowElementsRepo.update(id, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meadow-elements"] });
-      toast.success("Elemento aggiornato");
+      toast.success(msgs.updated);
     },
-    onError: () => toast.error("Errore durante l'aggiornamento"),
+    onError: () => toast.error(msgs.updateError),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => meadowElementsRepo.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meadow-elements"] });
-      toast.success("Elemento eliminato");
+      toast.success(msgs.deleted);
     },
-    onError: () => toast.error("Errore durante l'eliminazione"),
+    onError: () => toast.error(msgs.deleteError),
   });
 
   return {

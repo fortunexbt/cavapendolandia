@@ -428,7 +428,13 @@
     "demoOffer2Note": "Pendono e oscillano...",
     "demoOffer2Author": "Giulia",
     "demoInitiativePrompt": "I cavapendoli oggi hanno bisogno di scarpe nuove",
-    "demoInitiativeDetails": "Qualcuno ha visto le loro scarpe?"
+    "demoInitiativeDetails": "Qualcuno ha visto le loro scarpe?",
+    "meadowElementCreated": "Elemento creato",
+    "meadowElementUpdated": "Elemento aggiornato",
+    "meadowElementDeleted": "Elemento eliminato",
+    "meadowElementCreateError": "Errore durante la creazione",
+    "meadowElementUpdateError": "Errore durante l'aggiornamento",
+    "meadowElementDeleteError": "Errore durante l'eliminazione"
   },
   "adminLogin": {
     "title": "Admin",
