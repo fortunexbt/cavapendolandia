@@ -8,6 +8,9 @@
     "contatti": "Contatti"
   },
   "theme": {
+    "auto": "Automatico",
+    "lightLabel": "Chiaro",
+    "darkLabel": "Scuro",
     "light": "Passa al tema chiaro",
     "dark": "Passa al tema scuro"
   },
