@@ -356,5 +356,21 @@
     "authError": "Errore di autenticazione",
     "connectionError": "Connessione al backend non disponibile.",
     "authenticatedNoAccess": "Accesso effettuato ma non autorizzato come admin."
+  },
+  "notFound": {
+    "roomEmpty": "Stanza vuota",
+    "title": "404",
+    "description": "Questa stanza non esiste ancora.",
+    "backHome": "Torna alla soglia"
+  },
+  "offeringCard": {
+    "openPdf": "Apri PDF",
+    "openLink": "Apri link",
+    "offering": "Offerta",
+    "anonymous": "Anonimo"
+  },
+  "footer": {
+    "removal": "Rimozione",
+    "tagline": "Cavapendolandia · 2026"
   }
 }

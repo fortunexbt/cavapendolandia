@@ -356,5 +356,21 @@
     "authError": "Login error.",
     "connectionError": "Backend connection unavailable.",
     "authenticatedNoAccess": "You are authenticated but not yet authorized as admin."
+  },
+  "notFound": {
+    "roomEmpty": "Empty room",
+    "title": "404",
+    "description": "This room does not exist yet.",
+    "backHome": "Return to the threshold"
+  },
+  "offeringCard": {
+    "openPdf": "Open PDF",
+    "openLink": "Open link",
+    "offering": "Offering",
+    "anonymous": "Anonymous"
+  },
+  "footer": {
+    "removal": "Removal",
+    "tagline": "Cavapendolandia · 2026"
   }
 }

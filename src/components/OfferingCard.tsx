@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface OfferingCardProps {
   id: string;
@@ -31,6 +32,7 @@ const OfferingCard = ({
   curatorialNote,
   full = false,
 }: OfferingCardProps) => {
+  const { t } = useTranslation();
   const linkHost = (() => {
     if (!linkUrl) return "";
     try {
@@ -48,7 +50,7 @@ const OfferingCard = ({
         return fileUrl ? (
           <img
             src={fileUrl}
-            alt={title || "Offerta"}
+            alt={title || t("offeringCard.offering")}
             className="w-full max-h-[70vh] object-contain"
             loading="lazy"
           />
@@ -84,7 +86,7 @@ const OfferingCard = ({
               rel="noopener noreferrer"
               className="font-mono-light text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
             >
-              Apri PDF ↗
+              {t("offeringCard.openPdf")} ↗
             </a>
           </div>
         ) : null;
@@ -97,7 +99,7 @@ const OfferingCard = ({
               rel="noopener noreferrer"
               className="block font-mono-light text-muted-foreground hover:text-foreground transition-colors break-all"
             >
-              <span className="text-sm">{title || linkHost || "Apri link"}</span>
+              <span className="text-sm">{title || linkHost || t("offeringCard.openLink")}</span>
               <span className="block text-xs text-muted-foreground/50 mt-2">
                 {linkHost || linkUrl} ↗
               </span>
@@ -111,10 +113,10 @@ const OfferingCard = ({
 
   const authorDisplay =
     authorType === "anonymous"
-      ? "Anonimo"
+      ? t("offeringCard.anonymous")
       : authorType === "instagram"
-        ? `@${safeAuthorName || "anonimo"}`
-        : authorName || "Anonimo";
+        ? `@${safeAuthorName || t("offeringCard.anonymous")}`
+        : authorName || t("offeringCard.anonymous");
 
   const content = (
     <div className={`text-center ${full ? "" : "cursor-pointer group"}`}>
