@@ -259,7 +259,8 @@ export function useGalleryController({
     setGuideExpanded(false);
     await requestElementFullscreen(wrapper);
     if (isMobile && viewport.width < viewport.height) {
-      await screen.orientation?.lock?.("landscape").catch(() => undefined);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (screen.orientation as any)?.lock?.("landscape").catch(() => undefined);
     }
   }, [isMobile, viewport.height, viewport.width]);
 
