@@ -45,7 +45,7 @@ const Iniziative = () => {
         initiatives={initiatives}
         loading={isLoading}
         busy={isCreating}
-        onCreate={(payload) => createInitiative(payload)}
+        onCreate={(payload) => createInitiative({ ...payload, created_by: user.id })}
         onToggle={(id, isActive) => toggleInitiative({ id, isActive })}
         onDelete={(id) => deleteInitiative(id)}
       />

@@ -6,6 +6,7 @@ export type Initiative = {
   details: string | null;
   is_active: boolean;
   created_at: string;
+  updated_at?: string;
   created_by?: string | null;
 };
 
