@@ -325,6 +325,7 @@
     "stepSignature": "Signature",
     "stepConsent": "Consent",
     "errorMissingMediaType": "Choose what to leave before sending.",
+    "errorHoneypot": "Submission blocked.",
     "errorInvalidLink": "Enter a complete link.",
     "errorTextTooLong": "Text exceeds maximum allowed length.",
     "errorInvalidInstagram": "Invalid Instagram handle.",

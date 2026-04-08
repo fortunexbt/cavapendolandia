@@ -325,6 +325,7 @@
     "stepSignature": "Firma",
     "stepConsent": "Consenso",
     "errorMissingMediaType": "Scegli cosa lasciare prima di inviare.",
+    "errorHoneypot": "Invio bloccato.",
     "errorInvalidLink": "Inserisci un link completo.",
     "errorTextTooLong": "Il testo supera la lunghezza massima consentita.",
     "errorInvalidInstagram": "Firma Instagram non valida.",
