@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { supabase } from "@/integrations/supabase/client";
 import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
@@ -46,7 +47,7 @@ const Contatti = () => {
       visitor_email: email || null,
       message,
       category,
-      locale: "it",
+      locale: i18n.language || "it",
     });
 
     if (error) {
