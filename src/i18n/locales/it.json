@@ -554,5 +554,11 @@
   "offeringCard": {
     "openPdf": "Apri PDF",
     "openLink": "Apri link"
+  },
+  "app": {
+    "loading": {
+      "title": "Sto aprendo la soglia",
+      "message": "Sto riallineando le stanze, le superfici dipinte e il passaggio fra galleria e prato."
+    }
   }
 }

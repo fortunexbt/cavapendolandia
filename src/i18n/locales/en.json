@@ -554,5 +554,11 @@
   "offeringCard": {
     "openPdf": "Open PDF",
     "openLink": "Open link"
+  },
+  "app": {
+    "loading": {
+      "title": "Opening the threshold",
+      "message": "Realigning rooms, painted surfaces, and the passage between gallery and meadow."
+    }
   }
 }
