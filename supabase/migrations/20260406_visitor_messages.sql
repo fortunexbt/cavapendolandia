@@ -4,16 +4,16 @@ CREATE TYPE public.visitor_message_status AS ENUM ('unread', 'read', 'archived')
 
 CREATE TABLE public.visitor_messages (
   id uuid primary key default gen_random_uuid(),
-  name text,
-  email text,
+  visitor_name text,
+  visitor_email text,
   message text not null,
   category public.visitor_message_category not null,
   locale text not null default 'it',
-  status public.visitor_message_status not null default 'unread',
+  is_read boolean not null default false,
   created_at timestamptz not null default now()
 );
 
-ALTER ENABLE ROW LEVEL SECURITY ON public.visitor_messages;
+ALTER TABLE public.visitor_messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_insert_visitor_messages" ON public.visitor_messages
   FOR INSERT WITH CHECK (true);
 CREATE POLICY "admin_read_visitor_messages" ON public.visitor_messages

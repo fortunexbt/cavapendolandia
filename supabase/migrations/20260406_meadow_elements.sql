@@ -22,7 +22,7 @@ CREATE TABLE public.meadow_elements (
   updated_at timestamptz not null default now()
 );
 
-ALTER ENABLE ROW LEVEL SECURITY ON public.meadow_elements;
+ALTER TABLE public.meadow_elements ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_meadow_elements" ON public.meadow_elements
   FOR SELECT USING (true);
 CREATE POLICY "admin_write_meadow_elements" ON public.meadow_elements
