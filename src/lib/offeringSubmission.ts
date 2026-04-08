@@ -64,7 +64,7 @@ export type OfferingSubmissionResult =
         | "file_too_large"
         | "upload_failed"
         | "insert_failed";
-      message: string;
+      errorKey: string;
     };
 
 export const ACCEPT_MAP: Record<string, string> = {
@@ -154,7 +154,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "missing_media_type",
-      message: "Scegli cosa lasciare prima di inviare.",
+      errorKey: "wizard.errorMissingMediaType",
     };
   }
 
@@ -162,7 +162,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "honeypot",
-      message: "Invio bloccato.",
+      errorKey: "wizard.errorHoneypot",
     };
   }
 
@@ -170,7 +170,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "invalid_link",
-      message: "Inserisci un link completo.",
+      errorKey: "wizard.errorInvalidLink",
     };
   }
 
@@ -181,7 +181,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "text_too_long",
-      message: "Il testo supera la lunghezza massima consentita.",
+      errorKey: "wizard.errorTextTooLong",
     };
   }
 
@@ -192,7 +192,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "invalid_instagram",
-      message: "Firma Instagram non valida.",
+      errorKey: "wizard.errorInvalidInstagram",
     };
   }
 
@@ -203,7 +203,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "rate_limited",
-      message: "Hai inviato molte offerte. Riprova tra qualche minuto.",
+      errorKey: "wizard.errorRateLimited",
     };
   }
 
@@ -216,7 +216,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "file_too_large",
-      message: "Il file supera il limite di 100 MB.",
+      errorKey: "wizard.errorFileTooLarge",
     };
   }
 
@@ -233,7 +233,7 @@ export async function submitOfferingSubmission(
       return {
         ok: false,
         reason: "upload_failed",
-        message: uploadError.message || "Upload non riuscito.",
+        errorKey: "wizard.errorUploadFailed",
       };
     }
   }
@@ -269,7 +269,7 @@ export async function submitOfferingSubmission(
     return {
       ok: false,
       reason: "insert_failed",
-      message: error.message || "Qualcosa è andato storto. Riprova.",
+      errorKey: "wizard.errorInsertFailed",
     };
   }
 
