@@ -439,6 +439,11 @@
     "elementUpdateError": "Errore durante l'aggiornamento",
     "elementDeleted": "Elemento eliminato",
     "elementDeleteError": "Errore durante l'eliminazione",
-    "navIniziative": "Iniziative"
+    "navIniziative": "Iniziative",
+    "prelude": {
+      "subtitle": "Un luogo delicato",
+      "title": "CAVAPENDOLANDIA",
+      "body": "Entri in un mondo esplorabile stanza per stanza, dove la galleria si apre nel prato e le cavapendolate restano a galleggiare nell'aria."
+    }
   }
 }

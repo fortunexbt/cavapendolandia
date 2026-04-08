@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PRELUDE_SESSION_KEY = "cavapendolandia-prelude-seen";
 
@@ -8,6 +9,7 @@ interface CavapendoliPreludeProps {
 }
 
 const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
+  const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   // Use sessionStorage so prelude stays dismissed across navigations within the same browser session
   const alreadySeen = sessionStorage.getItem(PRELUDE_SESSION_KEY) === "1";
@@ -75,7 +77,7 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
 
           <div className="relative z-10 flex flex-col items-center">
             <p className="mb-6 font-mono-light text-xs uppercase tracking-[0.25em] text-foreground/70 md:mb-8">
-              Un luogo delicato
+              {t("prato.prelude.subtitle")}
             </p>
 
             <motion.h2
@@ -84,7 +86,7 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
               transition={{ duration: 0.8 }}
               className="text-4xl tracking-[0.14em] md:text-7xl"
             >
-              CAVAPENDOLANDIA
+              {t("prato.prelude.title")}
             </motion.h2>
 
             <motion.div
@@ -151,8 +153,7 @@ const CavapendoliPrelude = ({ onComplete }: CavapendoliPreludeProps) => {
             </motion.div>
 
             <p className="max-w-xl px-4 text-center text-base text-muted-foreground md:text-lg">
-              Entri in un mondo esplorabile stanza per stanza, dove la galleria si apre
-              nel prato e le cavapendolate restano a galleggiare nell'aria.
+              {t("prato.prelude.body")}
             </p>
 
             <div className="mx-auto mt-8 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-muted md:mt-10 md:max-w-md">

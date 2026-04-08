@@ -439,6 +439,11 @@
     "elementUpdateError": "Error updating element",
     "elementDeleted": "Element deleted",
     "elementDeleteError": "Error deleting element",
-    "navIniziative": "Iniziative"
+    "navIniziative": "Iniziative",
+    "prelude": {
+      "subtitle": "A delicate place",
+      "title": "CAVAPENDOLANDIA",
+      "body": "You enter a world you can explore room by room, where the gallery opens into the meadow and the cavapendolate float suspended in the air."
+    }
   }
 }
