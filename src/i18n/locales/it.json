@@ -90,7 +90,9 @@
       "loadingStage3": "Stabilisco il primo frame",
       "loadError": "Errore di caricamento",
       "loadErrorRetry": "Ricarica la pagina per ricostruire il mondo.",
-      "loadErrorTitle": "Caricamento interrotto"
+      "loadErrorTitle": "Caricamento interrotto",
+      "webglUnavailable": "WebGL non disponibile",
+      "webglUnavailableHint": "La grafica 3D richiede WebGL. Prova con un altro browser."
     },
     "zoneTransition": {
       "doorOutdoor": "Varco · ESTERNO",

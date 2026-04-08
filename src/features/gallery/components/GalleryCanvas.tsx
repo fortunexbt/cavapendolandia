@@ -1,5 +1,6 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
+import { useTranslation } from "react-i18next";
 import type { ResolvedRenderProfile, ViewportMetrics } from "@/components/cavapendo-gallery/runtime";
 import type { Offering, DepositSite, WorldStateSnapshot } from "@/components/cavapendo-gallery/types";
 import type { MeadowCreatureRuntimeSnapshot } from "@/components/cavapendo-gallery/types";
@@ -13,10 +14,10 @@ import {
 import { EYE_HEIGHT } from "@/components/cavapendo-gallery/config";
 
 class WebGLCrashBoundary extends React.Component<
-  React.ComponentProps<"div">,
+  React.ComponentProps<"div"> & { t: ReturnType<typeof useTranslation>["t"] },
   { hasError: boolean }
 > {
-  constructor(props: React.ComponentProps<"div">) {
+  constructor(props: React.ComponentProps<"div"> & { t: ReturnType<typeof useTranslation>["t"] }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -31,14 +32,15 @@ class WebGLCrashBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
+      const { t } = this.props;
       return (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#efe3d7]">
           <div className="text-center">
             <p className="text-sm font-light tracking-widest text-[#7d5f47] uppercase">
-              WebGL non disponibile
+              {t("gallery.shell.webglUnavailable")}
             </p>
             <p className="mt-2 text-xs text-[#a08060]">
-              La grafica 3D richiede WebGL. Prova con un altro browser.
+              {t("gallery.shell.webglUnavailableHint")}
             </p>
           </div>
         </div>
@@ -104,6 +106,7 @@ export interface GalleryCanvasProps {
 }
 
 export function GalleryCanvas(props: GalleryCanvasProps) {
+  const { t } = useTranslation();
   const {
     zone,
     isMobile,
@@ -154,7 +157,7 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
 
   return (
     <div className="absolute inset-0">
-      <WebGLCrashBoundary>
+      <WebGLCrashBoundary t={t}>
         <Canvas
           camera={{ position: [0, EYE_HEIGHT, 8], fov: isMobile ? 62 : 56 }}
           dpr={renderProfile.dpr}

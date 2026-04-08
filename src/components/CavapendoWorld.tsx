@@ -4,6 +4,7 @@ import { useReducedMotion } from "framer-motion";
 import React, { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 
 interface CavapendoWorldProps {
   className?: string;
@@ -334,8 +335,11 @@ function CavapendoWorld({ className = "" }: CavapendoWorldProps) {
   );
 }
 
-class WebGLCrashBoundary extends React.Component<Record<string, unknown>, { hasError: boolean }> {
-  constructor(props: Record<string, unknown>) {
+class WebGLCrashBoundary extends React.Component<
+  Record<string, unknown> & { t: ReturnType<typeof useTranslation>["t"] },
+  { hasError: boolean }
+> {
+  constructor(props: Record<string, unknown> & { t: ReturnType<typeof useTranslation>["t"] }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -350,14 +354,15 @@ class WebGLCrashBoundary extends React.Component<Record<string, unknown>, { hasE
 
   render() {
     if (this.state.hasError) {
+      const { t } = this.props;
       return (
         <div className="absolute inset-0 flex items-center justify-center bg-[#efe3d7]">
           <div className="text-center">
             <p className="text-sm font-light tracking-widest text-[#7d5f47] uppercase">
-              WebGL non disponibile
+              {t("gallery.shell.webglUnavailable")}
             </p>
             <p className="mt-2 text-xs text-[#a08060]">
-              La grafica 3D richiede WebGL. Prova con un altro browser.
+              {t("gallery.shell.webglUnavailableHint")}
             </p>
           </div>
         </div>
@@ -368,8 +373,9 @@ class WebGLCrashBoundary extends React.Component<Record<string, unknown>, { hasE
 }
 
 function WebGLCanvasFallback(props: React.ComponentProps<typeof Canvas>) {
+  const { t } = useTranslation();
   return (
-    <WebGLCrashBoundary>
+    <WebGLCrashBoundary t={t}>
       <Canvas
         {...props}
         onCreated={({ gl }) => {

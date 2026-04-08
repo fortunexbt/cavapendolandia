@@ -90,7 +90,9 @@
       "loadingStage3": "Stabilizing first frame",
       "loadError": "Loading error",
       "loadErrorRetry": "Reload the page to rebuild the world.",
-      "loadErrorTitle": "Loading interrupted"
+      "loadErrorTitle": "Loading interrupted",
+      "webglUnavailable": "WebGL not available",
+      "webglUnavailableHint": "3D graphics require WebGL. Try a different browser."
     },
     "zoneTransition": {
       "doorOutdoor": "Passage · OUTDOOR",
