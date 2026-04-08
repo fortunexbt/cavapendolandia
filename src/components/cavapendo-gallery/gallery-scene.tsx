@@ -1064,7 +1064,7 @@ function FrameCard({
         anchorX="center"
         anchorY="middle"
       >
-        {offering.title || "Senza titolo"}
+        {offering.title || t("gallery.framePreview.fallbackTitle")}
       </Text>
 
       <mesh position={[0, height / 2 + 0.02, 0.09]}>
