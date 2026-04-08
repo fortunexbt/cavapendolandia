@@ -21,16 +21,17 @@
       "loadErrorTitle": "Caricamento interrotto"
     },
     "zoneTransition": {
-      "doorOutdoor": "Varco · ESTERNO",
-      "doorReturn": "Rientro · GALLERIA",
+      "doorOutdoor": "Passaggio · ESTERNO",
+      "doorReturn": "Ritorno · GALLERIA",
       "doorDefault": "Soglia · USCITA",
-      "openRitual": "Apri rito",
+      "openRitual": "Apri rituale",
       "ambienceAlive": "Ambiente vivo",
       "ambienceActive": "Ambiente attivo",
-      "transitionToMeadow": "Attraverso ESTERNO",
+      "transitionToMeadow": "Verso ESTERNO",
       "transitionToMeadowDetail": "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
-      "transitionToGallery": "Rientro nella galleria",
-      "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere."
+      "transitionToGallery": "Torna alla galleria",
+      "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere.",
+      "header": "Soglia"
     },
     "hudBanner": {
       "pillLabel": "Un pensiero",
@@ -180,6 +181,52 @@
       "title": "Carico la galleria",
       "description": "Preparo il prato per l'esplorazione. Attendi.",
       "stage": "Tappa {{index}} di {{total}}"
+    },
+    "actions": {
+      "settings": "Impostazioni",
+      "offer": "Offri"
+    },
+    "mobileControls": {
+      "camera": "Fotocamera",
+      "look": "Guarda",
+      "move": "Muovi",
+      "movement": "Movimento",
+      "steps": "Passi"
+    },
+    "mobileOrientation": {
+      "continueAnyway": "Continua comunque",
+      "description": "Per la migliore esperienza, ruota il dispositivo in modalità orizzontale.",
+      "gotIt": "Capito",
+      "header": "Ruota il dispositivo",
+      "left": "Sinistra",
+      "lookActions": "Guarda",
+      "movement": "Movimento",
+      "right": "Destra",
+      "title": "Orizzontale consigliato"
+    },
+    "playerHud": {
+      "currentObjective": "Obiettivo corrente",
+      "reopenNote": "Riapri nota",
+      "ritualPlace": "Luogo del rituale"
+    },
+    "settings": {
+      "activeNow": "Attivo ora",
+      "ambienceVolume": "Volume ambiente",
+      "controls": "Controlli",
+      "enterFullscreen": "Entra fullscreen",
+      "exitFullscreen": "Esci fullscreen",
+      "fullCamera": "Fotocamera completa",
+      "hudAudio": "Audio HUD",
+      "invertedLook": "Sguardo invertito",
+      "joystickRadius": "Raggio joystick",
+      "lookTouch": "Touch sguardo",
+      "mouse": "Mouse",
+      "muteAudio": "Muta audio",
+      "normalLook": "Sguardo normale",
+      "renderProfile": "Profilo rendering",
+      "reopenGuide": "Riapri guida",
+      "softCamera": "Fotocamera morbida",
+      "unmuteAudio": "Riattiva audio"
     }
   },
   "nav": {
@@ -257,7 +304,9 @@
     "rule3": "Niente dati personali di terzi.",
     "rule4": "Non è un social: qui non si giudica.",
     "rule5": "Le cavapendolate entrano dopo una breve attesa.",
-    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui."
+    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui.",
+    "linkOffer": "Offri",
+    "linkRemoval": "Rimozione"
   },
   "offri": {
     "title": "Offri",

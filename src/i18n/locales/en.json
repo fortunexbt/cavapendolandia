@@ -30,7 +30,8 @@
       "transitionToMeadow": "Through OUTDOOR",
       "transitionToMeadowDetail": "The eyelids open on the globe. The meadow prepares beyond the threshold.",
       "transitionToGallery": "Return to gallery",
-      "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works."
+      "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works.",
+      "header": "Threshold"
     },
     "hudBanner": {
       "pillLabel": "A thought",
@@ -180,6 +181,52 @@
       "title": "Loading gallery",
       "description": "Preparing the meadow for exploration. Please wait.",
       "stage": "Stage {{index}} of {{total}}"
+    },
+    "actions": {
+      "settings": "Settings",
+      "offer": "Offer"
+    },
+    "mobileControls": {
+      "camera": "Camera",
+      "look": "Look",
+      "move": "Move",
+      "movement": "Movement",
+      "steps": "Steps"
+    },
+    "mobileOrientation": {
+      "continueAnyway": "Continue anyway",
+      "description": "For the best experience, rotate your device to landscape mode.",
+      "gotIt": "Got it",
+      "header": "Rotate your device",
+      "left": "Left",
+      "lookActions": "Look",
+      "movement": "Movement",
+      "right": "Right",
+      "title": "Landscape recommended"
+    },
+    "playerHud": {
+      "currentObjective": "Current objective",
+      "reopenNote": "Reopen note",
+      "ritualPlace": "Ritual place"
+    },
+    "settings": {
+      "activeNow": "Active now",
+      "ambienceVolume": "Ambience volume",
+      "controls": "Controls",
+      "enterFullscreen": "Enter fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "fullCamera": "Full camera",
+      "hudAudio": "HUD audio",
+      "invertedLook": "Inverted look",
+      "joystickRadius": "Joystick radius",
+      "lookTouch": "Look touch",
+      "mouse": "Mouse",
+      "muteAudio": "Mute audio",
+      "normalLook": "Normal look",
+      "renderProfile": "Render profile",
+      "reopenGuide": "Reopen guide",
+      "softCamera": "Soft camera",
+      "unmuteAudio": "Unmute audio"
     }
   },
   "nav": {
@@ -257,7 +304,9 @@
     "rule3": "No third-party personal data.",
     "rule4": "It is not a social space: there is no judgment here.",
     "rule5": "Cavapendolate enter after a brief wait.",
-    "rule6": "We reserve the right not to publish what does not belong here."
+    "rule6": "We reserve the right not to publish what does not belong here.",
+    "linkOffer": "Offer",
+    "linkRemoval": "Removal"
   },
   "offri": {
     "title": "Offer",
