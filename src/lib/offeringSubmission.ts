@@ -64,7 +64,7 @@ export type OfferingSubmissionResult =
         | "file_too_large"
         | "upload_failed"
         | "insert_failed";
-      message: string;
+      message?: string;
     };
 
 export const MEDIA_LABELS: Record<MediaType, string> = {
@@ -250,7 +250,6 @@ export async function submitOfferingSubmission(
       return {
         ok: false,
         reason: "upload_failed",
-        message: uploadError.message || "Upload non riuscito.",
       };
     }
   }
