@@ -14,7 +14,7 @@ export type MeadowElement = {
 
 export const meadowElementsRepo = {
   async listAll(): Promise<MeadowElement[]> {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("meadow_elements")
       .select("*")
       .order("created_at", { ascending: false });
@@ -23,17 +23,17 @@ export const meadowElementsRepo = {
   },
 
   async create(payload: Omit<MeadowElement, "id" | "created_at">): Promise<void> {
-    const { error } = await (supabase as any).from("meadow_elements").insert(payload);
+    const { error } = await supabase.from("meadow_elements").insert(payload);
     if (error) throw error;
   },
 
   async update(id: string, patch: Partial<Omit<MeadowElement, "id" | "created_at">>): Promise<void> {
-    const { error } = await (supabase as any).from("meadow_elements").update(patch).eq("id", id);
+    const { error } = await supabase.from("meadow_elements").update(patch).eq("id", id);
     if (error) throw error;
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await (supabase as any).from("meadow_elements").delete().eq("id", id);
+    const { error } = await supabase.from("meadow_elements").delete().eq("id", id);
     if (error) throw error;
   },
 };

@@ -58,7 +58,7 @@ function CavapendoloOrb({
       <mesh ref={meshRef} position={position} scale={1.35}>
         <icosahedronGeometry args={[1, 5]} />
         <MeshDistortMaterial
-          ref={materialRef as any}
+          ref={materialRef as React.Ref<DistortMaterialHandle>}
           color="#87644b"
           emissive="#4d3527"
           emissiveIntensity={0.24}
@@ -334,9 +334,8 @@ function CavapendoWorld({ className = "" }: CavapendoWorldProps) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-class WebGLCrashBoundary extends React.Component<any, { hasError: boolean }> {
-  constructor(props: any) {
+class WebGLCrashBoundary extends React.Component<Record<string, unknown>, { hasError: boolean }> {
+  constructor(props: Record<string, unknown>) {
     super(props);
     this.state = { hasError: false };
   }

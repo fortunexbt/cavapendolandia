@@ -168,8 +168,8 @@ describe("route smoke", () => {
     expect(
       await view.findByRole("heading", { name: /Admin/i }),
     ).toBeInTheDocument();
-    expect(view.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
-    expect(view.getByPlaceholderText(/Password/i)).toBeInTheDocument();
+    expect(view.getByPlaceholderText("adminLogin.emailPlaceholder")).toBeInTheDocument();
+    expect(view.getByPlaceholderText("adminLogin.passwordPlaceholder")).toBeInTheDocument();
     expect(view.getByRole("button", { name: /^Accedi$/i })).toBeInTheDocument();
   });
 });

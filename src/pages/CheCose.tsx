@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import PageLayout from "@/components/shared/PageLayout";
 import { usePageBlocks } from "@/features/content/hooks/usePageBlocks";
 
-const FALLBACK_PARAGRAPHS = [
-  "Un luogo dove lasciare qualcosa.",
-  "Un'immagine, un suono, un testo, un frammento.",
-  "La domanda: cosa significa Cavapendoli per te?",
-  "Non ci sono risposte giuste. Solo tracce.",
+const FALLBACK_PARAGRAPHS_KEYS = [
+  "cheCose.p1",
+  "cheCose.p2",
+  "cheCose.p3",
+  "cheCose.p4",
 ];
 
 const CheCose = () => {

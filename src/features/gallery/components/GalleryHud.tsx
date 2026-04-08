@@ -288,7 +288,7 @@ export function GalleryHud(props: GalleryHudProps) {
             exit={{ opacity: 0, y: -12 }}
             className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 rounded-full border border-[#816d5b] bg-[#130d0c]/94 px-4 py-2 text-sm italic text-[#fff3e6] backdrop-blur-xl"
           >
-            Una cavapendolata è stata lasciata in {lastDepositSiteId}.
+            {t("gallery.depositBanner", { siteId: lastDepositSiteId })}
           </motion.div>
         )}
       </AnimatePresence>

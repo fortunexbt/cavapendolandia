@@ -4,14 +4,16 @@ export type VisitorMessage = {
   id: string;
   visitor_name: string | null;
   visitor_email: string | null;
-  body: string;
+  message: string;
+  category: "domanda" | "richiesta" | "feedback";
   is_read: boolean;
+  locale: string | null;
   created_at: string;
 };
 
 export const visitorMessagesRepo = {
   async list(): Promise<VisitorMessage[]> {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from("visitor_messages")
       .select("*")
       .order("created_at", { ascending: false });
@@ -20,7 +22,7 @@ export const visitorMessagesRepo = {
   },
 
   async markAsRead(id: string): Promise<void> {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("visitor_messages")
       .update({ is_read: true })
       .eq("id", id);
@@ -28,7 +30,7 @@ export const visitorMessagesRepo = {
   },
 
   async markAllAsRead(): Promise<void> {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("visitor_messages")
       .update({ is_read: true })
       .eq("is_read", false);
@@ -36,7 +38,7 @@ export const visitorMessagesRepo = {
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await (supabase as any).from("visitor_messages").delete().eq("id", id);
+    const { error } = await supabase.from("visitor_messages").delete().eq("id", id);
     if (error) throw error;
   },
 };

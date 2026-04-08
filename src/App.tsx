@@ -15,17 +15,19 @@ type ErrorBoundaryProps = {
 
 type ErrorBoundaryState = {
   hasError: boolean;
-  error: Error | null;
 };
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
+class ErrorBoundary extends React.Component<
+  { children?: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children?: ReactNode }) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -44,13 +46,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 Cavapendolandia
               </div>
               <div className="mt-4 h-px w-20 bg-gradient-to-r from-[#f0dfc7]/75 to-transparent" />
-              <h1 className="mt-5 text-3xl font-light tracking-[0.16em] text-[#f7eee3]">
-                Qualcosa si è rotto
-              </h1>
-              <p className="mt-4 text-sm leading-relaxed text-[#dbcbbc]">
-                Un errore imprevisto ha interrotto il cammino. Ricarica la pagina per
-                ricostruire il mondo.
-              </p>
+              <ErrorBoundaryContent />
             </div>
           </div>
         </div>
@@ -59,6 +55,20 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
     return this.props.children;
   }
+}
+
+function ErrorBoundaryContent() {
+  const { t } = useTranslation();
+  return (
+    <>
+      <h1 className="mt-5 text-3xl font-light tracking-[0.16em] text-[#f7eee3]">
+        {t("error.title")}
+      </h1>
+      <p className="mt-4 text-sm leading-relaxed text-[#dbcbbc]">
+        {t("error.message")}
+      </p>
+    </>
+  );
 }
 const Index = lazy(() => import("./pages/Index"));
 const Entra = lazy(() => import("./pages/Entra"));

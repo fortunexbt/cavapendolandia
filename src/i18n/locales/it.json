@@ -70,7 +70,11 @@
   "cheCose": {
     "title": "Che cos'è",
     "linkRules": "Leggi le regole",
-    "linkRemoval": "Info rimozione"
+    "linkRemoval": "Info rimozione",
+    "p1": "Un luogo dove lasciare qualcosa.",
+    "p2": "Un'immagine, un suono, un testo, un frammento.",
+    "p3": "La domanda: cosa significa Cavapendoli per te?",
+    "p4": "Non ci sono risposte giuste. Solo tracce."
   },
   "regole": {
     "title": "Regole",
