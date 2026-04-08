@@ -65,6 +65,7 @@ export type OfferingSubmissionResult =
         | "upload_failed"
         | "insert_failed";
       message?: string;
+      reasonKey?: string;
     };
 
 export const MEDIA_LABELS: Record<MediaType, string> = {

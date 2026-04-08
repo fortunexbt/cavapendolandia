@@ -281,7 +281,15 @@
     "stepDeposit": "Deposit",
     "stepName": "Name",
     "stepSignature": "Signature",
-    "stepConsent": "Consent"
+    "stepConsent": "Consent",
+    "wizard.errorMissingMediaType": "Choose what you want to leave before submitting.",
+    "wizard.errorHoneypot": "Submission blocked.",
+    "wizard.errorInvalidLink": "Enter a complete link.",
+    "wizard.errorTextTooLong": "The text exceeds the maximum allowed length.",
+    "wizard.errorInvalidInstagram": "Invalid Instagram handle.",
+    "wizard.errorRateLimited": "You have submitted many offerings. Try again in a few minutes.",
+    "wizard.errorFileTooLarge": "The file exceeds the 100 MB limit.",
+    "wizard.errorGeneric": "Something went wrong. Try again."
   },
   "admin": {
     "unauthorized": "Unauthorized access.",

@@ -78,10 +78,10 @@ const OfferingSubmissionWizard = ({
     setSubmitting(true);
     const result = await submitOfferingSubmission(draft);
     setSubmitting(false);
-
     if (!result.ok) {
-      if ("reason" in result && result.reason !== "honeypot") {
-        toast.error("message" in result ? result.message : t("wizard.submittingError"));
+      // Silently absorb honeypot results — no toast, no user-visible error
+      if (result.reason !== "honeypot") {
+        toast.error(t(result.reasonKey ?? "wizard.errorGeneric"));
       }
       return;
     }
