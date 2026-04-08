@@ -451,8 +451,12 @@ export function WorldController({
     canvas.style.outline = "none";
 
     const handleLockChange = () => {
+      const wasLocked = isLockedRef.current;
       isLockedRef.current = document.pointerLockElement === canvas;
-      if (!isLockedRef.current) {
+      // Only guard movement — do NOT resetTransientInputs here.
+      // resetTransientInputs kills look state and breaks continuous look.
+      // movementGuardUntilRef already covers the guard window.
+      if (wasLocked && !isLockedRef.current) {
         movementGuardUntilRef.current = performance.now() + 180;
       }
     };
