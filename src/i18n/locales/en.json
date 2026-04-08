@@ -250,7 +250,10 @@
       "openPdf": "Open PDF",
       "authorPrefix": "By",
       "sentPrefix": "Sent:",
-      "openDetail": "Open detail →"
+      "openDetail": "Open detail →",
+      "openLink": "Open link",
+      "offeringLabel": "Offering",
+      "anonimo": "Anonymous"
     },
     "ritualPrompt": {
       "ritualStop": "Ritual stop",

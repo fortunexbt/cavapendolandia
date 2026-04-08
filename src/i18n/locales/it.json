@@ -250,7 +250,10 @@
       "openPdf": "Apri il PDF",
       "authorPrefix": "Di",
       "sentPrefix": "Inviata:",
-      "openDetail": "Apri dettaglio →"
+      "openDetail": "Apri dettaglio →",
+      "openLink": "Apri link",
+      "offeringLabel": "Offerta",
+      "anonimo": "Anonimo"
     },
     "ritualPrompt": {
       "ritualStop": "Sosta rituale",
