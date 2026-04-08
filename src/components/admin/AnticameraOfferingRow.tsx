@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS } from "date-fns/locale";
 
 type StatusFilter = "pending" | "approved" | "rejected" | "hidden";
 
@@ -27,7 +27,8 @@ const AnticameraOfferingRow = ({
   loading,
   onModerate,
 }: AnticameraOfferingRowProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === "it" ? it : enUS;
 
   return (
     <article className="group rounded-2xl border border-border bg-card/70 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-foreground/35">
@@ -54,7 +55,7 @@ const AnticameraOfferingRow = ({
                 : offering.author_name || "—"}{" "}
               · {offering.media_type} ·{" "}
               {format(new Date(offering.created_at), "d MMM yyyy", {
-                locale: it,
+                locale: dateLocale,
               })}
             </p>
             {offering.note && (

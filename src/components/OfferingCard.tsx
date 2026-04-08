@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 
 interface OfferingCardProps {
@@ -32,7 +32,8 @@ const OfferingCard = ({
   curatorialNote,
   full = false,
 }: OfferingCardProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === "it" ? it : enUS;
   const linkHost = (() => {
     if (!linkUrl) return "";
     try {
@@ -141,7 +142,7 @@ const OfferingCard = ({
       <div className="flex items-center justify-center gap-3 font-mono-light text-muted-foreground/55 text-[0.68rem] uppercase tracking-[0.12em]">
         <span>{authorDisplay}</span>
         <span>·</span>
-        <time>{format(new Date(createdAt), "d MMM yyyy", { locale: it })}</time>
+        <time>{format(new Date(createdAt), "d MMM yyyy", {locale: dateLocale})}</time>
       </div>
     </div>
   );
