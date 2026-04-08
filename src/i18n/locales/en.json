@@ -170,7 +170,8 @@
       "currentObjective": "CURRENT OBJECTIVE",
       "lookAt": "Look at {{label}}",
       "ritualPlace": "Ritual place",
-      "reopenNote": "Reopen note"
+      "reopenNote": "Reopen note",
+      "nearbyPrefix": "Near"
     },
     "settings": {
       "renderProfile": "RENDER PROFILE",
@@ -429,7 +430,7 @@
     "offeringsToModerateHint": "New cavapendolate sent to the meadow will appear here. Check every day.",
     "noOfferingsPending": "No cavapendolata pending.",
     "initiativePublished": "Initiative published",
-    "initiativePublishError": "Cannot publish initiative",
+    "initiativePublishError": "Could not publish initiative",
     "initiativeDeleted": "Initiative deleted",
     "comingSoon": "coming soon",
     "prato": "Meadow",
@@ -440,7 +441,14 @@
     "noElements": "No elements in the meadow.",
     "initiatives": "Initiatives",
     "pageSaved": "Page saved",
-    "pageSaveError": "Failed to save page"
+    "pageSaveError": "Failed to save page",
+    "messageMarkReadError": "Failed to mark as read",
+    "messageAllReadSuccess": "All messages marked as read",
+    "messageDeletedSuccess": "Message deleted",
+    "messageDeleteError": "Failed to delete message",
+    "initiativeUpdated": "Initiative updated",
+    "initiativeUpdateError": "Update failed",
+    "initiativeDeleteError": "Failed to delete initiative"
   },
   "prato": {
     "elementCreated": "Element created",

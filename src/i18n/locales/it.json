@@ -170,7 +170,8 @@
       "currentObjective": "OBIETTIVO CORRENTE",
       "lookAt": "Guarda {{label}}",
       "ritualPlace": "Luogo rituale",
-      "reopenNote": "Riapri nota"
+      "reopenNote": "Riapri nota",
+      "nearbyPrefix": "Vicino a"
     },
     "settings": {
       "renderProfile": "PROFILO RENDER",
@@ -440,7 +441,14 @@
     "noElements": "Nessun elemento nel prato.",
     "initiatives": "Initiatives",
     "pageSaved": "Contenuto salvato",
-    "pageSaveError": "Errore durante il salvataggio"
+    "pageSaveError": "Errore durante il salvataggio",
+    "messageMarkReadError": "Errore durante la marcatura come letto",
+    "messageAllReadSuccess": "Tutti i messaggi segnati come letti",
+    "messageDeletedSuccess": "Messaggio eliminato",
+    "messageDeleteError": "Errore durante l'eliminazione",
+    "initiativeUpdated": "Iniziativa aggiornata",
+    "initiativeUpdateError": "Errore durante l'aggiornamento",
+    "initiativeDeleteError": "Errore durante l'eliminazione"
   },
   "prato": {
     "elementCreated": "Elemento creato",

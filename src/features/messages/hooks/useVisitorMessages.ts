@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { visitorMessagesRepo } from "../api/visitorMessages.repo";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const useVisitorMessages = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: messages = [], isLoading } = useQuery({
@@ -17,25 +19,25 @@ export const useVisitorMessages = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["visitor-messages"] });
     },
-    onError: () => toast.error("Errore durante la marcatura come letto"),
+    onError: () => toast.error(t("admin.messageMarkReadError")),
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: () => visitorMessagesRepo.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["visitor-messages"] });
-      toast.success("Tutti i messaggi segnati come letti");
+      toast.success(t("admin.messageAllReadSuccess"));
     },
-    onError: () => toast.error("Errore"),
+    onError: () => toast.error(t("admin.messageMarkReadError")),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => visitorMessagesRepo.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["visitor-messages"] });
-      toast.success("Messaggio eliminato");
+      toast.success(t("admin.messageDeletedSuccess"));
     },
-    onError: () => toast.error("Errore durante l'eliminazione"),
+    onError: () => toast.error(t("admin.messageDeleteError")),
   });
 
   return {

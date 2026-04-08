@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { initiativesRepo } from "../api/initiatives.repo";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const useInitiatives = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: initiatives = [], isLoading } = useQuery({
@@ -21,9 +23,9 @@ export const useInitiatives = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa pubblicata");
+      toast.success(t("admin.initiativePublished"));
     },
-    onError: () => toast.error("Impossibile pubblicare l'iniziativa"),
+    onError: () => toast.error(t("admin.initiativePublishError")),
   });
 
   const updateMutation = useMutation({
@@ -32,9 +34,9 @@ export const useInitiatives = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa aggiornata");
+      toast.success(t("admin.initiativeUpdated"));
     },
-    onError: () => toast.error("Errore durante l'aggiornamento"),
+    onError: () => toast.error(t("admin.initiativeUpdateError")),
   });
 
   const toggleMutation = useMutation({
@@ -51,9 +53,9 @@ export const useInitiatives = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa eliminata");
+      toast.success(t("admin.initiativeDeleted"));
     },
-    onError: () => toast.error("Errore durante l'eliminazione"),
+    onError: () => toast.error(t("admin.initiativeDeleteError")),
   });
 
   return {
