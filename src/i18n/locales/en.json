@@ -1,4 +1,8 @@
 {
+  "ui": {
+    "previous": "Previous",
+    "next": "Next"
+  },
   "error": {
     "title": "Something broke",
     "message": "An unexpected error interrupted the journey. Reload the page to rebuild the world."

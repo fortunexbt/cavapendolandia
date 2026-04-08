@@ -1,4 +1,8 @@
 {
+  "ui": {
+    "previous": "Precedente",
+    "next": "Avanti"
+  },
   "error": {
     "title": "Qualcosa si è rotto",
     "message": "Un errore imprevisto ha interrotto il cammino. Ricarica la pagina per ricostruire il mondo."
