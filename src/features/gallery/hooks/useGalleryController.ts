@@ -328,8 +328,8 @@ export function useGalleryController({
       if (id === "outdoor") {
         startTransition(
           "meadow",
-          "Attraverso ESTERNO",
-          "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
+          t("gallery.zoneTransition.transitionToMeadow"),
+          t("gallery.zoneTransition.transitionToMeadowDetail"),
         );
         return;
       }
@@ -341,7 +341,7 @@ export function useGalleryController({
         );
       }
     },
-    [clearZoneTransitionTimers, onExit, zoneTransition],
+    [clearZoneTransitionTimers, onExit, zoneTransition, t],
   );
 
   useEffect(() => {

@@ -746,7 +746,7 @@ function CavapendoGallery({
         );
       }
     },
-    [clearZoneTransitionTimers, onExit, zoneTransition],
+    [clearZoneTransitionTimers, onExit, zoneTransition, t],
   );
 
   const handleInteraction = useCallback(

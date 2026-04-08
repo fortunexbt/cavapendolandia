@@ -78,7 +78,7 @@ const CavapendoGalleryShell = ({
     return () => {
       cancelled = true;
     };
-  }, [isMobile]);
+  }, [isMobile, t]);
 
   if (loadError) {
     return (
