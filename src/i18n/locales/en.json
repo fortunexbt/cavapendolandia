@@ -73,72 +73,129 @@
     "linkRemoval": "Removal info"
   },
   "gallery": {
+    "shell": {
+      "loadingStage0": "Loading gallery bundle",
+      "loadingStage1": "Warming surfaces and materials",
+      "loadingStage2": "Preloading sound environment",
+      "loadingStage3": "Stabilizing first frame",
+      "loadError": "Loading error",
+      "loadErrorRetry": "Reload the page to rebuild the world.",
+      "loadErrorTitle": "Loading interrupted"
+    },
+    "zoneTransition": {
+      "doorOutdoor": "Passage · OUTDOOR",
+      "doorReturn": "Return · GALLERY",
+      "doorDefault": "Threshold · EXIT",
+      "openRitual": "Open ritual",
+      "ambienceAlive": "Environment alive",
+      "ambienceActive": "Environment active",
+      "transitionToMeadow": "Through OUTDOOR",
+      "transitionToMeadowDetail": "The eyelids open on the globe. The meadow prepares beyond the threshold.",
+      "transitionToGallery": "Return to gallery",
+      "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works.",
+      "header": "ZONE TRANSITION"
+    },
+    "hudBanner": {
+      "pillLabel": "A thought"
+    },
+    "framePreview": {
+      "fallbackTitle": "Cavapendolata",
+      "audio": "Audio",
+      "audioHint": "Listen nearby",
+      "link": "Link",
+      "linkHint": "open out of room",
+      "pdf": "Document",
+      "pdfHint": "first suspended page"
+    },
+    "offeringModal": {
+      "untitled": "Untitled",
+      "authorArtist": "Artist",
+      "authorAnonymous": "Anonymous",
+      "imageAlt": "Image",
+      "openLinkNewTab": "Open link in a new tab",
+      "openPdf": "Open PDF",
+      "authorPrefix": "By",
+      "sentPrefix": "Sent:",
+      "openDetail": "Open detail →",
+      "openLink": "Open link",
+      "offeringLabel": "Offering",
+      "anonimo": "Anonymous"
+    },
+    "ritualPrompt": {
+      "ritualStop": "Ritual stop",
+      "depositsCollected": "Deposits collected here: {{count}}",
+      "leaveSomething": "Leave something here",
+      "keepWalking": "Keep walking",
+      "ritualHint": "Pause for a moment, listen to the place, then choose if you really want to leave a cavapendolata here.",
+      "initiativePrompt": "A thought:"
+    },
+    "depositModal": {
+      "title": "Leave a cavapendolata here",
+      "subtitle": "The trace remains in this place: it never leaves the scene you are crossing.",
+      "wizardTitle": "Leave a trace",
+      "wizardSubtitle": "A shape, a sound, a text: something this place can retain.",
+      "submitLabel": "Leave here"
+    },
+    "galleryNav": {
+      "loading": "Loading gallery bundle",
+      "returnToGallery": "Return to gallery"
+    },
+    "creatureModal": {
+      "close": "×"
+    },
+    "closeButton": "×",
     "preload": {
-      "header": "Cavapendolandia / Gallery",
-      "title": "Preparing the world.",
-      "description": "Progressive loading of the globe, painted surfaces, and sound environment. Entry starts only when the first frame is stable.",
-      "stage": "Stage {{index}}/{{total}}"
+      "header": "LOADING",
+      "title": "Cavapendolandia",
+      "description": "Loading world data...",
+      "stage": "Stage {{index}} / {{total}}"
     },
     "mobileOrientation": {
-      "header": "Mobile experience",
-      "title": "Rotate to landscape.",
-      "description": "The outer globe and twin-stick controls are designed for landscape. In portrait you can continue, but you'll lose space, vision, and comfort.",
-      "left": "Left",
-      "right": "Right",
-      "movement": "Movement",
-      "lookActions": "Look + actions",
+      "header": "ORIENTATION",
+      "title": "Hold your phone upright",
+      "description": "For the best experience, explore Cavapendolandia holding your phone upright.",
+      "left": "LEFT",
+      "movement": "MOVE",
+      "right": "RIGHT",
+      "lookActions": "LOOK",
       "continueAnyway": "Continue anyway",
       "gotIt": "Got it"
     },
-    "zoneTransition": {
-      "header": "Zone change"
-    },
-    "zone": {
-      "interior": "Interior",
-      "exterior": "Exterior"
-    },
     "playerHud": {
-      "currentObjective": "Current objective",
-      "lookAt": "Looking at: {{label}}",
+      "currentObjective": "CURRENT OBJECTIVE",
+      "lookAt": "Look at {{label}}",
       "ritualPlace": "Ritual place",
       "reopenNote": "Reopen note"
     },
-    "debugHud": {
-      "nearbyCreatures": "Nearby creatures {{count}}"
-    },
     "settings": {
-      "renderProfile": "Rendering profile",
+      "renderProfile": "RENDER PROFILE",
       "activeNow": "Active now",
-      "controls": "Controls",
+      "controls": "CONTROLS",
       "mouse": "Mouse",
-      "lookTouch": "Look touch",
+      "lookTouch": "Look (touch)",
       "joystickRadius": "Joystick radius",
       "invertedLook": "Inverted look",
       "normalLook": "Normal look",
       "softCamera": "Soft camera",
       "fullCamera": "Full camera",
-      "hudAudio": "HUD & audio",
-      "hudMode": "HUD {{mode}}",
-      "muteAudio": "Mute audio",
-      "unmuteAudio": "Unmute audio",
+      "hudAudio": "HUD / AUDIO",
+      "hudMode": "{{mode}} mode",
+      "muteAudio": "Mute",
+      "unmuteAudio": "Unmute",
       "ambienceVolume": "Ambience volume",
       "reopenGuide": "Reopen guide",
-      "exitFullscreen": "Exit fullscreen",
-      "enterFullscreen": "Enter fullscreen"
+      "enterFullscreen": "Enter fullscreen",
+      "exitFullscreen": "Exit fullscreen"
     },
     "guide": {
-      "fieldNote": "Field note",
-      "close": "Close",
-      "open": "Open",
-      "hide": "Hide",
-      "note": "Note"
-    },
-    "deposit": {
-      "leftIn": "A cavapendolata has been left at {{siteId}}."
+      "fieldNote": "FIELD NOTE",
+      "close": "CLOSE",
+      "open": "OPEN",
+      "hide": "HIDE",
+      "note": "NOTE"
     },
     "actions": {
-      "settings": "Settings",
-      "offer": "+ Offer"
+      "offer": "OFFER"
     }
   },
   "offri": {
@@ -216,78 +273,6 @@
     "stepName": "Name",
     "stepSignature": "Signature",
     "stepConsent": "Consent"
-  },
-  "gallery": {
-    "shell": {
-      "loadingStage0": "Loading gallery bundle",
-      "loadingStage1": "Warming surfaces and materials",
-      "loadingStage2": "Preloading sound environment",
-      "loadingStage3": "Stabilizing first frame",
-      "loadError": "Loading error",
-      "loadErrorRetry": "Reload the page to rebuild the world.",
-      "loadErrorTitle": "Loading interrupted"
-    },
-    "zoneTransition": {
-      "doorOutdoor": "Passage · OUTDOOR",
-      "doorReturn": "Return · GALLERY",
-      "doorDefault": "Threshold · EXIT",
-      "openRitual": "Open ritual",
-      "ambienceAlive": "Environment alive",
-      "ambienceActive": "Environment active",
-      "transitionToMeadow": "Through OUTDOOR",
-      "transitionToMeadowDetail": "The eyelids open on the globe. The meadow prepares beyond the threshold.",
-      "transitionToGallery": "Return to gallery",
-      "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works."
-    },
-    "hudBanner": {
-      "pillLabel": "A thought"
-    },
-    "framePreview": {
-      "fallbackTitle": "Cavapendolata",
-      "audio": "Audio",
-      "audioHint": "Listen nearby",
-      "link": "Link",
-      "linkHint": "open out of room",
-      "pdf": "Document",
-      "pdfHint": "first suspended page"
-    },
-    "offeringModal": {
-      "untitled": "Untitled",
-      "authorArtist": "Artist",
-      "authorAnonymous": "Anonymous",
-      "imageAlt": "Image",
-      "openLinkNewTab": "Open link in a new tab",
-      "openPdf": "Open PDF",
-      "authorPrefix": "By",
-      "sentPrefix": "Sent:",
-      "openDetail": "Open detail →",
-      "openLink": "Open link",
-      "offeringLabel": "Offering",
-      "anonimo": "Anonymous"
-    },
-    "ritualPrompt": {
-      "ritualStop": "Ritual stop",
-      "depositsCollected": "Deposits collected here: {{count}}",
-      "leaveSomething": "Leave something here",
-      "keepWalking": "Keep walking",
-      "ritualHint": "Pause for a moment, listen to the place, then choose if you really want to leave a cavapendolata here.",
-      "initiativePrompt": "A thought:"
-    },
-    "depositModal": {
-      "title": "Leave a cavapendolata here",
-      "subtitle": "The trace remains in this place: it never leaves the scene you are crossing.",
-      "wizardTitle": "Leave a trace",
-      "wizardSubtitle": "A shape, a sound, a text: something this place can retain.",
-      "submitLabel": "Leave here"
-    },
-    "galleryNav": {
-      "loading": "Loading gallery bundle",
-      "returnToGallery": "Return to gallery"
-    },
-    "creatureModal": {
-      "close": "×"
-    },
-    "closeButton": "×"
   },
   "admin": {
     "unauthorized": "Unauthorized access.",
@@ -442,7 +427,6 @@
     "elementUpdateError": "Error updating element",
     "elementDeleted": "Element deleted",
     "elementDeleteError": "Error deleting element",
-    "navIniziative": "Iniziative",
     "prelude": {
       "subtitle": "A delicate place",
       "title": "CAVAPENDOLANDIA",

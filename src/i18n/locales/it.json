@@ -73,72 +73,129 @@
     "linkRemoval": "Info rimozione"
   },
   "gallery": {
-    "preload": {
-      "header": "Cavapendolandia / Galleria",
-      "title": "Sto preparando il mondo.",
-      "description": "Caricamento progressivo del globo, delle superfici dipinte e dell'ambiente sonoro. L'ingresso parte solo quando il primo frame è stabile.",
-      "stage": "Fase {{index}}/{{total}}"
-    },
-    "mobileOrientation": {
-      "header": "Esperienza mobile",
-      "title": "Ruota in orizzontale.",
-      "description": "Il globo esterno e i controlli twin-stick sono progettati per il paesaggio. In verticale puoi continuare, ma perderai spazio, visione e comfort.",
-      "left": "Sinistra",
-      "right": "Destra",
-      "movement": "Movimento",
-      "lookActions": "Sguardo + azioni",
-      "continueAnyway": "Continua comunque",
-      "gotIt": "Ho capito"
+    "shell": {
+      "loadingStage0": "Carico il bundle della galleria",
+      "loadingStage1": "Scaldo superfici e materiali",
+      "loadingStage2": "Precarico l'ambiente sonoro",
+      "loadingStage3": "Stabilisco il primo frame",
+      "loadError": "Errore di caricamento",
+      "loadErrorRetry": "Ricarica la pagina per ricostruire il mondo.",
+      "loadErrorTitle": "Caricamento interrotto"
     },
     "zoneTransition": {
-      "header": "Cambio zona"
+      "doorOutdoor": "Varco · ESTERNO",
+      "doorReturn": "Rientro · GALLERIA",
+      "doorDefault": "Soglia · USCITA",
+      "openRitual": "Apri rito",
+      "ambienceAlive": "Ambiente vivo",
+      "ambienceActive": "Ambiente attivo",
+      "transitionToMeadow": "Attraverso ESTERNO",
+      "transitionToMeadowDetail": "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
+      "transitionToGallery": "Rientro nella galleria",
+      "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere.",
+      "header": "TRANSIONE DI ZONA"
     },
-    "zone": {
-      "interior": "Interno",
-      "exterior": "Esterno"
+    "hudBanner": {
+      "pillLabel": "Un pensiero"
+    },
+    "framePreview": {
+      "fallbackTitle": "Cavapendolata",
+      "audio": "Audio",
+      "audioHint": "Da ascoltare vicino",
+      "link": "Link",
+      "linkHint": "apri fuori stanza",
+      "pdf": "Documento",
+      "pdfHint": "prima pagina sospesa"
+    },
+    "offeringModal": {
+      "untitled": "Senza titolo",
+      "authorArtist": "Artista",
+      "authorAnonymous": "Anonimo",
+      "imageAlt": "Immagine",
+      "openLinkNewTab": "Apri il link in una nuova scheda",
+      "openPdf": "Apri il PDF",
+      "authorPrefix": "Di",
+      "sentPrefix": "Inviata:",
+      "openDetail": "Apri dettaglio →",
+      "openLink": "Apri link",
+      "offeringLabel": "Offerta",
+      "anonimo": "Anonimo"
+    },
+    "ritualPrompt": {
+      "ritualStop": "Sosta rituale",
+      "depositsCollected": "Depositi raccolti qui: {{count}}",
+      "leaveSomething": "Lascia qui qualcosa",
+      "keepWalking": "Continua a camminare",
+      "ritualHint": "Fermati un momento, ascolta il luogo, poi scegli se lasciare davvero una cavapendolata qui.",
+      "initiativePrompt": "Un pensiero:"
+    },
+    "depositModal": {
+      "title": "Lascia qui una cavapendolata",
+      "subtitle": "La traccia resta in questo luogo: non esce mai dalla scena che stai attraversando.",
+      "wizardTitle": "Lascia una traccia",
+      "wizardSubtitle": "Una forma, un suono, un testo: qualcosa che questo luogo possa trattenere.",
+      "submitLabel": "Lascia qui"
+    },
+    "galleryNav": {
+      "loading": "Carico il bundle della galleria",
+      "returnToGallery": "Rientro nella galleria"
+    },
+    "creatureModal": {
+      "close": "×"
+    },
+    "closeButton": "×",
+    "preload": {
+      "header": "CARICAMENTO",
+      "title": "Cavapendolandia",
+      "description": "Caricamento dei dati del mondo...",
+      "stage": "Fase {{index}} / {{total}}"
+    },
+    "mobileOrientation": {
+      "header": "ORIENTAMENTO",
+      "title": "Tieni il telefono in verticale",
+      "description": "Per la migliore esperienza, esplora Cavapendolandia tenendo il telefono in verticale.",
+      "left": "SINISTRA",
+      "movement": "MUOVI",
+      "right": "DESTRA",
+      "lookActions": "GUARDA",
+      "continueAnyway": "Continua comunque",
+      "gotIt": "Capito"
     },
     "playerHud": {
-      "currentObjective": "Obiettivo attuale",
-      "lookAt": "Sguardo: {{label}}",
+      "currentObjective": "OBIETTIVO CORRENTE",
+      "lookAt": "Guarda {{label}}",
       "ritualPlace": "Luogo rituale",
-      "reopenNote": "Riapri appunto"
-    },
-    "debugHud": {
-      "nearbyCreatures": "Creature vicine {{count}}"
+      "reopenNote": "Riapri nota"
     },
     "settings": {
-      "renderProfile": "Profilo di rendering",
+      "renderProfile": "PROFILO RENDER",
       "activeNow": "Attivo ora",
-      "controls": "Controlli",
+      "controls": "CONTROLLI",
       "mouse": "Mouse",
-      "lookTouch": "Look touch",
+      "lookTouch": "Sguardo (touch)",
       "joystickRadius": "Raggio joystick",
-      "invertedLook": "Look invertito",
-      "normalLook": "Look normale",
+      "invertedLook": "Sguardo invertito",
+      "normalLook": "Sguardo normale",
       "softCamera": "Camera morbida",
       "fullCamera": "Camera piena",
-      "hudAudio": "HUD e audio",
-      "hudMode": "HUD {{mode}}",
-      "muteAudio": "Muta audio",
-      "unmuteAudio": "Riattiva audio",
-      "ambienceVolume": "Volume ambiente",
+      "hudAudio": "HUD / AUDIO",
+      "hudMode": "Modalità {{mode}}",
+      "muteAudio": "Muta",
+      "unmuteAudio": "Attiva audio",
+      "ambienceVolume": "Volume ambience",
       "reopenGuide": "Riapri guida",
-      "exitFullscreen": "Esci dal fullscreen",
-      "enterFullscreen": "Entra in fullscreen"
+      "enterFullscreen": "Entra in fullscreen",
+      "exitFullscreen": "Esci da fullscreen"
     },
     "guide": {
-      "fieldNote": "Appunto di campo",
-      "close": "Chiudi",
-      "open": "Apri",
-      "hide": "Togli",
-      "note": "Nota"
-    },
-    "deposit": {
-      "leftIn": "Una cavapendolata è stata lasciata in {{siteId}}."
+      "fieldNote": "NOTA DI CAMPO",
+      "close": "CHIUDI",
+      "open": "APRI",
+      "hide": "NASCONDI",
+      "note": "NOTA"
     },
     "actions": {
-      "settings": "Impostazioni",
-      "offer": "+ Offri"
+      "offer": "OFFRI"
     }
   },
   "offri": {
@@ -216,78 +273,6 @@
     "stepName": "Nome",
     "stepSignature": "Firma",
     "stepConsent": "Consenso"
-  },
-  "gallery": {
-    "shell": {
-      "loadingStage0": "Carico il bundle della galleria",
-      "loadingStage1": "Scaldo superfici e materiali",
-      "loadingStage2": "Precarico l'ambiente sonoro",
-      "loadingStage3": "Stabilisco il primo frame",
-      "loadError": "Errore di caricamento",
-      "loadErrorRetry": "Ricarica la pagina per ricostruire il mondo.",
-      "loadErrorTitle": "Caricamento interrotto"
-    },
-    "zoneTransition": {
-      "doorOutdoor": "Varco · ESTERNO",
-      "doorReturn": "Rientro · GALLERIA",
-      "doorDefault": "Soglia · USCITA",
-      "openRitual": "Apri rito",
-      "ambienceAlive": "Ambiente vivo",
-      "ambienceActive": "Ambiente attivo",
-      "transitionToMeadow": "Attraverso ESTERNO",
-      "transitionToMeadowDetail": "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
-      "transitionToGallery": "Rientro nella galleria",
-      "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere."
-    },
-    "hudBanner": {
-      "pillLabel": "Un pensiero"
-    },
-    "framePreview": {
-      "fallbackTitle": "Cavapendolata",
-      "audio": "Audio",
-      "audioHint": "Da ascoltare vicino",
-      "link": "Link",
-      "linkHint": "apri fuori stanza",
-      "pdf": "Documento",
-      "pdfHint": "prima pagina sospesa"
-    },
-    "offeringModal": {
-      "untitled": "Senza titolo",
-      "authorArtist": "Artista",
-      "authorAnonymous": "Anonimo",
-      "imageAlt": "Immagine",
-      "openLinkNewTab": "Apri il link in una nuova scheda",
-      "openPdf": "Apri il PDF",
-      "authorPrefix": "Di",
-      "sentPrefix": "Inviata:",
-      "openDetail": "Apri dettaglio →",
-      "openLink": "Apri link",
-      "offeringLabel": "Offerta",
-      "anonimo": "Anonimo"
-    },
-    "ritualPrompt": {
-      "ritualStop": "Sosta rituale",
-      "depositsCollected": "Depositi raccolti qui: {{count}}",
-      "leaveSomething": "Lascia qui qualcosa",
-      "keepWalking": "Continua a camminare",
-      "ritualHint": "Fermati un momento, ascolta il luogo, poi scegli se lasciare davvero una cavapendolata qui.",
-      "initiativePrompt": "Un pensiero:"
-    },
-    "depositModal": {
-      "title": "Lascia qui una cavapendolata",
-      "subtitle": "La traccia resta in questo luogo: non esce mai dalla scena che stai attraversando.",
-      "wizardTitle": "Lascia una traccia",
-      "wizardSubtitle": "Una forma, un suono, un testo: qualcosa che questo luogo possa trattenere.",
-      "submitLabel": "Lascia qui"
-    },
-    "galleryNav": {
-      "loading": "Carico il bundle della galleria",
-      "returnToGallery": "Rientro nella galleria"
-    },
-    "creatureModal": {
-      "close": "×"
-    },
-    "closeButton": "×"
   },
   "admin": {
     "unauthorized": "Accesso non autorizzato.",
@@ -442,7 +427,6 @@
     "elementUpdateError": "Errore durante l'aggiornamento",
     "elementDeleted": "Elemento eliminato",
     "elementDeleteError": "Errore durante l'eliminazione",
-    "navIniziative": "Iniziative",
     "prelude": {
       "subtitle": "Un luogo delicato",
       "title": "CAVAPENDOLANDIA",
