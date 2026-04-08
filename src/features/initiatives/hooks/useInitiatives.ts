@@ -2,8 +2,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { initiativesRepo } from "../api/initiatives.repo";
 import { toast } from "sonner";
 
-export const useInitiatives = () => {
+export type InitiativesToastMessages = {
+  createSuccess: string;
+  createError: string;
+  updateSuccess: string;
+  updateError: string;
+  deleteSuccess: string;
+  deleteError: string;
+};
+
+const DEFAULT_MESSAGES: InitiativesToastMessages = {
+  createSuccess: "Iniziativa pubblicata",
+  createError: "Impossibile pubblicare l'iniziativa",
+  updateSuccess: "Iniziativa aggiornata",
+  updateError: "Errore durante l'aggiornamento",
+  deleteSuccess: "Iniziativa eliminata",
+  deleteError: "Errore durante l'eliminazione",
+};
+
+export const useInitiatives = (messages: Partial<InitiativesToastMessages> = {}) => {
   const queryClient = useQueryClient();
+  const msgs = { ...DEFAULT_MESSAGES, ...messages };
 
   const { data: initiatives = [], isLoading } = useQuery({
     queryKey: ["admin-initiatives"],
@@ -21,9 +40,9 @@ export const useInitiatives = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa pubblicata");
+      toast.success(msgs.createSuccess);
     },
-    onError: () => toast.error("Impossibile pubblicare l'iniziativa"),
+    onError: () => toast.error(msgs.createError),
   });
 
   const updateMutation = useMutation({
@@ -32,9 +51,9 @@ export const useInitiatives = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa aggiornata");
+      toast.success(msgs.updateSuccess);
     },
-    onError: () => toast.error("Errore durante l'aggiornamento"),
+    onError: () => toast.error(msgs.updateError),
   });
 
   const toggleMutation = useMutation({
@@ -51,9 +70,9 @@ export const useInitiatives = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-initiatives"] });
       queryClient.invalidateQueries({ queryKey: ["active-initiative"] });
-      toast.success("Iniziativa eliminata");
+      toast.success(msgs.deleteSuccess);
     },
-    onError: () => toast.error("Errore durante l'eliminazione"),
+    onError: () => toast.error(msgs.deleteError),
   });
 
   return {

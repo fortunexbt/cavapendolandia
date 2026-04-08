@@ -12,7 +12,14 @@ const Iniziative = () => {
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const { initiatives, isLoading, createInitiative, toggleInitiative, deleteInitiative, isCreating } =
-    useInitiatives();
+    useInitiatives({
+      createSuccess: t("admin.initiativePublished"),
+      createError: t("admin.initiativePublishError"),
+      updateSuccess: t("admin.initiativeUpdated"),
+      updateError: t("admin.initiativeUpdateError"),
+      deleteSuccess: t("admin.initiativeDeleted"),
+      deleteError: t("admin.initiativeDeleteError"),
+    });
 
   if (loading) return <div className="min-h-screen bg-background" />;
   if (!user) return <Navigate to="/admin" replace />;

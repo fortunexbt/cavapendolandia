@@ -437,7 +437,20 @@
     "add": "Add",
     "noElements": "No elements in the meadow.",
     "blockKeyPlaceholder": "hero",
-    "initiatives": "Initiatives"
+    "initiatives": "Initiatives",
+    "pageContentSaved": "Content saved",
+    "pageContentSaveError": "Error saving content",
+    "initiativePublished": "Initiative published",
+    "initiativePublishError": "Cannot publish initiative",
+    "initiativeUpdated": "Initiative updated",
+    "initiativeUpdateError": "Error updating initiative",
+    "initiativeDeleted": "Initiative deleted",
+    "initiativeDeleteError": "Error deleting initiative",
+    "messageMarkAsReadError": "Error marking as read",
+    "allMessagesMarkedAsRead": "All messages marked as read",
+    "messageMarkAllAsReadError": "Error marking all as read",
+    "messageDeleted": "Message deleted",
+    "messageDeleteError": "Error deleting message"
   },
   "adminLogin": {
     "title": "Admin",

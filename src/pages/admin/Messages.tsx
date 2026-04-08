@@ -30,7 +30,13 @@ const MessagesContent = () => {
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const { messages, unreadCount, isLoading, markAsRead, markAllAsRead, deleteMessage, isMarkingAll } =
-    useVisitorMessages();
+    useVisitorMessages({
+      markAsReadError: t("admin.messageMarkAsReadError"),
+      markAllAsReadSuccess: t("admin.allMessagesMarkedAsRead"),
+      markAllAsReadError: t("admin.messageMarkAllAsReadError"),
+      deleteSuccess: t("admin.messageDeleted"),
+      deleteError: t("admin.messageDeleteError"),
+    });
 
   if (loading) return <div className="min-h-screen bg-background" />;
   if (!user) return <Navigate to="/admin" replace />;

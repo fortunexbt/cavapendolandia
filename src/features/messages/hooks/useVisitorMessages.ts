@@ -2,8 +2,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { visitorMessagesRepo } from "../api/visitorMessages.repo";
 import { toast } from "sonner";
 
-export const useVisitorMessages = () => {
+export type VisitorMessagesToastMessages = {
+  markAsReadError: string;
+  markAllAsReadSuccess: string;
+  markAllAsReadError: string;
+  deleteSuccess: string;
+  deleteError: string;
+};
+
+const DEFAULT_MESSAGES: VisitorMessagesToastMessages = {
+  markAsReadError: "Errore durante la marcatura come letto",
+  markAllAsReadSuccess: "Tutti i messaggi segnati come letti",
+  markAllAsReadError: "Errore",
+  deleteSuccess: "Messaggio eliminato",
+  deleteError: "Errore durante l'eliminazione",
+};
+
+export const useVisitorMessages = (toastMessages: Partial<VisitorMessagesToastMessages> = {}) => {
   const queryClient = useQueryClient();
+  const msgs = { ...DEFAULT_MESSAGES, ...toastMessages };
 
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ["visitor-messages"],
@@ -17,25 +34,25 @@ export const useVisitorMessages = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["visitor-messages"] });
     },
-    onError: () => toast.error("Errore durante la marcatura come letto"),
+    onError: () => toast.error(msgs.markAsReadError),
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: () => visitorMessagesRepo.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["visitor-messages"] });
-      toast.success("Tutti i messaggi segnati come letti");
+      toast.success(msgs.markAllAsReadSuccess);
     },
-    onError: () => toast.error("Errore"),
+    onError: () => toast.error(msgs.markAllAsReadError),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => visitorMessagesRepo.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["visitor-messages"] });
-      toast.success("Messaggio eliminato");
+      toast.success(msgs.deleteSuccess);
     },
-    onError: () => toast.error("Errore durante l'eliminazione"),
+    onError: () => toast.error(msgs.deleteError),
   });
 
   return {

@@ -50,7 +50,10 @@ const PagesEditorContent = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
-  const { block, isLoading, save, isSaving } = usePageContent(slug, blockKey);
+  const { block, isLoading, save, isSaving } = usePageContent(slug, blockKey, {
+    saveSuccess: t("admin.pageContentSaved"),
+    saveError: t("admin.pageContentSaveError"),
+  });
 
   // Sync local state when block loads
   useState(() => {
