@@ -7,7 +7,8 @@
     "rimozione": "Rimozione",
     "contatti": "Contatti",
     "menu": "Menu",
-    "selectLanguage": "Seleziona lingua"
+    "selectLanguage": "Seleziona lingua",
+    "footerBrand": "Cavapendolandia · 2026 ·"
   },
   "theme": {
     "light": "Passa al tema chiaro",
@@ -65,7 +66,11 @@
   "cheCose": {
     "title": "Che cos'è",
     "linkRules": "Leggi le regole",
-    "linkRemoval": "Info rimozione"
+    "linkRemoval": "Info rimozione",
+    "p1": "A place to leave something.",
+    "p2": "An image, a sound, a text, a fragment.",
+    "p3": "The question: what does Cavapendoli mean to you?",
+    "p4": "There are no right answers. Only traces."
   },
   "regole": {
     "title": "Regole",

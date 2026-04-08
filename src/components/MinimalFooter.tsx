@@ -7,7 +7,7 @@ const MinimalFooter = () => {
   return (
     <footer className="py-4 text-center">
       <p className="font-mono-light text-[0.6rem] uppercase tracking-[0.15em] text-muted-foreground/40">
-        Cavapendolandia · 2026 ·{" "}
+{t("nav.footerBrand")} {" "}
         <Link to="/rimozione" className="hover:text-muted-foreground transition-colors">
           {t("nav.rimozione")}
         </Link>
