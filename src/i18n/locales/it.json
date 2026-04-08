@@ -572,7 +572,19 @@
     "rot": "rot",
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
-    "navIniziative": "Iniziative"
+    "navIniziative": "Iniziative",
+    "meadowElementCreated": "Elemento creato",
+    "meadowElementCreateError": "Errore durante la creazione",
+    "meadowElementUpdated": "Elemento aggiornato",
+    "meadowElementUpdateError": "Errore durante l'aggiornamento",
+    "meadowElementDeleted": "Elemento eliminato",
+    "meadowElementDeleteError": "Errore durante l'eliminazione",
+    "messageMarkedRead": "Messaggio segnato come letto",
+    "messageMarkReadError": "Errore durante la marcatura come letto",
+    "allMessagesMarkedRead": "Tutti i messaggi segnati come letti",
+    "allMessagesMarkReadError": "Errore",
+    "messageDeleted": "Messaggio eliminato",
+    "messageDeleteError": "Errore durante l'eliminazione"
   },
   "notFound": {
     "roomEmpty": "Stanza vuota",
