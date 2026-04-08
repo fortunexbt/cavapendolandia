@@ -25,6 +25,8 @@ vi.mock("react-i18next", () => ({
         "offeringDetail.back": "Torna alla galleria",
         "offri.initiativeLabel": "Un pensiero",
         "gallery.guide.fieldNote": "Esplora il mondo",
+        "adminLogin.signIn": "Accedi",
+        "adminLogin.signingIn": "Accesso in corso",
       };
       return map[key] ?? key;
     },
@@ -38,6 +40,7 @@ vi.mock("i18next", () => ({
     init: () => {},
     t: (key: string) => key,
     language: "it",
+    on: vi.fn(),
   },
 }));
 
