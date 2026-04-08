@@ -230,7 +230,8 @@
     "copied": "Copied!",
     "copyLink": "Copy link",
     "another": "Another one",
-    "leaveOffering": "Leave a cavapendolata"
+    "leaveOffering": "Leave a cavapendolata",
+    "entraComingSoonHint": "Coming soon: we are reviewing the first offerings."
   },
   "grazie": {
     "title": "Thank you",
@@ -441,11 +442,8 @@
     "initiatives": "Initiatives",
     "pageContentSaved": "Content saved",
     "pageContentSaveError": "Error saving content",
-    "initiativePublished": "Initiative published",
-    "initiativePublishError": "Cannot publish initiative",
     "initiativeUpdated": "Initiative updated",
     "initiativeUpdateError": "Error updating initiative",
-    "initiativeDeleted": "Initiative deleted",
     "initiativeDeleteError": "Error deleting initiative",
     "messageMarkAsReadError": "Error marking as read",
     "allMessagesMarkedAsRead": "All messages marked as read",

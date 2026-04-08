@@ -230,7 +230,8 @@
     "copied": "Copiato!",
     "copyLink": "Copia link",
     "another": "Un'altra",
-    "leaveOffering": "Lascia una cavapendolata"
+    "leaveOffering": "Lascia una cavapendolata",
+    "entraComingSoonHint": "In arrivo: stiamo revisionando le prime offerte."
   },
   "grazie": {
     "title": "Grazie",
@@ -424,11 +425,8 @@
     "initiatives": "Iniziative",
     "pageContentSaved": "Contenuto salvato",
     "pageContentSaveError": "Errore durante il salvataggio",
-    "initiativePublished": "Iniziativa pubblicata",
-    "initiativePublishError": "Impossibile pubblicare l'iniziativa",
     "initiativeUpdated": "Iniziativa aggiornata",
     "initiativeUpdateError": "Errore durante l'aggiornamento",
-    "initiativeDeleted": "Iniziativa eliminata",
     "initiativeDeleteError": "Errore durante l'eliminazione",
     "messageMarkAsReadError": "Errore durante la marcatura come letto",
     "allMessagesMarkedAsRead": "Tutti i messaggi segnati come letti",

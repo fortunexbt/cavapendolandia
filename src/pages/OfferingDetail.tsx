@@ -67,6 +67,7 @@ const OfferingDetail = () => {
             <p className="text-lg italic text-muted-foreground/60 mb-4">{t("offeringDetail.notFound")}</p>
             <EntraComingSoon
               label={t("offeringDetail.backToArchive")}
+              hint={t("offeringDetail.entraComingSoonHint")}
               className="font-mono-light text-muted-foreground/45 underline underline-offset-4"
             />
           </div>
@@ -110,6 +111,7 @@ const OfferingDetail = () => {
               )}
               <EntraComingSoon
                 label={t("offeringDetail.backToArchive")}
+                hint={t("offeringDetail.entraComingSoonHint")}
                 className="font-mono-light text-xs text-muted-foreground/45"
               />
               <Link
