@@ -392,7 +392,8 @@
     "rot": "rot",
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
-    "blockKeyPlaceholder": "hero"
+    "blockKeyPlaceholder": "hero",
+    "initiatives": "Iniziative"
   },
   "adminLogin": {
     "title": "Admin",

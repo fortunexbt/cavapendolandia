@@ -392,7 +392,8 @@
     "rot": "rot",
     "add": "Add",
     "noElements": "No elements in the meadow.",
-    "blockKeyPlaceholder": "hero"
+    "blockKeyPlaceholder": "hero",
+    "initiatives": "Initiatives"
   },
   "adminLogin": {
     "title": "Admin",
