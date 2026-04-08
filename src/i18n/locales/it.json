@@ -196,7 +196,11 @@
     },
     "actions": {
       "offer": "OFFRI"
-    }
+    },
+    "offeringLabel": "Offerta",
+    "openPdf": "Apri il PDF",
+    "openLink": "Apri link",
+    "anonimo": "Anonimo"
   },
   "offri": {
     "title": "Offri",
@@ -421,6 +425,9 @@
     "rot": "rot",
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
+    "initiatives": "Initiatives"
+  },
+  "prato": {
     "elementCreated": "Elemento creato",
     "elementCreateError": "Errore durante la creazione",
     "elementUpdated": "Elemento aggiornato",

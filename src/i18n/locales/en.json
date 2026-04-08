@@ -196,7 +196,11 @@
     },
     "actions": {
       "offer": "OFFER"
-    }
+    },
+    "offeringLabel": "Offering",
+    "openPdf": "Open PDF",
+    "openLink": "Open link",
+    "anonimo": "Anonymous"
   },
   "offri": {
     "title": "Offer",
@@ -421,6 +425,9 @@
     "rot": "rot",
     "add": "Add",
     "noElements": "No elements in the meadow.",
+    "initiatives": "Initiatives"
+  },
+  "prato": {
     "elementCreated": "Element created",
     "elementCreateError": "Error creating element",
     "elementUpdated": "Element updated",
