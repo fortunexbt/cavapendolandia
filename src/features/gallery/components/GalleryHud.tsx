@@ -188,7 +188,7 @@ export function GalleryHud(props: GalleryHudProps) {
         showGuideUi &&
         (!guideDescriptor || guideHidden || !guideExpanded) && (
           <PlayerHud
-            zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
+            zoneLabel={zone === "gallery" ? t("gallery.hudBanner.zoneIndoor") : t("gallery.hudBanner.zoneOutdoor")}
             sectorLabel={
               zone === "meadow" ? currentSectorDescriptor?.label || null : null
             }

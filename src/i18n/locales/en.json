@@ -296,7 +296,9 @@
       "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works."
     },
     "hudBanner": {
-      "pillLabel": "A thought"
+      "pillLabel": "A thought",
+      "zoneIndoor": "Interior",
+      "zoneOutdoor": "Exterior"
     },
     "framePreview": {
       "fallbackTitle": "Cavapendolata",

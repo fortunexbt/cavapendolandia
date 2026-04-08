@@ -296,7 +296,9 @@
       "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere."
     },
     "hudBanner": {
-      "pillLabel": "Un pensiero"
+      "pillLabel": "Un pensiero",
+      "zoneIndoor": "Interno",
+      "zoneOutdoor": "Esterno"
     },
     "framePreview": {
       "fallbackTitle": "Cavapendolata",
