@@ -9,7 +9,16 @@ export type MeadowElement = {
   scale: number;
   rotation: number;
   tone: string;
+  secondary_tone?: string | null;
+  height?: number | null;
+  canopy?: number | null;
+  image_path?: string | null;
+  config_json?: Record<string, unknown>;
+  is_hidden?: boolean;
+  created_by?: string | null;
+  updated_by?: string | null;
   created_at: string;
+  updated_at?: string;
 };
 
 export const meadowElementsRepo = {
