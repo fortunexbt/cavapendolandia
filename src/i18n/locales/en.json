@@ -340,6 +340,93 @@
     "creatureModal": {
       "close": "×"
     },
+    "guide": {
+      "fieldNote": "Field note",
+      "note": "Note",
+      "open": "Open",
+      "close": "Close",
+      "hide": "Hide",
+      "steps": {
+        "intro": {
+          "titleDesktop": "Let the room open",
+          "bodyDesktop": "WASD moves the body and the mouse follows your gaze. As soon as you feel the rhythm of the room, let your eye find the OUTDOOR arch on the opposite wall.",
+          "titleMobile": "Find a comfortable pace",
+          "bodyMobile": "Horizontally the outside reads better. The left pad moves the body, the right pad curves your gaze: stay soft in the center, push to the edge when you want to turn more.",
+          "hint1Desktop": "WASD to move",
+          "hint2Desktop": "Mouse to look",
+          "hint3Desktop": "F to widen the scene",
+          "hint1Mobile": "Hold phone horizontally",
+          "hint2Mobile": "Left to move",
+          "hint3Mobile": "Right to look",
+          "compactLabel": "Find OUTDOOR"
+        },
+        "find-outdoor": {
+          "titleDesktop": "Approach the threshold",
+          "bodyDesktop": "The interior stays warm and gathered. On the opposite wall the OUTDOOR arch opens by itself when you get close enough.",
+          "titleMobile": "Approach the threshold",
+          "bodyMobile": "The interior stays warm and gathered. On the opposite wall the OUTDOOR arch opens by itself when you get close enough.",
+          "hint1Desktop": "Opposite wall",
+          "hint2Desktop": "No key needed",
+          "hint3Desktop": "Let the passage open",
+          "hint1Mobile": "Opposite wall",
+          "hint2Mobile": "No key needed",
+          "hint3Mobile": "Let the passage open",
+          "compactLabel": "Reach OUTDOOR"
+        },
+        "arrive-globe": {
+          "titleDesktop": "Let the outside in",
+          "bodyDesktop": "Outside there's no task: there's a first calm space that opens in three directions. Look at the masses first, then choose which call to follow.",
+          "titleMobile": "Let the outside in",
+          "bodyMobile": "Outside there's no task: there's a first calm space that opens in three directions. Look at the masses first, then choose which call to follow.",
+          "hint1Desktop": "West: denser",
+          "hint2Desktop": "South: more open",
+          "hint3Desktop": "East: more built",
+          "hint1Mobile": "West: denser",
+          "hint2Mobile": "South: more open",
+          "hint3Mobile": "East: more built",
+          "compactLabel": "Read the first landscape"
+        },
+        "meet-creatures": {
+          "titleDesktop": "Follow what insists",
+          "bodyDesktop": "The creatures don't give objectives. They stay, they return, they divert their gaze: when a movement keeps pointing at the same spot, usually the place wants to be heard.",
+          "titleMobile": "Follow what insists",
+          "bodyMobile": "The creatures don't give objectives. They stay, they return, they divert their gaze: when a movement keeps pointing at the same spot, usually the place wants to be heard.",
+          "hint1Desktop": "Perches",
+          "hint2Desktop": "Repeated passages",
+          "hint3Desktop": "Light presences",
+          "hint1Mobile": "Perches",
+          "hint2Mobile": "Repeated passages",
+          "hint3Mobile": "Light presences",
+          "compactLabel": "Follow a movement"
+        },
+        "find-deposit": {
+          "titleDesktop": "Stop only where needed",
+          "bodyDesktop": "Suspended rings, vertical glows and creatures that return indicate a ritual place. It's not an obligation: if the place holds, you can choose to leave something.",
+          "titleMobile": "Stop only where needed",
+          "bodyMobile": "Suspended rings, vertical glows and creatures that return indicate a ritual place. It's not an obligation: if the place holds, you can choose to leave something.",
+          "hint1Desktop": "Three ritual places",
+          "hint2Desktop": "Vertical glows",
+          "hint3Desktop": "Leave only if it makes sense",
+          "hint1Mobile": "Three ritual places",
+          "hint2Mobile": "Vertical glows",
+          "hint3Mobile": "Leave only if it makes sense",
+          "compactLabel": "Recognize a ritual place"
+        },
+        "deposit-ready": {
+          "titleDesktop": "Ritual pause",
+          "bodyDesktop": "When you're in the right place, the ritual pause opens without asking for technical gestures. From there you can choose whether to really leave a cavapendolata.",
+          "titleMobile": "Ritual pause",
+          "bodyMobile": "When you're in the right place, open the ritual pause and decide calmly whether to really leave a cavapendolata.",
+          "hint1Desktop": "Let it open",
+          "hint2Desktop": "Then choose whether to leave",
+          "hint3Desktop": "The place holds the trace",
+          "hint1Mobile": "Open the pause",
+          "hint2Mobile": "Leave here if you want",
+          "hint3Mobile": "The place holds the trace",
+          "compactLabel": "Ritual pause"
+        }
+      }
+    },
     "closeButton": "×"
   },
   "admin": {

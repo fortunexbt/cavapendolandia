@@ -681,13 +681,23 @@ export function GuidePanel({
 }) {
   const { t } = useTranslation();
   if (!descriptor) return null;
-  const translatedTitle = t(`gallery.guide.steps.${descriptor.stepKey}.title`);
-  const translatedBody = t(`gallery.guide.steps.${descriptor.stepKey}.body`);
-  const translatedHints = [
-    t(`gallery.guide.steps.${descriptor.stepKey}.hint1`),
-    t(`gallery.guide.steps.${descriptor.stepKey}.hint2`),
-    t(`gallery.guide.steps.${descriptor.stepKey}.hint3`),
-  ];
+  const translatedTitle = isMobile
+    ? t(`gallery.guide.steps.${descriptor.stepKey}.titleMobile`)
+    : t(`gallery.guide.steps.${descriptor.stepKey}.titleDesktop`);
+  const translatedBody = isMobile
+    ? t(`gallery.guide.steps.${descriptor.stepKey}.bodyMobile`)
+    : t(`gallery.guide.steps.${descriptor.stepKey}.bodyDesktop`);
+  const translatedHints = isMobile
+    ? [
+        t(`gallery.guide.steps.${descriptor.stepKey}.hint1Mobile`),
+        t(`gallery.guide.steps.${descriptor.stepKey}.hint2Mobile`),
+        t(`gallery.guide.steps.${descriptor.stepKey}.hint3Mobile`),
+      ]
+    : [
+        t(`gallery.guide.steps.${descriptor.stepKey}.hint1Desktop`),
+        t(`gallery.guide.steps.${descriptor.stepKey}.hint2Desktop`),
+        t(`gallery.guide.steps.${descriptor.stepKey}.hint3Desktop`),
+      ];
   const translatedCompactLabel = t(`gallery.guide.steps.${descriptor.stepKey}.compactLabel`);
   const guideCopy = isMobile
     ? translatedCompactLabel

@@ -340,6 +340,93 @@
     "creatureModal": {
       "close": "×"
     },
+    "guide": {
+      "fieldNote": "Nota sul campo",
+      "note": "Nota",
+      "open": "Apri",
+      "close": "Chiudi",
+      "hide": "Nascondi",
+      "steps": {
+        "intro": {
+          "titleDesktop": "Lascia che la stanza si apra",
+          "bodyDesktop": "WASD muove il corpo e il mouse accompagna lo sguardo. Appena senti il ritmo della stanza, lascia che l'occhio trovi l'arco ESTERNO sul muro opposto.",
+          "titleMobile": "Trova un passo comodo",
+          "bodyMobile": "In orizzontale l'esterno si legge meglio. Il pad sinistro accompagna il corpo, il destro curva lo sguardo: resta morbido al centro, spingiti al bordo quando vuoi voltarti di piu.",
+          "hint1Desktop": "WASD per muovere",
+          "hint2Desktop": "Mouse per guardare",
+          "hint3Desktop": "F per allargare la scena",
+          "hint1Mobile": "Tieni il telefono in orizzontale",
+          "hint2Mobile": "Sinistra per muovere",
+          "hint3Mobile": "Destra per guardare",
+          "compactLabel": "Cerca ESTERNO"
+        },
+        "find-outdoor": {
+          "titleDesktop": "Avvicinati alla soglia",
+          "bodyDesktop": "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
+          "titleMobile": "Avvicinati alla soglia",
+          "bodyMobile": "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
+          "hint1Desktop": "Muro opposto",
+          "hint2Desktop": "Nessun tasto necessario",
+          "hint3Desktop": "Lascia che il passaggio si apra",
+          "hint1Mobile": "Muro opposto",
+          "hint2Mobile": "Nessun tasto necessario",
+          "hint3Mobile": "Lascia che il passaggio si apra",
+          "compactLabel": "Raggiungi ESTERNO"
+        },
+        "arrive-globe": {
+          "titleDesktop": "Lascia entrare l'esterno",
+          "bodyDesktop": "Fuori non c'e un compito: c'e un primo spazio calmo che si apre verso tre direzioni. Guarda prima le masse, poi scegli quale richiamo seguire.",
+          "titleMobile": "Lascia entrare l'esterno",
+          "bodyMobile": "Fuori non c'e un compito: c'e un primo spazio calmo che si apre verso tre direzioni. Guarda prima le masse, poi scegli quale richiamo seguire.",
+          "hint1Desktop": "Ovest piu fitto",
+          "hint2Desktop": "Sud piu aperto",
+          "hint3Desktop": "Est piu costruito",
+          "hint1Mobile": "Ovest piu fitto",
+          "hint2Mobile": "Sud piu aperto",
+          "hint3Mobile": "Est piu costruito",
+          "compactLabel": "Leggi il primo paesaggio"
+        },
+        "meet-creatures": {
+          "titleDesktop": "Segui cio che insiste",
+          "bodyDesktop": "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
+          "titleMobile": "Segui cio che insiste",
+          "bodyMobile": "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
+          "hint1Desktop": "Posatoi",
+          "hint2Desktop": "Passaggi ripetuti",
+          "hint3Desktop": "Presenze leggere",
+          "hint1Mobile": "Posatoi",
+          "hint2Mobile": "Passaggi ripetuti",
+          "hint3Mobile": "Presenze leggere",
+          "compactLabel": "Segui un movimento"
+        },
+        "find-deposit": {
+          "titleDesktop": "Fermati solo dove serve",
+          "bodyDesktop": "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non e un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
+          "titleMobile": "Fermati solo dove serve",
+          "bodyMobile": "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non e un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
+          "hint1Desktop": "Tre luoghi rituali",
+          "hint2Desktop": "Bagliori verticali",
+          "hint3Desktop": "Lascia qualcosa solo se ha senso",
+          "hint1Mobile": "Tre luoghi rituali",
+          "hint2Mobile": "Bagliori verticali",
+          "hint3Mobile": "Lascia qualcosa solo se ha senso",
+          "compactLabel": "Riconosci un luogo rituale"
+        },
+        "deposit-ready": {
+          "titleDesktop": "Sosta rituale",
+          "bodyDesktop": "Quando sei nel punto giusto, la sosta rituale si apre senza chiedere gesti tecnici. Da li puoi scegliere se lasciare davvero una cavapendolata.",
+          "titleMobile": "Sosta rituale",
+          "bodyMobile": "Quando sei nel punto giusto, apri la sosta rituale e decidi con calma se lasciare davvero una cavapendolata.",
+          "hint1Desktop": "Lascia che si apra",
+          "hint2Desktop": "Poi scegli se lasciare",
+          "hint3Desktop": "Il luogo trattiene la traccia",
+          "hint1Mobile": "Apri la sosta",
+          "hint2Mobile": "Lascia qui se vuoi",
+          "hint3Mobile": "Il luogo trattiene la traccia",
+          "compactLabel": "Sosta rituale"
+        }
+      }
+    },
     "closeButton": "×"
   },
   "admin": {
