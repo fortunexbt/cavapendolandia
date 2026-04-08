@@ -21,12 +21,12 @@ const CheCose = () => {
   const p3Block = getBlock("p3");
   const p4Block = getBlock("p4");
 
-  const title = titleBlock?.body ?? t("cheCose.title");
+  const title = titleBlock?.body_text ?? t("cheCose.title");
   const paragraphs = [
-    p1Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[0]),
-    p2Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[1]),
-    p3Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[2]),
-    p4Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[3]),
+    p1Block?.body_text ?? t(FALLBACK_PARAGRAPHS_KEYS[0]),
+    p2Block?.body_text ?? t(FALLBACK_PARAGRAPHS_KEYS[1]),
+    p3Block?.body_text ?? t(FALLBACK_PARAGRAPHS_KEYS[2]),
+    p4Block?.body_text ?? t(FALLBACK_PARAGRAPHS_KEYS[3]),
   ];
 
   return (

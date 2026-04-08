@@ -334,8 +334,8 @@ function CavapendoWorld({ className = "" }: CavapendoWorldProps) {
   );
 }
 
-class WebGLCrashBoundary extends React.Component<Record<string, unknown>, { hasError: boolean }> {
-  constructor(props: Record<string, unknown>) {
+class WebGLCrashBoundary extends React.Component<{ children?: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children?: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
   }

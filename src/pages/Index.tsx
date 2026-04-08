@@ -88,8 +88,8 @@ const Index = () => {
   const subtitleBlock = getBlock("subtitle");
   const descriptionBlock = getBlock("description");
 
-  const subtitle = subtitleBlock?.body ?? t("index.subtitleFallback");
-  const description = descriptionBlock?.body ?? t("index.descriptionFallback");
+  const subtitle = subtitleBlock?.body_text ?? t("index.subtitleFallback");
+  const description = descriptionBlock?.body_text ?? t("index.descriptionFallback");
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">

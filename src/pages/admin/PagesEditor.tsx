@@ -56,7 +56,7 @@ const PagesEditorContent = () => {
   useState(() => {
     if (block) {
       setTitle(block.title ?? "");
-      setBody(block.body ?? "");
+      setBody(block.body_text ?? "");
     }
   });
 

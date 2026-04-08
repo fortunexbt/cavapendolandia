@@ -19,13 +19,13 @@ const Regole = () => {
   const { getBlock } = usePageBlocks("regole");
 
   const titleBlock = getBlock("title");
-  const title = titleBlock?.body ?? t("regole.title");
+  const title = titleBlock?.body_text ?? t("regole.title");
 
   // Load up to 7 rules from CMS
   const rules: string[] = [];
   for (let i = 0; i < 7; i++) {
     const block = getBlock(`rule-${i}`);
-    rules.push(block?.body ?? t(FALLBACK_RULES_KEYS[i]));
+    rules.push(block?.body_text ?? t(FALLBACK_RULES_KEYS[i]));
   }
 
   return (

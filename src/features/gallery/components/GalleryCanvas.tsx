@@ -11,6 +11,7 @@ import {
   VirtualJoystick,
 } from "@/components/cavapendo-gallery/gameplay";
 import { EYE_HEIGHT } from "@/components/cavapendo-gallery/config";
+import { useTranslation } from "react-i18next";
 
 class WebGLCrashBoundary extends React.Component<
   React.ComponentProps<"div">,
@@ -104,6 +105,7 @@ export interface GalleryCanvasProps {
 }
 
 export function GalleryCanvas(props: GalleryCanvasProps) {
+  const { t } = useTranslation();
   const {
     zone,
     isMobile,
