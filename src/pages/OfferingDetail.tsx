@@ -19,6 +19,8 @@ const OfferingDetail = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // Clipboard write failed silently — no action needed
     });
   };
 
