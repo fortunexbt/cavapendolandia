@@ -206,7 +206,9 @@
     "offeringLabel": "Offering",
     "openPdf": "Open PDF",
     "openLink": "Open link",
-    "anonimo": "Anonymous"
+    "anonimo": "Anonymous",
+    "zoneInterior": "Interior",
+    "zoneExterior": "Exterior"
   },
   "offri": {
     "title": "Offer",
