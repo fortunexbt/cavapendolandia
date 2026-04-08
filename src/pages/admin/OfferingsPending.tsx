@@ -37,9 +37,9 @@ const OfferingsPending = () => {
   const DEMO_OFFERINGS: AdminOffering[] = [
     {
       id: "demo-1",
-      title: "Una foto del mare",
-      note: "Il mare di Ostia all'alba",
-      author_name: "Marco",
+      title: t("admin.demoOffer1Title"),
+      note: t("admin.demoOffer1Note"),
+      author_name: t("admin.demoOffer1Author"),
       author_type: "name",
       media_type: "image",
       file_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400",
@@ -48,9 +48,9 @@ const OfferingsPending = () => {
     },
     {
       id: "demo-2",
-      title: "Poesia per i cavapendoli",
-      note: "Pendono e oscillano...",
-      author_name: "Giulia",
+      title: t("admin.demoOffer2Title"),
+      note: t("admin.demoOffer2Note"),
+      author_name: t("admin.demoOffer2Author"),
       author_type: "name",
       media_type: "text",
       file_url: null,
