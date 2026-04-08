@@ -29,7 +29,8 @@
     "successTitle": "Messaggio inviato",
     "successMessage": "La tua voce è stata udita. Ti risponderemo se necessario.",
     "errorFillFields": "Per favore compila tutti i campi richiesti.",
-    "errorSendFailed": "Non è stato possibile inviare il messaggio. Riprova più tardi."
+    "errorSendFailed": "Non è stato possibile inviare il messaggio. Riprova più tardi.",
+    "websiteLabel": "Sito web"
   },
   "index": {
     "subtitleThreshold": "Soglia di Cavapendolandia",
@@ -284,7 +285,8 @@
     "errorRateLimited": "Hai inviato molte offerte. Riprova tra qualche minuto.",
     "errorFileTooLarge": "Il file supera il limite di 100 MB.",
     "errorUploadFailed": "Upload non riuscito.",
-    "errorInsertFailed": "Qualcosa è andato storto. Riprova."
+    "errorInsertFailed": "Qualcosa è andato storto. Riprova.",
+    "websiteLabel": "Sito web"
   },
   "admin": {
     "unauthorized": "Accesso non autorizzato.",

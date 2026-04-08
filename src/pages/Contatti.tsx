@@ -108,7 +108,7 @@ const Contatti = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Honeypot - hidden from users */}
             <div className="hidden" aria-hidden="true">
-              <label htmlFor="website">Website</label>
+              <label htmlFor="website">{t("contatti.websiteLabel")}</label>
               <input type="text" name="website" id="website" tabIndex={-1} autoComplete="off" />
             </div>
 

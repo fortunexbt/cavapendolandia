@@ -29,7 +29,8 @@
     "successTitle": "Message sent",
     "successMessage": "Your voice has been heard. We will respond if necessary.",
     "errorFillFields": "Please fill in all required fields.",
-    "errorSendFailed": "Unable to send message. Please try again later."
+    "errorSendFailed": "Unable to send message. Please try again later.",
+    "websiteLabel": "Website"
   },
   "index": {
     "subtitleThreshold": "Cavapendolandia Threshold",
@@ -284,7 +285,8 @@
     "errorRateLimited": "You have submitted many offerings. Try again in a few minutes.",
     "errorFileTooLarge": "File exceeds the 100 MB limit.",
     "errorUploadFailed": "Upload failed.",
-    "errorInsertFailed": "Something went wrong. Try again."
+    "errorInsertFailed": "Something went wrong. Try again.",
+    "websiteLabel": "Website"
   },
   "admin": {
     "unauthorized": "Unauthorized access.",
