@@ -19,6 +19,7 @@ import {
   type AuthorType,
   canProceedSubmissionStep,
   createInitialSubmissionDraft,
+  submitOfferingSubmission,
 } from "@/lib/offeringSubmission";
 import { registerClientSubmission } from "@/lib/offeringValidation";
 import type { MediaType } from "@/lib/offeringSubmission";
