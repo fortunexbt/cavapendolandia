@@ -281,23 +281,22 @@ export function DepositModal({
               {site.label}
             </p>
             <h2 className="mt-2 text-2xl font-light text-[#24180f]">
-              Lascia qui una cavapendolata
+              {t("gallery.depositModal.title")}
             </h2>
             <p className="mt-2 text-sm italic text-[#5b493c]">
-              {site.subtitle}. La traccia resta in questo luogo: non esce mai
-              dalla scena che stai attraversando.
+              {site.subtitle}. {t("gallery.depositModal.subtitle")}
             </p>
             {initiative && (
               <p className="mt-3 text-xs italic text-[#7c6552]">
-                Un pensiero: {initiative.prompt}
+                {t("gallery.ritualPrompt.initiativePrompt")} {initiative.prompt}
               </p>
             )}
             </div>
 
             <OfferingSubmissionWizard
-              title="Lascia una traccia"
-              subtitle="Una forma, un suono, un testo: qualcosa che questo luogo possa trattenere."
-              submitLabel="Lascia qui"
+              title={t("gallery.depositModal.wizardTitle")}
+              subtitle={t("gallery.depositModal.wizardSubtitle")}
+              submitLabel={t("gallery.depositModal.submitLabel")}
               onCancel={onClose}
               onSubmitted={() => {
                 onSubmitted(site.id);
