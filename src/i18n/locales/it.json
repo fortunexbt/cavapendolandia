@@ -99,7 +99,8 @@
       "header": "Oltre la soglia"
     },
     "hudBanner": {
-      "pillLabel": "Un pensiero"
+      "pillLabel": "Un pensiero",
+      "depositLeft": "Una cavapendolata è stata lasciata in {{siteId}}"
     },
     "framePreview": {
       "fallbackTitle": "Cavapendolata",

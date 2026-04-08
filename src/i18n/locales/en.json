@@ -99,7 +99,8 @@
       "header": "Through the threshold"
     },
     "hudBanner": {
-      "pillLabel": "A thought"
+      "pillLabel": "A thought",
+      "depositLeft": "A Cavapendolata has been left in {{siteId}}"
     },
     "framePreview": {
       "fallbackTitle": "Cavapendolata",
