@@ -73,6 +73,17 @@ const OfferingSubmissionWizard = ({
     setDraft(createInitialSubmissionDraft());
   };
 
+  const REASON_TO_KEY: Record<string, string> = {
+    missing_media_type: "wizard.errorMissingMediaType",
+    invalid_link: "wizard.errorInvalidLink",
+    text_too_long: "wizard.errorTextTooLong",
+    invalid_instagram: "wizard.errorInvalidInstagram",
+    rate_limited: "wizard.errorRateLimited",
+    file_too_large: "wizard.errorFileTooLarge",
+    upload_failed: "wizard.errorUploadFailed",
+    insert_failed: "wizard.errorInsertFailed",
+  };
+
   const handleSubmit = async () => {
     if (submitting) return;
     setSubmitting(true);
@@ -81,7 +92,8 @@ const OfferingSubmissionWizard = ({
 
     if (!result.ok) {
       if ("reason" in result && result.reason !== "honeypot") {
-        toast.error("message" in result ? result.message : t("wizard.submittingError"));
+        const key = result.reason ? REASON_TO_KEY[result.reason] : undefined;
+        toast.error(key ? t(key) : t("wizard.submittingError"));
       }
       return;
     }
