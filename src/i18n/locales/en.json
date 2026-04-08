@@ -147,7 +147,51 @@
       "close": "Close",
       "open": "Open",
       "hide": "Hide",
-      "note": "Note"
+      "note": "Note",
+      "steps": {
+        "intro": {
+          "title": "Guide",
+          "body": "Cavapendolandia is a place that does not explain itself. Move slowly and let yourself be guided by what happens.",
+          "hint1": "Move slowly",
+          "hint2": "Breathe gently",
+          "hint3": "Let it happen"
+        },
+        "find-outdoor": {
+          "title": "Find the outside",
+          "body": "The inside stays warm and gathered. On the opposite wall, the OUTDOOR arch opens by itself when you get close enough.",
+          "hint1": "Opposite wall",
+          "hint2": "No key needed",
+          "hint3": "Let the passage open"
+        },
+        "arrive-globe": {
+          "title": "Read the first landscape",
+          "body": "The landscape changes by listening to those who enter. The first circle responds to your presence. Every gesture leaves a trace, small or large.",
+          "hint1": "The landscape responds",
+          "hint2": "Every gesture counts",
+          "hint3": "East is more built"
+        },
+        "meet-creatures": {
+          "title": "Follow a movement",
+          "body": "Creatures do not give objectives. They stay, they return, they turn away their gaze: when a movement insists on the same spot, usually the place wants to be heard.",
+          "hint1": "Perches",
+          "hint2": "Repeated passages",
+          "hint3": "Light presences"
+        },
+        "find-deposit": {
+          "title": "Recognize a ritual place",
+          "body": "Suspended rings, vertical glows and creatures that return indicate a ritual place. It is not an obligation: if the place holds, you can choose to leave something.",
+          "hint1": "Three ritual places",
+          "hint2": "Vertical glows",
+          "hint3": "Leave something only if it makes sense"
+        },
+        "deposit-ready": {
+          "title": "Ritual pause",
+          "body": "If the place holds, you can choose to leave something. It is not an obligation.",
+          "hint1": "Open the pause",
+          "hint2": "Leave here if you want",
+          "hint3": "The place retains the trace"
+        }
+      }
     },
     "deposit": {
       "leftIn": "A cavapendolata has been left at {{siteId}}."

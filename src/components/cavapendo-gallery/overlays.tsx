@@ -681,11 +681,19 @@ export function GuidePanel({
 }) {
   const { t } = useTranslation();
   if (!descriptor) return null;
+  const translatedTitle = t(`gallery.guide.steps.${descriptor.stepKey}.title`);
+  const translatedBody = t(`gallery.guide.steps.${descriptor.stepKey}.body`);
+  const translatedHints = [
+    t(`gallery.guide.steps.${descriptor.stepKey}.hint1`),
+    t(`gallery.guide.steps.${descriptor.stepKey}.hint2`),
+    t(`gallery.guide.steps.${descriptor.stepKey}.hint3`),
+  ];
+  const translatedCompactLabel = t(`gallery.guide.steps.${descriptor.stepKey}.compactLabel`);
   const guideCopy = isMobile
-    ? descriptor.compactLabel
+    ? translatedCompactLabel
     : expanded
-      ? descriptor.body
-      : descriptor.compactLabel;
+      ? translatedBody
+      : translatedCompactLabel;
 
   return (
     <motion.div
@@ -709,7 +717,7 @@ export function GuidePanel({
                 isMobile ? "text-[1.05rem]" : "text-[1.45rem]"
               }`}
             >
-              {descriptor.title}
+              {translatedTitle}
             </h2>
             <p
               className={`mt-1.5 leading-relaxed text-[#fff1e1] ${
@@ -744,9 +752,9 @@ export function GuidePanel({
 
         {expanded && !isMobile && (
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {descriptor.hints.map((hint) => (
+            {translatedHints.map((hint, i) => (
               <div
-                key={hint}
+                key={i}
                 className="rounded-full border border-[#896f58] bg-[#1a1310] px-3 py-1.5 text-[0.58rem] uppercase tracking-[0.18em] text-[#fff4e4]"
               >
                 {hint}
@@ -770,6 +778,7 @@ export function GuideObjectivePill({
 }) {
   const { t } = useTranslation();
   if (!descriptor) return null;
+  const translatedCompactLabel = t(`gallery.guide.steps.${descriptor.stepKey}.compactLabel`);
 
   return (
     <motion.div
@@ -784,7 +793,7 @@ export function GuideObjectivePill({
     >
       <div className="flex items-center gap-3 rounded-full border border-[#806958] bg-[linear-gradient(180deg,_rgba(16,12,10,0.95),_rgba(10,8,8,0.92))] px-4 py-2 shadow-[0_18px_48px_rgba(0,0,0,0.38)] backdrop-blur-[18px]">
         <div className="min-w-0 flex-1 text-[0.82rem] text-[#fff8ee]">
-          {descriptor.compactLabel}
+          {translatedCompactLabel}
         </div>
         {!isMobile && (
           <button

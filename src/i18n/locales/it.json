@@ -147,7 +147,51 @@
       "close": "Chiudi",
       "open": "Apri",
       "hide": "Togli",
-      "note": "Nota"
+      "note": "Nota",
+      "steps": {
+        "intro": {
+          "title": "Guida",
+          "body": "Cavapendolandia è un luogo che non spiega. Muoviti con calma e lasciati guidare da ciò che succede.",
+          "hint1": "Muoviti con calma",
+          "hint2": "Respira piano",
+          "hint3": "Lascia che succeda"
+        },
+        "find-outdoor": {
+          "title": "Trova l'esterno",
+          "body": "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
+          "hint1": "Muro opposto",
+          "hint2": "Nessun tasto necessario",
+          "hint3": "Lascia che il passaggio si apra"
+        },
+        "arrive-globe": {
+          "title": "Leggi il primo paesaggio",
+          "body": "Il paesaggio cambia ascoltando chi ci entra. Il primo cerchio risponde alla tua presenza. Ogni gesto lascia una traccia, piccola o grande che sia.",
+          "hint1": "Il paesaggio risponde",
+          "hint2": "Ogni gesto conta",
+          "hint3": "Est è più costruito"
+        },
+        "meet-creatures": {
+          "title": "Segui un movimento",
+          "body": "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
+          "hint1": "Posatoi",
+          "hint2": "Passaggi ripetuti",
+          "hint3": "Presenze leggere"
+        },
+        "find-deposit": {
+          "title": "Riconosci un luogo rituale",
+          "body": "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non è un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
+          "hint1": "Tre luoghi rituali",
+          "hint2": "Bagliori verticali",
+          "hint3": "Lascia qualcosa solo se ha senso"
+        },
+        "deposit-ready": {
+          "title": "Sosta rituale",
+          "body": "Se il luogo tiene, puoi scegliere di lasciare qualcosa. Non è un obbligo.",
+          "hint1": "Apri la sosta",
+          "hint2": "Lascia qui se vuoi",
+          "hint3": "Il luogo trattiene la traccia"
+        }
+      }
     },
     "deposit": {
       "leftIn": "Una cavapendolata è stata lasciata in {{siteId}}."
