@@ -337,6 +337,7 @@
     "title": "Titolo",
     "body": "Body",
     "titlePlaceholder": "Titolo del blocco",
+    "blockKeyPlaceholder": "hero",
     "bodyPlaceholder": "Contenuto del blocco...",
     "saveBlock": "Salva blocco",
     "saving": "Salvataggio…",

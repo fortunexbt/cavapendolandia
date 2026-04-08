@@ -113,7 +113,7 @@ const PagesEditorContent = () => {
                 value={blockKey}
                 onChange={(e) => setBlockKey(e.target.value)}
                 className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                placeholder="hero"
+                placeholder={t("admin.blockKeyPlaceholder")}
               />
             </div>
           </div>

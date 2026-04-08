@@ -337,6 +337,7 @@
     "title": "Title",
     "body": "Body",
     "titlePlaceholder": "Block title",
+    "blockKeyPlaceholder": "hero",
     "bodyPlaceholder": "Block content...",
     "saveBlock": "Save block",
     "saving": "Saving…",
