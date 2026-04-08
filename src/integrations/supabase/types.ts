@@ -125,105 +125,6 @@ export type Database = {
         }
         Relationships: []
       }
-      visitor_messages: {
-        Row: {
-          id: string
-          visitor_name: string | null
-          visitor_email: string | null
-          message: string
-          category: Database["public"]["Enums"]["message_category"]
-          is_read: boolean
-          locale: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          visitor_name?: string | null
-          visitor_email?: string | null
-          message: string
-          category: Database["public"]["Enums"]["message_category"]
-          is_read?: boolean
-          locale?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          visitor_name?: string | null
-          visitor_email?: string | null
-          message?: string
-          category?: Database["public"]["Enums"]["message_category"]
-          is_read?: boolean
-          locale?: string | null
-          created_at?: string
-        }
-        Relationships: []
-      }
-      page_content: {
-        Row: {
-          id: string
-          page_slug: string
-          block_key: string
-          title: string | null
-          body: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          page_slug: string
-          block_key: string
-          title?: string | null
-          body?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          page_slug?: string
-          block_key?: string
-          title?: string | null
-          body?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      meadow_elements: {
-        Row: {
-          id: string
-          element_type: Database["public"]["Enums"]["meadow_element_type"]
-          label: string
-          position_x: number
-          position_z: number
-          scale: number
-          rotation: number
-          tone: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          element_type: Database["public"]["Enums"]["meadow_element_type"]
-          label: string
-          position_x: number
-          position_z: number
-          scale: number
-          rotation: number
-          tone: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          element_type?: Database["public"]["Enums"]["meadow_element_type"]
-          label?: string
-          position_x?: number
-          position_z?: number
-          scale?: number
-          rotation?: number
-          tone?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -243,8 +144,6 @@ export type Database = {
       author_type: "anonymous" | "name" | "instagram"
       media_type: "image" | "video" | "audio" | "text" | "pdf" | "link"
       offering_status: "pending" | "approved" | "rejected" | "hidden"
-      message_category: "domanda" | "richiesta" | "feedback"
-      meadow_element_type: "tree" | "monolith" | "lantern" | "billboard"
     }
     CompositeTypes: {
       [_ in never]: never
