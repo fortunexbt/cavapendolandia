@@ -2,10 +2,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type VisitorMessage = {
   id: string;
-  visitor_name: string | null;
-  visitor_email: string | null;
-  body: string;
-  is_read: boolean;
+  name: string | null;
+  email: string | null;
+  message: string;
+  category: "domanda" | "richiesta" | "feedback";
+  locale: string;
+  status: "unread" | "read" | "archived";
+  is_read: boolean; // computed: status !== 'unread'
   created_at: string;
 };
 
@@ -16,13 +19,16 @@ export const visitorMessagesRepo = {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data || []) as VisitorMessage[];
+    return ((data || []) as any[]).map((row) => ({
+      ...row,
+      is_read: row.status !== "unread",
+    })) as VisitorMessage[];
   },
 
   async markAsRead(id: string): Promise<void> {
     const { error } = await (supabase as any)
       .from("visitor_messages")
-      .update({ is_read: true })
+      .update({ status: "read" })
       .eq("id", id);
     if (error) throw error;
   },
@@ -30,8 +36,8 @@ export const visitorMessagesRepo = {
   async markAllAsRead(): Promise<void> {
     const { error } = await (supabase as any)
       .from("visitor_messages")
-      .update({ is_read: true })
-      .eq("is_read", false);
+      .update({ status: "read" })
+      .eq("status", "unread");
     if (error) throw error;
   },
 

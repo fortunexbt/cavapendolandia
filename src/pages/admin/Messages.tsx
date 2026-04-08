@@ -88,10 +88,10 @@ const MessagesContent = () => {
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-medium text-foreground">
-                      {msg.visitor_name || t("admin.anonymous")}
+                      {msg.name || t("admin.anonymous")}
                     </p>
-                    {msg.visitor_email && (
-                      <span className="text-xs text-muted-foreground">{msg.visitor_email}</span>
+                    {msg.email && (
+                      <span className="text-xs text-muted-foreground">{msg.email}</span>
                     )}
                     {!msg.is_read && (
                       <Badge variant="default" className="text-[0.55rem] px-1.5 py-0 h-4">
@@ -99,7 +99,7 @@ const MessagesContent = () => {
                       </Badge>
                     )}
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-foreground/80">{msg.body}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground/80">{msg.message}</p>
                   <p className="mt-2 font-mono-light text-[0.62rem] uppercase tracking-[0.1em] text-muted-foreground">
                     {new Date(msg.created_at).toLocaleString(i18n.language)}
                   </p>
