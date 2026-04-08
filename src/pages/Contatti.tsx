@@ -7,7 +7,7 @@ import MinimalHeader from "@/components/MinimalHeader";
 import MinimalFooter from "@/components/MinimalFooter";
 
 const Contatti = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [cooldown, setCooldown] = useState(false);
@@ -46,7 +46,7 @@ const Contatti = () => {
       email: email || null,
       message,
       category,
-      locale: "it",
+      locale: i18n.language,
     });
 
     if (error) {
