@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pageContentRepo } from "../api/pageContent.repo";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const usePageContent = (slug: string, blockKey: string) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: block, isLoading } = useQuery({
@@ -16,9 +18,9 @@ export const usePageContent = (slug: string, blockKey: string) => {
       pageContentRepo.upsert(slug, blockKey, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["page-content", slug, blockKey] });
-      toast.success("Contenuto salvato");
+      toast.success(t("admin.pageSaved"));
     },
-    onError: () => toast.error("Errore durante il salvataggio"),
+    onError: () => toast.error(t("admin.pageSaveError")),
   });
 
   return {

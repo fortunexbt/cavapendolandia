@@ -438,7 +438,9 @@
     "rot": "rot",
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
-    "initiatives": "Initiatives"
+    "initiatives": "Initiatives",
+    "pageSaved": "Contenuto salvato",
+    "pageSaveError": "Errore durante il salvataggio"
   },
   "prato": {
     "elementCreated": "Elemento creato",

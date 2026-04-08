@@ -438,7 +438,9 @@
     "rot": "rot",
     "add": "Add",
     "noElements": "No elements in the meadow.",
-    "initiatives": "Initiatives"
+    "initiatives": "Initiatives",
+    "pageSaved": "Page saved",
+    "pageSaveError": "Failed to save page"
   },
   "prato": {
     "elementCreated": "Element created",
