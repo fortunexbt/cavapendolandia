@@ -67,28 +67,11 @@ export type OfferingSubmissionResult =
       message: string;
     };
 
-export const MEDIA_LABELS: Record<MediaType, string> = {
-  image: "Immagine",
-  video: "Video",
-  audio: "Audio",
-  text: "Testo",
-  pdf: "PDF",
-  link: "Link",
-};
-
 export const ACCEPT_MAP: Record<string, string> = {
   image: "image/*",
   video: "video/*",
   audio: "audio/*",
   pdf: "application/pdf",
-};
-
-export const STEP_LABELS: Record<number, string> = {
-  1: "Scelta",
-  2: "Deposito",
-  3: "Nome",
-  4: "Firma",
-  5: "Consenso",
 };
 
 export const createInitialSubmissionDraft = (): OfferingSubmissionDraft => ({
