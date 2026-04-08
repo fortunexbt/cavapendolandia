@@ -133,7 +133,13 @@
     "creatureModal": {
       "close": "×"
     },
-    "closeButton": "×"
+    "closeButton": "×",
+    "preload": {
+      "header": "Cavapendo",
+      "title": "Entrando nella galleria",
+      "description": "Riscaldando superfici e materiali — attendi mentre il mondo viene assemblato.",
+      "stage": "Fase {{index}} di {{total}}"
+    }
   },
   "offri": {
     "title": "Offri",

@@ -133,7 +133,13 @@
     "creatureModal": {
       "close": "×"
     },
-    "closeButton": "×"
+    "closeButton": "×",
+    "preload": {
+      "header": "Cavapendo",
+      "title": "Entering the gallery",
+      "description": "Warming surfaces and materials — please wait while the world is assembled.",
+      "stage": "Stage {{index}} of {{total}}"
+    }
   },
   "offri": {
     "title": "Offer",
