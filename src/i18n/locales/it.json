@@ -157,6 +157,10 @@
     "another": "Un'altra",
     "leaveOffering": "Lascia una cavapendolata"
   },
+  "notFound404": {
+    "label": "Stanza vuota",
+    "message": "Questa stanza non esiste ancora."
+  },
   "grazie": {
     "title": "Grazie",
     "line1": "La tua cavapendolata sta facendo il suo cammino.",

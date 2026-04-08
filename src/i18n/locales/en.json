@@ -157,6 +157,10 @@
     "another": "Another one",
     "leaveOffering": "Leave a cavapendolata"
   },
+  "notFound404": {
+    "label": "Empty room",
+    "message": "This room doesn't exist yet."
+  },
   "grazie": {
     "title": "Thank you",
     "line1": "Your cavapendolata is making its way.",
