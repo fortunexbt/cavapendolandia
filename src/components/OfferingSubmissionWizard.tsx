@@ -19,9 +19,9 @@ import {
   type AuthorType,
   canProceedSubmissionStep,
   createInitialSubmissionDraft,
-  type MediaType,
-  submitOfferingSubmission,
 } from "@/lib/offeringSubmission";
+import { registerClientSubmission } from "@/lib/offeringValidation";
+import type { MediaType } from "@/lib/offeringSubmission";
 
 const MEDIA_TYPE_KEYS: Record<MediaType, string> = {
   image: "wizard.mediaTypeImage",
@@ -87,6 +87,7 @@ const OfferingSubmissionWizard = ({
     }
 
     setSubmitted(true);
+    registerClientSubmission();
     onSubmitted?.();
   };
 
