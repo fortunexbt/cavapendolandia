@@ -464,14 +464,8 @@ export function WorldController({
 
     const handleCanvasClick = () => {
       if (modalOpen) return;
+      canvas.requestPointerLock();
       onActivity();
-      canvas.focus();
-
-      if (!isMobile && !isLockedRef.current) {
-        canvas.requestPointerLock();
-        return;
-      }
-
     };
 
     const handleMouseMove = (event: MouseEvent) => {
@@ -522,9 +516,8 @@ export function WorldController({
         document.exitPointerLock();
       }
     };
-  }, [
+  ], [
     gl,
-    isMobile,
     modalOpen,
     onActivity,
     onInteraction,
