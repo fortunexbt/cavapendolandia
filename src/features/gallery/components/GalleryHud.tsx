@@ -188,7 +188,7 @@ export function GalleryHud(props: GalleryHudProps) {
         showGuideUi &&
         (!guideDescriptor || guideHidden || !guideExpanded) && (
           <PlayerHud
-            zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
+            zoneLabel={t(zone === "gallery" ? "gallery.zoneInterior" : "gallery.zoneExterior")}
             sectorLabel={
               zone === "meadow" ? currentSectorDescriptor?.label || null : null
             }
@@ -203,10 +203,9 @@ export function GalleryHud(props: GalleryHudProps) {
             onOpenGuide={onOpenGuide}
           />
         )}
-
       {hudMode === "debug" && (
         <DebugHud
-          zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
+          zoneLabel={t(zone === "gallery" ? "gallery.zoneInterior" : "gallery.zoneExterior")}
           sectorLabel={currentSectorDescriptor?.label || null}
           renderProfile={activeRenderProfile.label}
           ambienceLabel={ambienceLabel}

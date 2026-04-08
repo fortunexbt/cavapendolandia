@@ -54,7 +54,8 @@
     "mysticalOpening10": "Vanno e vengono, svolacchiano, si posano e se ne vanno.",
     "mysticalOpening11": "Chi sa cosa fanno quando non si mostrano.",
     "mysticalOpening12": "Li invito con umiltà a entrare nel cannello della penna...",
-    "mysticalOpening13": "e mi ridacchiano addosso."
+    "mysticalOpening13": "e mi ridacchiano addosso.",
+    "initiativePrompt": "Un pensiero"
   },
   "cheCose": {
     "title": "Che cos'è",
@@ -197,7 +198,9 @@
       "open": "Apri",
       "close": "Chiudi",
       "hide": "Nascondi"
-    }
+    },
+    "zoneInterior": "Interno",
+    "zoneExterior": "Esterno"
   },
   "offri": {
     "title": "Offri",

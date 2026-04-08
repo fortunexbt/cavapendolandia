@@ -54,7 +54,8 @@
     "mysticalOpening10": "They come and go, flutter about, land and leave.",
     "mysticalOpening11": "Who knows what they do when they're not showing themselves.",
     "mysticalOpening12": "I invite them with humility to enter the barrel of the pen...",
-    "mysticalOpening13": "and they giggle at me."
+    "mysticalOpening13": "and they giggle at me.",
+    "initiativePrompt": "A thought"
   },
   "cheCose": {
     "title": "What is it",
@@ -197,7 +198,9 @@
       "open": "Open",
       "close": "Close",
       "hide": "Hide"
-    }
+    },
+    "zoneInterior": "Interior",
+    "zoneExterior": "Exterior"
   },
   "offri": {
     "title": "Offer",
