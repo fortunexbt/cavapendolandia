@@ -7,14 +7,15 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { Textarea } from "@/components/ui/textarea";
 import OfferingCard from "@/components/OfferingCard";
 import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import { it, enUS } from "date-fns/locale";
 import { toast } from "sonner";
 import { withSignedFileUrl } from "@/lib/offeringMedia";
 
 type OfferingStatus = "pending" | "approved" | "rejected" | "hidden";
 
 const AdminOfferingDetail = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === "it" ? it : enUS;
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, isAdmin, loading } = useAdmin();
@@ -119,9 +120,9 @@ const AdminOfferingDetail = () => {
                     : offering.author_name || "—"}
               </span></p>
               <p>{t("admin.rights")} {offering.consent_rights ? "✓" : "✗"} · {t("admin.archive")} {offering.consent_archive ? "✓" : "✗"} · {t("admin.reshare")} {offering.consent_reshare ? "✓" : "✗"}</p>
-              <p>{t("admin.created")} {format(new Date(offering.created_at), "d MMMM yyyy, HH:mm", { locale: it })}</p>
+              <p>{t("admin.created")} {format(new Date(offering.created_at), "d MMMM yyyy, HH:mm", {locale: dateLocale})}</p>
               {offering.approved_at && (
-                <p>{t("admin.approved")} {format(new Date(offering.approved_at), "d MMMM yyyy, HH:mm", { locale: it })}</p>
+                <p>{t("admin.approved")} {format(new Date(offering.approved_at), "d MMMM yyyy, HH:mm", {locale: dateLocale})}</p>
               )}
             </div>
 
