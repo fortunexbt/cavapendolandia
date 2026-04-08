@@ -207,7 +207,8 @@
     "playerHud": {
       "currentObjective": "Obiettivo corrente",
       "reopenNote": "Riapri nota",
-      "ritualPlace": "Luogo del rituale"
+      "ritualPlace": "Luogo del rituale",
+      "lookAt": "Guardando {{label}}"
     },
     "settings": {
       "activeNow": "Attivo ora",
@@ -226,7 +227,12 @@
       "renderProfile": "Profilo rendering",
       "reopenGuide": "Riapri guida",
       "softCamera": "Fotocamera morbida",
-      "unmuteAudio": "Riattiva audio"
+      "unmuteAudio": "Riattiva audio",
+      "hudMode": "HUD: {{mode}}"
+    },
+    "depositBanner": "Una traccia ti attende qui · {{siteId}}",
+    "debugHud": {
+      "nearbyCreatures": "Creature vicine: {{count}}"
     }
   },
   "nav": {

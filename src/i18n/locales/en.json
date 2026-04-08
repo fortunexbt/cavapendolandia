@@ -207,7 +207,8 @@
     "playerHud": {
       "currentObjective": "Current objective",
       "reopenNote": "Reopen note",
-      "ritualPlace": "Ritual place"
+      "ritualPlace": "Ritual place",
+      "lookAt": "Looking at {{label}}"
     },
     "settings": {
       "activeNow": "Active now",
@@ -226,7 +227,12 @@
       "renderProfile": "Render profile",
       "reopenGuide": "Reopen guide",
       "softCamera": "Soft camera",
-      "unmuteAudio": "Unmute audio"
+      "unmuteAudio": "Unmute audio",
+      "hudMode": "HUD: {{mode}}"
+    },
+    "depositBanner": "A trace awaits here · {{siteId}}",
+    "debugHud": {
+      "nearbyCreatures": "Nearby creatures: {{count}}"
     }
   },
   "nav": {
