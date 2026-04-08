@@ -23,10 +23,10 @@ const CheCose = () => {
 
   const title = titleBlock?.body ?? t("cheCose.title");
   const paragraphs = [
-    p1Block?.body ?? FALLBACK_PARAGRAPHS[0],
-    p2Block?.body ?? FALLBACK_PARAGRAPHS[1],
-    p3Block?.body ?? FALLBACK_PARAGRAPHS[2],
-    p4Block?.body ?? FALLBACK_PARAGRAPHS[3],
+    p1Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[0]),
+    p2Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[1]),
+    p3Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[2]),
+    p4Block?.body ?? t(FALLBACK_PARAGRAPHS_KEYS[3]),
   ];
 
   return (
