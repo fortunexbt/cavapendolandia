@@ -1,4 +1,15 @@
 {
+  "error": {
+    "title": "Qualcosa si è rotto",
+    "message": "Un errore imprevisto ha interrotto il cammino. Ricarica la pagina per ricostruire il mondo."
+  },
+  "footer": {
+    "removal": "Rimozione"
+  },
+  "gallery": {
+    "depositBanner": "Una cavapendolata è stata lasciata in {{siteId}}.",
+    "openPdf": "Apri PDF ↗"
+  },
   "nav": {
     "cheCose": "Che cos'è",
     "galleria": "Galleria",
@@ -64,7 +75,14 @@
   "regole": {
     "title": "Regole",
     "linkOffer": "Lascia una cavapendolata",
-    "linkRemoval": "Info rimozione"
+    "linkRemoval": "Info rimozione",
+    "rule0": "Cavapendolandia è un luogo delicato.",
+    "rule1": "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
+    "rule2": "Niente odio, molestie o contenuti violenti espliciti.",
+    "rule3": "Niente dati personali di terzi.",
+    "rule4": "Non è un social: qui non si giudica.",
+    "rule5": "Le cavapendolate entrano dopo una breve attesa.",
+    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui."
   },
   "gallery": {
     "preload": {
@@ -437,5 +455,19 @@
     "authError": "Errore durante l'accesso.",
     "connectionError": "Connessione al backend non disponibile.",
     "authenticatedNoAccess": "Sei autenticato ma non ancora autorizzato come admin."
+  },
+  "offeringCard": {
+    "openPdf": "Apri PDF",
+    "openLink": "Apri link"
+  },
+  "regole": {
+    "title": "Regole",
+    "rule0": "Cavapendolandia è un luogo delicato.",
+    "rule1": "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
+    "rule2": "Niente odio, molestie o contenuti violenti espliciti.",
+    "rule3": "Niente dati personali di terzi.",
+    "rule4": "Non è un social: qui non si giudica.",
+    "rule5": "Le cavapendolate entrano dopo una breve attesa.",
+    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui."
   }
 }

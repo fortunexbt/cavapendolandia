@@ -1,4 +1,15 @@
 {
+  "error": {
+    "title": "Something broke",
+    "message": "An unexpected error interrupted the journey. Reload the page to rebuild the world."
+  },
+  "footer": {
+    "removal": "Removal"
+  },
+  "gallery": {
+    "depositBanner": "A cavapendolata has been left at {{siteId}}.",
+    "openPdf": "Open PDF ↗"
+  },
   "nav": {
     "cheCose": "What is it",
     "galleria": "Gallery",
@@ -64,7 +75,14 @@
   "regole": {
     "title": "Rules",
     "linkOffer": "Leave a cavapendolata",
-    "linkRemoval": "Removal info"
+    "linkRemoval": "Removal info",
+    "rule0": "Cavapendolandia is a delicate place.",
+    "rule1": "Leave only what belongs to you or what you have the right to share.",
+    "rule2": "No hatred, harassment, or explicit violent content.",
+    "rule3": "No third-party personal data.",
+    "rule4": "It's not a social network: there is no judging here.",
+    "rule5": "Cavapendolate enter after a brief wait.",
+    "rule6": "We reserve the right not to publish what does not belong here."
   },
   "gallery": {
     "preload": {
@@ -437,5 +455,19 @@
     "authError": "Login error.",
     "connectionError": "Backend connection unavailable.",
     "authenticatedNoAccess": "You are authenticated but not yet authorized as admin."
+  },
+  "offeringCard": {
+    "openPdf": "Open PDF",
+    "openLink": "Open link"
+  },
+  "regole": {
+    "title": "Rules",
+    "rule0": "Cavapendolandia is a delicate place.",
+    "rule1": "Leave only what belongs to you or what you have the right to share.",
+    "rule2": "No hate, harassment, or explicit violent content.",
+    "rule3": "No third-party personal data.",
+    "rule4": "It is not a social space: there is no judgment here.",
+    "rule5": "Cavapendolate enter after a brief wait.",
+    "rule6": "We reserve the right not to publish what does not belong here."
   }
 }
