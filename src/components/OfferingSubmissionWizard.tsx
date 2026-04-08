@@ -443,7 +443,7 @@ const OfferingSubmissionWizard = ({
       </div>
 
       <div className="sr-only" aria-hidden>
-        <label htmlFor="website">Website</label>
+        <label htmlFor="website">{t("contatti.honeypotLabel")}</label>
         <input
           id="website"
           value={draft.honeypot}

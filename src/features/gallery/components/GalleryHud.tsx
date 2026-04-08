@@ -212,7 +212,7 @@ export function GalleryHud(props: GalleryHudProps) {
           ambienceLabel={ambienceLabel}
           sensitivitySummary={`Mouse ${mouseSensitivity.toFixed(2)} • touch ${touchSensitivity.toFixed(2)} • joy ${Math.round(joystickRadius)}px`}
           nearbyTriggerLabel={
-            nearbyTriggerLabel ? `Vicino a ${nearbyTriggerLabel}` : null
+            nearbyTriggerLabel ? t("gallery.debug.nearbyTrigger", { label: nearbyTriggerLabel }) : null
           }
           nearbyCreatureCount={nearbyCreatureDefinitions.length}
         />

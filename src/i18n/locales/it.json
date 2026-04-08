@@ -11,288 +11,6 @@
     "removal": "Rimozione"
   },
   "gallery": {
-    "depositBanner": "Una cavapendolata è stata lasciata in {{siteId}}.",
-    "openPdf": "Apri PDF ↗"
-  },
-  "nav": {
-    "cheCose": "Che cos'è",
-    "galleria": "Galleria",
-    "offri": "Offri",
-    "regole": "Regole",
-    "rimozione": "Rimozione",
-    "contatti": "Contatti"
-  },
-  "theme": {
-    "light": "Passa al tema chiaro",
-    "dark": "Passa al tema scuro"
-  },
-  "contatti": {
-    "title": "Contatti",
-    "subtitle": "Hai qualcosa da dire? Scrivici.",
-    "nameLabel": "Nome (opzionale)",
-    "emailLabel": "Email (opzionale)",
-    "categoryLabel": "Categoria *",
-    "messageLabel": "Messaggio *",
-    "selectCategory": "Seleziona una categoria",
-    "categoryDomanda": "Domanda",
-    "categoryRichiesta": "Richiesta",
-    "categoryFeedback": "Feedback",
-    "submit": "Invia messaggio",
-    "submitting": "Invio in corso...",
-    "sent": "Inviato",
-    "backHome": "Torna alla home",
-    "successTitle": "Messaggio inviato",
-    "successMessage": "La tua voce è stata udita. Ti risponderemo se necessario.",
-    "errorFillFields": "Per favore compila tutti i campi richiesti.",
-    "errorSendFailed": "Non è stato possibile inviare il messaggio. Riprova più tardi."
-  },
-  "index": {
-    "subtitleThreshold": "Soglia di Cavapendolandia",
-    "subtitleMaterials": "carta, rame, vento",
-    "subtitle": "Una soglia esplorabile",
-    "subtitleFallback": "Una soglia esplorabile",
-    "descriptionFallback": "Una stanza che si apre nel prato, un archivio che respira, una soglia dove i cavapendoli si fanno vedere solo per poco.",
-    "ctaEnter": "Entra",
-    "initiativeBanner": "Un pensiero",
-    "navGallery": "Galleria",
-    "navOffri": "Offri",
-    "navRegole": "Regole",
-    "mysticalOpening1": "I Cavapendoli scendono a spirale, quasi velici.",
-    "mysticalOpening2": "Prima erano ovunque, nei magazzini del mondo impalpabile.",
-    "mysticalOpening3": "Lentamente, nel tempo, hanno assunto forma.",
-    "mysticalOpening4": "Prima immagini, poi dipinti, poi parole.",
-    "mysticalOpening5": "Ma non si lasciavano fissare volentieri.",
-    "mysticalOpening6": "Nel tempo che passa, hanno accettato di essere esposti allo sguardo degli estranei.",
-    "mysticalOpening7": "Ora tentennano, forse non vogliono essere fermati su carta.",
-    "mysticalOpening8": "Sfuggono, perché vivono di libertà.",
-    "mysticalOpening9": "Sono bonari, ilari, sfuggenti e spiritosi.",
-    "mysticalOpening10": "Vanno e vengono, svolacchiano, si posano e se ne vanno.",
-    "mysticalOpening11": "Chi sa cosa fanno quando non si mostrano.",
-    "mysticalOpening12": "Li invito con umiltà a entrare nel cannello della penna...",
-    "mysticalOpening13": "e mi ridacchiano addosso."
-  },
-  "cheCose": {
-    "title": "Che cos'è",
-    "linkRules": "Leggi le regole",
-    "linkRemoval": "Info rimozione",
-    "p1": "Un luogo dove lasciare qualcosa.",
-    "p2": "Un'immagine, un suono, un testo, un frammento.",
-    "p3": "La domanda: cosa significa Cavapendoli per te?",
-    "p4": "Non ci sono risposte giuste. Solo tracce."
-  },
-  "regole": {
-    "title": "Regole",
-    "linkOffer": "Lascia una cavapendolata",
-    "linkRemoval": "Info rimozione",
-    "rule0": "Cavapendolandia è un luogo delicato.",
-    "rule1": "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
-    "rule2": "Niente odio, molestie o contenuti violenti espliciti.",
-    "rule3": "Niente dati personali di terzi.",
-    "rule4": "Non è un social: qui non si giudica.",
-    "rule5": "Le cavapendolate entrano dopo una breve attesa.",
-    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui."
-  },
-  "gallery": {
-    "preload": {
-      "header": "Cavapendolandia / Galleria",
-      "title": "Sto preparando il mondo.",
-      "description": "Caricamento progressivo del globo, delle superfici dipinte e dell'ambiente sonoro. L'ingresso parte solo quando il primo frame è stabile.",
-      "stage": "Fase {{index}}/{{total}}"
-    },
-    "mobileOrientation": {
-      "header": "Esperienza mobile",
-      "title": "Ruota in orizzontale.",
-      "description": "Il globo esterno e i controlli twin-stick sono progettati per il paesaggio. In verticale puoi continuare, ma perderai spazio, visione e comfort.",
-      "left": "Sinistra",
-      "right": "Destra",
-      "movement": "Movimento",
-      "lookActions": "Sguardo + azioni",
-      "continueAnyway": "Continua comunque",
-      "gotIt": "Ho capito"
-    },
-    "mobileControls": {
-      "steps": "PASSI",
-      "camera": "CAMERA",
-      "movement": "movimento",
-      "move": "muovi",
-      "look": "sguardo"
-    },
-    "zoneTransition": {
-      "header": "Cambio zona"
-    },
-    "zone": {
-      "interior": "Interno",
-      "exterior": "Esterno"
-    },
-    "playerHud": {
-      "currentObjective": "Obiettivo attuale",
-      "lookAt": "Sguardo: {{label}}",
-      "ritualPlace": "Luogo rituale",
-      "reopenNote": "Riapri appunto"
-    },
-    "debugHud": {
-      "nearbyCreatures": "Creature vicine {{count}}"
-    },
-    "settings": {
-      "renderProfile": "Profilo di rendering",
-      "activeNow": "Attivo ora",
-      "controls": "Controlli",
-      "mouse": "Mouse",
-      "lookTouch": "Look touch",
-      "joystickRadius": "Raggio joystick",
-      "invertedLook": "Look invertito",
-      "normalLook": "Look normale",
-      "softCamera": "Camera morbida",
-      "fullCamera": "Camera piena",
-      "hudAudio": "HUD e audio",
-      "hudMode": "HUD {{mode}}",
-      "muteAudio": "Muta audio",
-      "unmuteAudio": "Riattiva audio",
-      "ambienceVolume": "Volume ambiente",
-      "reopenGuide": "Riapri guida",
-      "exitFullscreen": "Esci dal fullscreen",
-      "enterFullscreen": "Entra in fullscreen"
-    },
-    "guide": {
-      "fieldNote": "Appunto di campo",
-      "close": "Chiudi",
-      "open": "Apri",
-      "hide": "Togli",
-      "note": "Nota",
-      "steps": {
-        "intro": {
-          "title": "Guida",
-          "body": "Cavapendolandia è un luogo che non spiega. Muoviti con calma e lasciati guidare da ciò che succede.",
-          "hint1": "Muoviti con calma",
-          "hint2": "Respira piano",
-          "hint3": "Lascia che succeda"
-        },
-        "find-outdoor": {
-          "title": "Trova l'esterno",
-          "body": "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
-          "hint1": "Muro opposto",
-          "hint2": "Nessun tasto necessario",
-          "hint3": "Lascia che il passaggio si apra"
-        },
-        "arrive-globe": {
-          "title": "Leggi il primo paesaggio",
-          "body": "Il paesaggio cambia ascoltando chi ci entra. Il primo cerchio risponde alla tua presenza. Ogni gesto lascia una traccia, piccola o grande che sia.",
-          "hint1": "Il paesaggio risponde",
-          "hint2": "Ogni gesto conta",
-          "hint3": "Est è più costruito"
-        },
-        "meet-creatures": {
-          "title": "Segui un movimento",
-          "body": "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
-          "hint1": "Posatoi",
-          "hint2": "Passaggi ripetuti",
-          "hint3": "Presenze leggere"
-        },
-        "find-deposit": {
-          "title": "Riconosci un luogo rituale",
-          "body": "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non è un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
-          "hint1": "Tre luoghi rituali",
-          "hint2": "Bagliori verticali",
-          "hint3": "Lascia qualcosa solo se ha senso"
-        },
-        "deposit-ready": {
-          "title": "Sosta rituale",
-          "body": "Se il luogo tiene, puoi scegliere di lasciare qualcosa. Non è un obbligo.",
-          "hint1": "Apri la sosta",
-          "hint2": "Lascia qui se vuoi",
-          "hint3": "Il luogo trattiene la traccia"
-        }
-      }
-    },
-    "deposit": {
-      "leftIn": "Una cavapendolata è stata lasciata in {{siteId}}."
-    },
-    "actions": {
-      "settings": "Impostazioni",
-      "offer": "+ Offri"
-    }
-  },
-  "offri": {
-    "title": "Offri",
-    "subtitle": "Lascia qualcosa per i cavapendoli.",
-    "initiativeLabel": "Pensiero attivo",
-    "submittedTitle": "Accolta",
-    "submittedLine1": "La tua cavapendolata è in attesa di entrare.",
-    "submittedLine2": "Sarà visibile nell'Archivio dopo essere passata per l'Anticamera.",
-    "ctaGallery": "Vai all'Archivio",
-    "ctaAnother": "Lascia un'altra"
-  },
-  "offeringDetail": {
-    "untitled": "Cavapendolata",
-    "loading": "Caricamento...",
-    "notFound": "Non è stato trovato nulla.",
-    "backToArchive": "Torna all'Archivio",
-    "found": "Trovata",
-    "copied": "Copiato!",
-    "copyLink": "Copia link",
-    "another": "Un'altra",
-    "leaveOffering": "Lascia una cavapendolata"
-  },
-  "grazie": {
-    "title": "Grazie",
-    "line1": "La tua cavapendolata sta facendo il suo cammino.",
-    "line2": "Attraverserà l'Anticamera prima di entrare nell'Archivio.",
-    "ctaHome": "Torna alla soglia",
-    "ctaGallery": "Vai all'Archivio"
-  },
-  "rimozione": {
-    "title": "Rimozione",
-    "line1": "Se hai lasciato qualcosa e vuoi che venga rimosso,",
-    "line2": "scrivici a:",
-    "ctaOffer": "Lascia qualcosa"
-  },
-  "wizard": {
-    "submitLabel": "Invia all'Anticamera",
-    "submittingError": "Errore durante l'invio.",
-    "successTitle": "Accolta",
-    "successMessage": "La tua cavapendolata è in attesa di entrare.",
-    "step1Prompt": "Cosa lasci?",
-    "step2TextPlaceholder": "Scrivi qui...",
-    "step2LinkPlaceholder": "https://...",
-    "step2FilePlaceholder": "Scegli un file",
-    "step2FileSize": "Max {{size}} MB.",
-    "step2HintSmall": "Piccolo va bene.",
-    "step2HintNoExplain": "Non deve spiegare tutto.",
-    "step3TitlePlaceholder": "Titolo (opzionale)",
-    "step3NotePlaceholder": "Due righe, se vuoi.",
-    "step4Prompt": "Come vuoi apparire?",
-    "step4AuthorAnonymous": "Anonimo",
-    "step4AuthorName": "Nome o pseudonimo",
-    "step4AuthorInstagram": "@Instagram (opzionale)",
-    "step4NamePlaceholder": "come vuoi essere chiamato/a",
-    "step4InstagramPlaceholder": "@tuonome",
-    "consentRights": "Questo contenuto è mio, oppure posso condividerlo.",
-    "consentArchive": "Va bene se entra in Archivio, dopo l'Anticamera.",
-    "consentReshare": "Se necessario, può essere ricondivisa nei canali del progetto.",
-    "back": "← torna",
-    "close": "chiudi",
-    "next": "avanti",
-    "mediaTypeImage": "Immagine",
-    "mediaTypeVideo": "Video",
-    "mediaTypeAudio": "Audio",
-    "mediaTypeText": "Testo",
-    "mediaTypePdf": "PDF",
-    "mediaTypeLink": "Link",
-    "stepChoice": "Scelta",
-    "stepDeposit": "Deposito",
-    "stepName": "Nome",
-    "stepSignature": "Firma",
-    "stepConsent": "Consenso",
-    "errorMissingMediaType": "Scegli cosa lasciare prima di inviare.",
-    "errorInvalidLink": "Inserisci un link completo.",
-    "errorTextTooLong": "Il testo supera la lunghezza massima consentita.",
-    "errorInvalidInstagram": "Firma Instagram non valida.",
-    "errorRateLimited": "Hai inviato molte offerte. Riprova tra qualche minuto.",
-    "errorFileTooLarge": "Il file supera il limite di 100 MB.",
-    "errorUploadFailed": "Upload non riuscito.",
-    "errorInsertFailed": "Qualcosa è andato storto. Riprova."
-  },
-  "gallery": {
     "shell": {
       "loadingStage0": "Carico il bundle della galleria",
       "loadingStage1": "Scaldo superfici e materiali",
@@ -448,7 +166,172 @@
         }
       }
     },
-    "closeButton": "×"
+    "closeButton": "×",
+    "door": {
+      "exit": "USCITA",
+      "outdoor": "ESTERNO",
+      "return": "GALLERIA"
+    },
+    "debug": {
+      "nearbyTrigger": "Vicino a {{label}}"
+    }
+  },
+  "nav": {
+    "cheCose": "Che cos'è",
+    "galleria": "Galleria",
+    "offri": "Offri",
+    "regole": "Regole",
+    "rimozione": "Rimozione",
+    "contatti": "Contatti"
+  },
+  "theme": {
+    "light": "Passa al tema chiaro",
+    "dark": "Passa al tema scuro"
+  },
+  "contatti": {
+    "title": "Contatti",
+    "subtitle": "Hai qualcosa da dire? Scrivici.",
+    "nameLabel": "Nome (opzionale)",
+    "emailLabel": "Email (opzionale)",
+    "categoryLabel": "Categoria *",
+    "messageLabel": "Messaggio *",
+    "selectCategory": "Seleziona una categoria",
+    "categoryDomanda": "Domanda",
+    "categoryRichiesta": "Richiesta",
+    "categoryFeedback": "Feedback",
+    "submit": "Invia messaggio",
+    "submitting": "Invio in corso...",
+    "sent": "Inviato",
+    "backHome": "Torna alla home",
+    "successTitle": "Messaggio inviato",
+    "successMessage": "La tua voce è stata udita. Ti risponderemo se necessario.",
+    "errorFillFields": "Compila tutti i campi richiesti.",
+    "errorSendFailed": "Impossibile inviare il messaggio. Riprova più tardi.",
+    "honeypotLabel": "Sito web"
+  },
+  "index": {
+    "subtitleThreshold": "Soglia di Cavapendolandia",
+    "subtitleMaterials": "carta, rame, vento",
+    "subtitle": "Una soglia esplorabile",
+    "subtitleFallback": "Una soglia esplorabile",
+    "descriptionFallback": "Una stanza che si apre nel prato, un archivio che respira, una soglia dove i cavapendoli si fanno vedere solo per poco.",
+    "ctaEnter": "Entra",
+    "initiativeBanner": "Un pensiero",
+    "navGallery": "Galleria",
+    "navOffri": "Offri",
+    "navRegole": "Regole",
+    "mysticalOpening1": "I Cavapendoli scendono a spirale, quasi velici.",
+    "mysticalOpening2": "Prima erano ovunque, nei magazzini del mondo impalpabile.",
+    "mysticalOpening3": "Lentamente, nel tempo, hanno assunto forma.",
+    "mysticalOpening4": "Prima immagini, poi dipinti, poi parole.",
+    "mysticalOpening5": "Ma non si lasciavano fissare volentieri.",
+    "mysticalOpening6": "Nel tempo che passa, hanno accettato di essere esposti allo sguardo degli estranei.",
+    "mysticalOpening7": "Ora tentennano, forse non vogliono essere fermati su carta.",
+    "mysticalOpening8": "Sfuggono, perché vivono di libertà.",
+    "mysticalOpening9": "Sono bonari, ilari, sfuggenti e spiritosi.",
+    "mysticalOpening10": "Vanno e vengono, svolacchiano, si posano e se ne vanno.",
+    "mysticalOpening11": "Chi sa cosa fanno quando non si mostrano.",
+    "mysticalOpening12": "Li invito con umiltà a entrare nel cannello della penna...",
+    "mysticalOpening13": "e mi ridacchiano addosso."
+  },
+  "cheCose": {
+    "title": "Che cos'è",
+    "linkRules": "Leggi le regole",
+    "linkRemoval": "Info rimozione",
+    "p1": "Un luogo dove lasciare qualcosa.",
+    "p2": "Un'immagine, un suono, un testo, un frammento.",
+    "p3": "La domanda: cosa significa Cavapendoli per te?",
+    "p4": "Non ci sono risposte giuste. Solo tracce."
+  },
+  "regole": {
+    "title": "Regole",
+    "rule0": "Cavapendolandia è un luogo delicato.",
+    "rule1": "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
+    "rule2": "Niente odio, molestie o contenuti violenti espliciti.",
+    "rule3": "Niente dati personali di terzi.",
+    "rule4": "Non è un social: qui non si giudica.",
+    "rule5": "Le cavapendolate entrano dopo una breve attesa.",
+    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui."
+  },
+  "offri": {
+    "title": "Offri",
+    "subtitle": "Lascia qualcosa per i cavapendoli.",
+    "initiativeLabel": "Pensiero attivo",
+    "submittedTitle": "Accolta",
+    "submittedLine1": "La tua cavapendolata è in attesa di entrare.",
+    "submittedLine2": "Sarà visibile nell'Archivio dopo essere passata per l'Anticamera.",
+    "ctaGallery": "Vai all'Archivio",
+    "ctaAnother": "Lascia un'altra"
+  },
+  "offeringDetail": {
+    "untitled": "Cavapendolata",
+    "loading": "Caricamento...",
+    "notFound": "Non è stato trovato nulla.",
+    "backToArchive": "Torna all'Archivio",
+    "found": "Trovata",
+    "copied": "Copiato!",
+    "copyLink": "Copia link",
+    "another": "Un'altra",
+    "leaveOffering": "Lascia una cavapendolata"
+  },
+  "grazie": {
+    "title": "Grazie",
+    "line1": "La tua cavapendolata sta facendo il suo cammino.",
+    "line2": "Attraverserà l'Anticamera prima di entrare nell'Archivio.",
+    "ctaHome": "Torna alla soglia",
+    "ctaGallery": "Vai all'Archivio"
+  },
+  "rimozione": {
+    "title": "Rimozione",
+    "line1": "Se hai lasciato qualcosa e vuoi che venga rimosso,",
+    "line2": "scrivici a:",
+    "ctaOffer": "Lascia qualcosa"
+  },
+  "wizard": {
+    "submitLabel": "Invia all'Anticamera",
+    "submittingError": "Errore durante l'invio.",
+    "successTitle": "Accolta",
+    "successMessage": "La tua cavapendolata è in attesa di entrare.",
+    "step1Prompt": "Cosa lasci?",
+    "step2TextPlaceholder": "Scrivi qui...",
+    "step2LinkPlaceholder": "https://...",
+    "step2FilePlaceholder": "Scegli un file",
+    "step2FileSize": "Max {{size}} MB.",
+    "step2HintSmall": "Piccolo va bene.",
+    "step2HintNoExplain": "Non deve spiegare tutto.",
+    "step3TitlePlaceholder": "Titolo (opzionale)",
+    "step3NotePlaceholder": "Due righe, se vuoi.",
+    "step4Prompt": "Come vuoi apparire?",
+    "step4AuthorAnonymous": "Anonimo",
+    "step4AuthorName": "Nome o pseudonimo",
+    "step4AuthorInstagram": "@Instagram (opzionale)",
+    "step4NamePlaceholder": "come vuoi essere chiamato/a",
+    "step4InstagramPlaceholder": "@tuonome",
+    "consentRights": "Questo contenuto è mio, oppure posso condividerlo.",
+    "consentArchive": "Va bene se entra in Archivio, dopo l'Anticamera.",
+    "consentReshare": "Se necessario, può essere ricondivisa nei canali del progetto.",
+    "back": "← torna",
+    "close": "chiudi",
+    "next": "avanti",
+    "mediaTypeImage": "Immagine",
+    "mediaTypeVideo": "Video",
+    "mediaTypeAudio": "Audio",
+    "mediaTypeText": "Testo",
+    "mediaTypePdf": "PDF",
+    "mediaTypeLink": "Link",
+    "stepChoice": "Scelta",
+    "stepDeposit": "Deposito",
+    "stepName": "Nome",
+    "stepSignature": "Firma",
+    "stepConsent": "Consenso",
+    "errorMissingMediaType": "Scegli cosa lasciare prima di inviare.",
+    "errorInvalidLink": "Inserisci un link completo.",
+    "errorTextTooLong": "Il testo supera la lunghezza massima consentita.",
+    "errorInvalidInstagram": "Firma Instagram non valida.",
+    "errorRateLimited": "Hai inviato molte offerte. Riprova tra qualche minuto.",
+    "errorFileTooLarge": "Il file supera il limite di 100 MB.",
+    "errorUploadFailed": "Upload non riuscito.",
+    "errorInsertFailed": "Qualcosa è andato storto. Riprova."
   },
   "admin": {
     "unauthorized": "Accesso non autorizzato.",
@@ -589,9 +472,6 @@
     "offeringsToModerate": "Cavapendolate da moderare",
     "offeringsToModerateHint": "Qui appariranno le nuove cavapendolate inviate al prato. Controlla ogni giorno.",
     "noOfferingsPending": "Nessuna cavapendolata in attesa.",
-    "initiativePublished": "Iniziativa pubblicata",
-    "initiativePublishError": "Impossibile pubblicare l'iniziativa",
-    "initiativeDeleted": "Iniziativa eliminata",
     "comingSoon": "in arrivo",
     "prato": "Prato",
     "pratoEditorComingSoon": "L'editor del prato è in fase di preparazione. Presto disponibile.",
@@ -599,7 +479,6 @@
     "rot": "rot",
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
-    "navIniziative": "Iniziative",
     "meadowElementCreated": "Elemento creato",
     "meadowElementCreateError": "Errore durante la creazione",
     "meadowElementUpdated": "Elemento aggiornato",
@@ -636,15 +515,5 @@
   "offeringCard": {
     "openPdf": "Apri PDF",
     "openLink": "Apri link"
-  },
-  "regole": {
-    "title": "Regole",
-    "rule0": "Cavapendolandia è un luogo delicato.",
-    "rule1": "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
-    "rule2": "Niente odio, molestie o contenuti violenti espliciti.",
-    "rule3": "Niente dati personali di terzi.",
-    "rule4": "Non è un social: qui non si giudica.",
-    "rule5": "Le cavapendolate entrano dopo una breve attesa.",
-    "rule6": "Ci riserviamo di non pubblicare ciò che non può stare qui."
   }
 }
