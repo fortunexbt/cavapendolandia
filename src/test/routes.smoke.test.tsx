@@ -50,6 +50,7 @@ vi.mock("i18next", () => ({
     init: () => {},
     t: (key: string) => key,
     language: "it",
+    on: vi.fn(),
   },
 }));
 
