@@ -7,31 +7,37 @@
     <title>Cavapendoland</title>
     <meta name="description" content="Che cosa significa Cavapendoli per te? Un archivio di tracce, offerte e cavapendolate.">
     <meta name="author" content="Cavapendoland" />
-    
-    
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
-    
-  
-  
-  
-  
-  
-  
-  
-  <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/E6zHFlGK9WQ4SnBwCreMTkZmRgi2/social-images/social-1772687869462-Screenshot_2026-03-05_at_05.57.41.webp">
-  <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/E6zHFlGK9WQ4SnBwCreMTkZmRgi2/social-images/social-1772687869462-Screenshot_2026-03-05_at_05.57.41.webp">
-  
-  
-  
-  
-  <meta property="og:title" content="Cavapendoland">
-  <meta name="twitter:title" content="Cavapendoland">
-  <meta property="og:description" content="Che cosa significa Cavapendoli per te? Un archivio di tracce, offerte e cavapendolate.">
-  <meta name="twitter:description" content="Che cosa significa Cavapendoli per te? Un archivio di tracce, offerte e cavapendolate.">
-</head>
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/E6zHFlGK9WQ4SnBwCreMTkZmRgi2/social-images/social-1772687869462-Screenshot_2026-03-05_at_05.57.41.webp">
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/E6zHFlGK9WQ4SnBwCreMTkZmRgi2/social-images/social-1772687869462-Screenshot_2026-03-05_at_05.57.41.webp">
+    <meta property="og:title" content="Cavapendoland">
+    <meta name="twitter:title" content="Cavapendoland">
+    <meta property="og:description" content="Che cosa significa Cavapendoli per te? Un archivio di tracce, offerte e cavapendolate.">
+    <meta name="twitter:description" content="Che cosa significa Cavapendoli per te? Un archivio di tracce, offerte e cavapendolate.">
+    <style>
+      /* Preloader: shown before React hydrates */
+      body { margin: 0; background: #0c0908; }
+      #root { min-height: 100dvh; display: flex; align-items: center; justify-content: center; }
+      .preloader { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+      .preloader-dot { width: 6px; height: 6px; border-radius: 50%; background: #7d6552; animation: cp-pulse 1.4s ease-in-out infinite both; }
+      .preloader-dot:nth-child(2) { animation-delay: 0.16s; background: #a08870; }
+      .preloader-dot:nth-child(3) { animation-delay: 0.32s; background: #c4a882; }
+      .preloader-label { font-family: ui-monospace, monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: #7d6552; }
+      @keyframes cp-pulse { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+    </style>
+  </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="preloader">
+        <div style="display:flex;gap:8px">
+          <div class="preloader-dot"></div>
+          <div class="preloader-dot"></div>
+          <div class="preloader-dot"></div>
+        </div>
+        <div class="preloader-label">Cavapendoland</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
