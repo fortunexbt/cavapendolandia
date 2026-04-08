@@ -86,7 +86,8 @@
       "transitionToMeadow": "Attraverso ESTERNO",
       "transitionToMeadowDetail": "Le palpebre si aprono sul globo. Il prato si prepara oltre la soglia.",
       "transitionToGallery": "Rientro nella galleria",
-      "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere."
+      "transitionToGalleryDetail": "La luce si richiude e il padiglione torna a respirare attorno alle opere.",
+      "header": "Oltre la soglia"
     },
     "hudBanner": {
       "pillLabel": "Un pensiero"
@@ -139,6 +140,56 @@
       "title": "Entrando nella galleria",
       "description": "Riscaldando superfici e materiali — attendi mentre il mondo viene assemblato.",
       "stage": "Fase {{index}} di {{total}}"
+    },
+    "mobileOrientation": {
+      "header": "Cavapendo",
+      "title": "Tieni il telefono in orizzontale",
+      "description": "Il paesaggio si legge meglio in orizzontale. Tieni il telefono girato per la migliore esperienza.",
+      "left": "Pad sinistro",
+      "movement": "muove il corpo",
+      "right": "Pad destro",
+      "lookActions": "curva lo sguardo — resta morbido al centro",
+      "continueAnyway": "Continua comunque",
+      "gotIt": "Capito"
+    },
+    "playerHud": {
+      "currentObjective": "Obiettivo attuale",
+      "lookAt": "Guarda {{label}}",
+      "ritualPlace": "Luogo rituale vicino",
+      "reopenNote": "Riapri nota"
+    },
+    "settings": {
+      "renderProfile": "Qualità rendering",
+      "activeNow": "Attivo",
+      "controls": "Controlli",
+      "mouse": "Mouse",
+      "lookTouch": "Sguardo (touch)",
+      "joystickRadius": "Raggio joystick",
+      "invertedLook": "Sguardo invertito",
+      "normalLook": "Sguardo normale",
+      "softCamera": "Camera morbida",
+      "fullCamera": "Camera piena",
+      "hudAudio": "Audio hud",
+      "hudMode": "Modalità hud: {{mode}}",
+      "muteAudio": "Muta",
+      "unmuteAudio": "Attiva audio",
+      "ambienceVolume": "Volume ambiente",
+      "reopenGuide": "Riapri guida",
+      "enterFullscreen": "Schermo intero",
+      "exitFullscreen": "Esci da schermo intero"
+    },
+    "actions": {
+      "offer": "Lascia un'offerta"
+    },
+    "debugHud": {
+      "nearbyCreatures": "{{count}} creature vicine"
+    },
+    "guide": {
+      "fieldNote": "Nota sul campo",
+      "note": "Nota",
+      "open": "Apri",
+      "close": "Chiudi",
+      "hide": "Nascondi"
     }
   },
   "offri": {
@@ -261,7 +312,7 @@
     "noteSaved": "Nota salvata",
     "curatorialSeeds": "Semi curatoriali",
     "initiativesTitle": "Iniziative",
-    "initiativesHint": "Crea e gestisci le iniziative — i semi tematici che guidano nuove cavapendolate.",
+    "initiativesHint": "Semi curati, rituali e esperimenti.",
     "cmsContent": "Contenuti CMS",
     "pagesEditor": "Editor Pagine",
     "preview": "Anteprima",

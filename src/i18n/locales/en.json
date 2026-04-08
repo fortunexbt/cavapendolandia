@@ -86,7 +86,8 @@
       "transitionToMeadow": "Through OUTDOOR",
       "transitionToMeadowDetail": "The eyelids open on the globe. The meadow prepares beyond the threshold.",
       "transitionToGallery": "Return to gallery",
-      "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works."
+      "transitionToGalleryDetail": "The light closes again and the pavilion returns to breathe around the works.",
+      "header": "Through the threshold"
     },
     "hudBanner": {
       "pillLabel": "A thought"
@@ -139,6 +140,56 @@
       "title": "Entering the gallery",
       "description": "Warming surfaces and materials — please wait while the world is assembled.",
       "stage": "Stage {{index}} of {{total}}"
+    },
+    "mobileOrientation": {
+      "header": "Cavapendo",
+      "title": "Hold the phone horizontally",
+      "description": "The landscape reads best in landscape. Hold your phone horizontally for the best experience.",
+      "left": "Left pad",
+      "movement": "moves the body",
+      "right": "Right pad",
+      "lookActions": "curves the gaze — stay soft in the center",
+      "continueAnyway": "Continue anyway",
+      "gotIt": "Got it"
+    },
+    "playerHud": {
+      "currentObjective": "Current objective",
+      "lookAt": "Look at {{label}}",
+      "ritualPlace": "Ritual place nearby",
+      "reopenNote": "Reopen note"
+    },
+    "settings": {
+      "renderProfile": "Render quality",
+      "activeNow": "Active",
+      "controls": "Controls",
+      "mouse": "Mouse",
+      "lookTouch": "Look (touch)",
+      "joystickRadius": "Joystick radius",
+      "invertedLook": "Inverted look",
+      "normalLook": "Normal look",
+      "softCamera": "Soft camera",
+      "fullCamera": "Full camera",
+      "hudAudio": "Hud audio",
+      "hudMode": "Hud mode: {{mode}}",
+      "muteAudio": "Mute",
+      "unmuteAudio": "Unmute",
+      "ambienceVolume": "Ambience volume",
+      "reopenGuide": "Reopen guide",
+      "enterFullscreen": "Enter fullscreen",
+      "exitFullscreen": "Exit fullscreen"
+    },
+    "actions": {
+      "offer": "Leave an offering"
+    },
+    "debugHud": {
+      "nearbyCreatures": "{{count}} nearby creatures"
+    },
+    "guide": {
+      "fieldNote": "Field note",
+      "note": "Note",
+      "open": "Open",
+      "close": "Close",
+      "hide": "Hide"
     }
   },
   "offri": {
@@ -261,7 +312,7 @@
     "noteSaved": "Note saved",
     "curatorialSeeds": "Curatorial seeds",
     "initiativesTitle": "Initiatives",
-    "initiativesHint": "Create and manage initiatives — the thematic seeds that guide new cavapendolate.",
+    "initiativesHint": "Curated seeds, rituals, and experiments.",
     "cmsContent": "CMS Content",
     "pagesEditor": "Pages Editor",
     "preview": "Preview",
