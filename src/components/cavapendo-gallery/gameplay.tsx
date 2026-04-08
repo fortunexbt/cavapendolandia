@@ -472,10 +472,6 @@ export function WorldController({
         return;
       }
 
-      if (!isMobile && isLockedRef.current) {
-        const target = resolveInteractionTarget();
-        if (target) onInteraction(target);
-      }
     };
 
     const handleMouseMove = (event: MouseEvent) => {
