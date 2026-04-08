@@ -427,6 +427,12 @@
     "rot": "rot",
     "add": "Add",
     "noElements": "No elements in the meadow.",
+    "elementCreated": "Element created",
+    "elementCreateError": "Error creating element",
+    "elementUpdated": "Element updated",
+    "elementUpdateError": "Error updating element",
+    "elementDeleted": "Element deleted",
+    "elementDeleteError": "Error deleting element",
     "navIniziative": "Iniziative"
   }
 }

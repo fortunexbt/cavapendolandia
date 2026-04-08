@@ -427,6 +427,12 @@
     "rot": "rot",
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
+    "elementCreated": "Elemento creato",
+    "elementCreateError": "Errore durante la creazione",
+    "elementUpdated": "Elemento aggiornato",
+    "elementUpdateError": "Errore durante l'aggiornamento",
+    "elementDeleted": "Elemento eliminato",
+    "elementDeleteError": "Errore durante l'eliminazione",
     "navIniziative": "Iniziative"
   }
 }
