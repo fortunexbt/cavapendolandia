@@ -74,7 +74,6 @@ const OfferingSubmissionWizard = ({
   };
 
   const getErrorMessage = (result: { ok: false; reason?: string; message?: string }): string => {
-    if (result.message) return result.message;
     if (result.reason === "honeypot") return "";
     const map: Record<string, string> = {
       missing_media_type: t("wizard.errorMissingMediaType"),
@@ -86,7 +85,9 @@ const OfferingSubmissionWizard = ({
       upload_failed: t("wizard.errorUploadFailed"),
       insert_failed: t("wizard.errorInsertFailed"),
     };
-    return (result.reason && map[result.reason]) ? map[result.reason] : t("wizard.submittingError");
+    if (result.reason && map[result.reason]) return map[result.reason];
+    // Fallback for unexpected errors — use message only if no i18n key
+    return result.message ?? t("wizard.submittingError");
   };
 
   const handleSubmit = async () => {
