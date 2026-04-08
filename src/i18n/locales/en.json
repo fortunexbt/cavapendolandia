@@ -278,6 +278,18 @@
   },
   "admin": {
     "unauthorized": "Unauthorized access.",
+    "loginAccessReserved": "Reserved access",
+    "loginEmailPlaceholder": "Admin email",
+    "loginPasswordPlaceholder": "Password",
+    "loginHide": "Hide",
+    "loginShow": "Show",
+    "loginSigningIn": "Signing in...",
+    "loginSignIn": "Sign in",
+    "loginAccessGranted": "Access granted",
+    "loginGenericError": "Login error.",
+    "loginConnectionError": "Backend connection unavailable.",
+    "loginAuthenticatedNotAuthorized": "You are authenticated but not yet authorized as admin.",
+    "entraComingSoonHint": "Coming soon: we are reviewing the first offerings.",
     "noPermissions": "Your account is authenticated, but does not yet have admin permissions.",
     "loading": "Loading…",
     "anticamera": "Antechamber",
@@ -405,5 +417,25 @@
     "add": "Add",
     "noElements": "No elements in the meadow.",
     "navIniziative": "Iniziative"
+  },
+  "notFound": {
+    "roomEmpty": "Empty room",
+    "title": "404",
+    "description": "This room does not exist yet.",
+    "backHome": "Return to the threshold"
+  },
+  "adminLogin": {
+    "title": "Admin",
+    "subtitle": "Reserved access",
+    "emailPlaceholder": "Admin email",
+    "passwordPlaceholder": "Password",
+    "showPassword": "Show",
+    "hidePassword": "Hide",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "signInSuccess": "Access granted",
+    "authError": "Login error.",
+    "connectionError": "Backend connection unavailable.",
+    "authenticatedNoAccess": "You are authenticated but not yet authorized as admin."
   }
 }

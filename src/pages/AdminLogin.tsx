@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 
 
 const AdminLogin = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isAdmin, loading } = useAdmin();
   const [email, setEmail] = useState("");
@@ -33,10 +35,10 @@ const AdminLogin = () => {
       });
       if (error) throw error;
 
-      toast.success("Accesso effettuato");
+      toast.success(t("adminLogin.signInSuccess"));
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Errore durante l'accesso.";
-      toast.error(message.includes("Failed to fetch") ? "Connessione al backend non disponibile." : message);
+      const message = err instanceof Error ? err.message : t("adminLogin.authError");
+      toast.error(message.includes("Failed to fetch") ? t("adminLogin.connectionError") : message);
     } finally {
       setSigningIn(false);
     }
@@ -52,9 +54,9 @@ const AdminLogin = () => {
         transition={{ duration: 0.6 }}
         className="w-full max-w-sm text-center rounded-2xl border border-border bg-card/70 p-8"
       >
-        <h1 className="text-2xl font-light mb-3 tracking-[0.08em]">Admin</h1>
+        <h1 className="text-2xl font-light mb-3 tracking-[0.08em]">{t("adminLogin.title")}</h1>
         <p className="font-mono-light text-xs text-muted-foreground mb-7 uppercase tracking-[0.1em]">
-          Accesso riservato
+          {t("adminLogin.subtitle")}
         </p>
 
         <form onSubmit={handleSignIn} className="space-y-4">
@@ -62,7 +64,7 @@ const AdminLogin = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email admin"
+            placeholder={t("adminLogin.emailPlaceholder")}
             className="bg-background border-input text-center"
             required
           />
@@ -71,7 +73,7 @@ const AdminLogin = () => {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder={t("adminLogin.passwordPlaceholder")}
               className="bg-background border-input text-center pr-10"
               required
             />
@@ -80,7 +82,7 @@ const AdminLogin = () => {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
             >
-              {showPassword ? "Nascondi" : "Mostra"}
+              {showPassword ? t("adminLogin.hidePassword") : t("adminLogin.showPassword")}
             </button>
           </div>
           <button
@@ -88,13 +90,13 @@ const AdminLogin = () => {
             disabled={signingIn}
             className="w-full font-mono-light text-xs uppercase tracking-[0.15em] px-6 py-3 rounded-xl border border-foreground/20 hover:bg-foreground hover:text-primary-foreground disabled:opacity-40"
           >
-            {signingIn ? "Accesso..." : "Accedi"}
+            {signingIn ? t("adminLogin.signingIn") : t("adminLogin.signIn")}
           </button>
         </form>
 
         {user && !isAdmin && (
           <p className="mt-4 text-sm text-muted-foreground">
-            Sei autenticato ma non ancora autorizzato come admin.
+            {t("adminLogin.authenticatedNoAccess")}
           </p>
         )}
       </motion.div>

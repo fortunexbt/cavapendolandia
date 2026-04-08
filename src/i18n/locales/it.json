@@ -278,6 +278,18 @@
   },
   "admin": {
     "unauthorized": "Accesso non autorizzato.",
+    "loginAccessReserved": "Accesso riservato",
+    "loginEmailPlaceholder": "Email admin",
+    "loginPasswordPlaceholder": "Password",
+    "loginHide": "Nascondi",
+    "loginShow": "Mostra",
+    "loginSigningIn": "Accesso...",
+    "loginSignIn": "Accedi",
+    "loginAccessGranted": "Accesso effettuato",
+    "loginGenericError": "Errore durante l'accesso.",
+    "loginConnectionError": "Connessione al backend non disponibile.",
+    "loginAuthenticatedNotAuthorized": "Sei autenticato ma non ancora autorizzato come admin.",
+    "entraComingSoonHint": "In arrivo: stiamo revisionando le prime offerte.",
     "noPermissions": "Il tuo account è autenticato, ma non ha ancora permessi admin.",
     "loading": "Carico…",
     "anticamera": "Anticamera",
@@ -405,5 +417,25 @@
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
     "navIniziative": "Iniziative"
+  },
+  "notFound": {
+    "roomEmpty": "Stanza vuota",
+    "title": "404",
+    "description": "Questa stanza non esiste ancora.",
+    "backHome": "Torna alla soglia"
+  },
+  "adminLogin": {
+    "title": "Admin",
+    "subtitle": "Accesso riservato",
+    "emailPlaceholder": "Email admin",
+    "passwordPlaceholder": "Password",
+    "showPassword": "Mostra",
+    "hidePassword": "Nascondi",
+    "signIn": "Accedi",
+    "signingIn": "Accesso...",
+    "signInSuccess": "Accesso effettuato",
+    "authError": "Errore durante l'accesso.",
+    "connectionError": "Connessione al backend non disponibile.",
+    "authenticatedNoAccess": "Sei autenticato ma non ancora autorizzato come admin."
   }
 }
