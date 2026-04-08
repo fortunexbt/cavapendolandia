@@ -54,7 +54,7 @@ const MinimalHeader = () => {
             <button 
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex flex-col gap-1.5 p-2 md:hidden"
-              aria-label="Menu"
+              aria-label={t("nav.menu")}
             >
               <span className={`block h-0.5 w-6 bg-foreground/70 transition-transform ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
               <span className={`block h-0.5 w-6 bg-foreground/70 ${menuOpen ? 'opacity-0' : ''}`} />

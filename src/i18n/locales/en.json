@@ -5,7 +5,9 @@
     "offri": "Offer",
     "regole": "Rules",
     "rimozione": "Removal",
-    "contatti": "Contact"
+    "contatti": "Contact",
+    "menu": "Menu",
+    "selectLanguage": "Select language"
   },
   "theme": {
     "light": "Switch to light theme",
