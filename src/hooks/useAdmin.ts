@@ -61,6 +61,8 @@ export const useAdmin = () => {
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       await syncAuth(session?.user ?? null);
+    }).catch((err) => {
+      console.warn("[useAdmin] getSession failed:", err);
     });
 
     return () => subscription.unsubscribe();
