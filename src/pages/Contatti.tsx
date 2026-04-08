@@ -41,13 +41,13 @@ const Contatti = () => {
     setFormState("submitting");
     setErrorMessage("");
 
-    const { error } = await supabase.from("visitor_messages").insert({
+    const { error } = await supabase.from("visitor_messages").insert([{
       visitor_name: name || null,
       visitor_email: email || null,
       message,
-      category,
+      category: category as "domanda" | "richiesta" | "feedback",
       locale: i18n.language,
-    });
+    }]);
 
     if (error) {
       setErrorMessage(t("contatti.errorSendFailed"));

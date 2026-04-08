@@ -106,6 +106,7 @@ import {
   MEADOW_SKYLINE_LANDMARKS,
   MEADOW_SPAWN,
   type MeadowCreatureDefinition,
+  type MeadowSector,
 } from "@/lib/meadowWorld";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 import { useGalleryController } from "@/features/gallery/hooks/useGalleryController";
@@ -453,7 +454,7 @@ function CavapendoGallery({
   const ambienceState = useAmbientAudio({
     enabled: hasInteracted,
     zone,
-    sector: currentSectorDescriptor,
+    sector: currentSector as MeadowSector | null,
     nearbyTriggerId,
     nearbyDepositId,
     volume: ambienceVolume,
@@ -878,7 +879,7 @@ function CavapendoGallery({
     snapshotRef.current = {
       ...snapshotRef.current,
       zone,
-      sector: currentSectorDescriptor,
+      sector: currentSector as MeadowSector | null,
       deviceClass,
       renderProfile: activeRenderProfile.id,
       resolvedRenderProfile: resolvedPreferredProfile.id,
