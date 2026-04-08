@@ -106,6 +106,13 @@
       "continueAnyway": "Continue anyway",
       "gotIt": "Got it"
     },
+    "mobileControls": {
+      "steps": "STEPS",
+      "camera": "CAMERA",
+      "movement": "movement",
+      "move": "move",
+      "look": "look"
+    },
     "zoneTransition": {
       "header": "Zone change"
     },

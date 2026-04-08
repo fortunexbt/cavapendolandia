@@ -106,6 +106,13 @@
       "continueAnyway": "Continua comunque",
       "gotIt": "Ho capito"
     },
+    "mobileControls": {
+      "steps": "PASSI",
+      "camera": "CAMERA",
+      "movement": "movimento",
+      "move": "muovi",
+      "look": "sguardo"
+    },
     "zoneTransition": {
       "header": "Cambio zona"
     },
