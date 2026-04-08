@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import CavapendoliPrelude from "@/components/CavapendoliPrelude";
 import { useThemeMode } from "@/hooks/useThemeMode";
 
@@ -123,23 +122,15 @@ const AnimatedRoutes = () => {
   return (
     <>
       {showPrelude && <CavapendoliPrelude onComplete={handlePreludeComplete} />}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          <Routes location={location}>
-            <Route
-              path="/"
-              element={
-                <RouteBoundary>
-                  <Index />
-                </RouteBoundary>
-              }
-            />
+      <Routes location={location}>
+        <Route
+          path="/"
+          element={
+            <RouteBoundary>
+              <Index />
+            </RouteBoundary>
+          }
+        />
             <Route
               path="/entra"
               element={
@@ -324,8 +315,6 @@ const AnimatedRoutes = () => {
               }
             />
           </Routes>
-        </motion.div>
-      </AnimatePresence>
     </>
   );
 };
