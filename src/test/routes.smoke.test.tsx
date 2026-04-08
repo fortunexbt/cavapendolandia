@@ -25,6 +25,18 @@ vi.mock("react-i18next", () => ({
         "offeringDetail.back": "Torna alla galleria",
         "offri.initiativeLabel": "Un pensiero",
         "gallery.guide.fieldNote": "Esplora il mondo",
+        "adminLogin.title": "Admin",
+        "adminLogin.subtitle": "Accedi",
+        "adminLogin.emailPlaceholder": "Email admin",
+        "adminLogin.passwordPlaceholder": "Password",
+        "adminLogin.signIn": "Accedi",
+        "adminLogin.signingIn": "Accesso...",
+        "adminLogin.signInSuccess": "Accesso effettuato",
+        "adminLogin.authError": "Errore di autenticazione",
+        "adminLogin.connectionError": "Errore di connessione",
+        "adminLogin.showPassword": "Mostra password",
+        "adminLogin.hidePassword": "Nascondi password",
+        "adminLogin.authenticatedNoAccess": "Accesso negato",
       };
       return map[key] ?? key;
     },
@@ -168,8 +180,8 @@ describe("route smoke", () => {
     expect(
       await view.findByRole("heading", { name: /Admin/i }),
     ).toBeInTheDocument();
-    expect(view.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
-    expect(view.getByPlaceholderText(/Password/i)).toBeInTheDocument();
+    expect(view.getByPlaceholderText("Email admin")).toBeInTheDocument();
+    expect(view.getByPlaceholderText("Password")).toBeInTheDocument();
     expect(view.getByRole("button", { name: /^Accedi$/i })).toBeInTheDocument();
   });
 });

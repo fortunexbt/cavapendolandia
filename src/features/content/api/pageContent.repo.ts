@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 export type PageContentBlock = {
   id: string;
@@ -13,7 +14,7 @@ export type PageContentBlock = {
 export const pageContentRepo = {
   async listBySlug(slug: string): Promise<PageContentBlock[]> {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", slug)
@@ -31,7 +32,7 @@ export const pageContentRepo = {
 
   async get(slug: string, blockKey: string): Promise<PageContentBlock | null> {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", slug)
@@ -49,7 +50,7 @@ export const pageContentRepo = {
   },
 
   async upsert(slug: string, blockKey: string, payload: { title?: string; body?: string }): Promise<void> {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("page_content")
       .upsert(
         { page_slug: slug, block_key: blockKey, title: payload.title || null, body: payload.body || null },
@@ -60,14 +61,14 @@ export const pageContentRepo = {
 
   async listSlugs(): Promise<string[]> {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("page_content")
         .select("page_slug");
       if (error) {
         console.warn("[pageContentRepo] listSlugs error:", error.message);
         return [];
       }
-      const slugs = [...new Set((data || []).map((r: any) => r.page_slug))] as string[];
+      const slugs = [...new Set((data || []).map((r) => r.page_slug as string))] as string[];
       return slugs;
     } catch (e) {
       console.warn("[pageContentRepo] listSlugs exception:", e);

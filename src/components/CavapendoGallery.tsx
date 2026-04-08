@@ -453,7 +453,7 @@ function CavapendoGallery({
   const ambienceState = useAmbientAudio({
     enabled: hasInteracted,
     zone,
-    sector: currentSector as any,
+    sector: currentSector as "return_court" | "lantern_ridge" | "whisper_grove" | "shrine_basin" | "far_rim" | null,
     nearbyTriggerId,
     nearbyDepositId,
     volume: ambienceVolume,
@@ -878,7 +878,7 @@ function CavapendoGallery({
     snapshotRef.current = {
       ...snapshotRef.current,
       zone,
-      sector: currentSector as any,
+      sector: currentSector as "return_court" | "lantern_ridge" | "whisper_grove" | "shrine_basin" | "far_rim" | null,
       deviceClass,
       renderProfile: activeRenderProfile.id,
       resolvedRenderProfile: resolvedPreferredProfile.id,
