@@ -125,7 +125,14 @@
       "subtitle": "La traccia resta in questo luogo: non esce mai dalla scena che stai attraversando.",
       "wizardTitle": "Lascia una traccia",
       "wizardSubtitle": "Una forma, un suono, un testo: qualcosa che questo luogo possa trattenere.",
-      "submitLabel": "Lascia qui"
+      "submitLabel": "Lascia qui",
+      "ritualStopTitle": "Sosta rituale",
+      "ritualStopBody": "La traccia resta in questo luogo: non esce mai dalla scena che stai attraversando.",
+      "depositsCount": "Depositi raccolti qui:",
+      "initiativePrompt": "Un pensiero:",
+      "ctaLeave": "Lascia qui qualcosa",
+      "ctaContinue": "Continua a camminare",
+      "ritualStopBodySuffix": "Fermati un momento, ascolta il luogo, poi scegli se lasciare davvero una cavapendolata qui."
     },
     "galleryNav": {
       "loading": "Carico il bundle della galleria",

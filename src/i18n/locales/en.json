@@ -125,7 +125,14 @@
       "subtitle": "The trace remains in this place: it never leaves the scene you are crossing.",
       "wizardTitle": "Leave a trace",
       "wizardSubtitle": "A shape, a sound, a text: something this place can retain.",
-      "submitLabel": "Leave here"
+      "submitLabel": "Leave here",
+      "ritualStopTitle": "Ritual stop",
+      "ritualStopBody": "The trace remains in this place: it never leaves the scene you are crossing.",
+      "depositsCount": "Deposits collected here:",
+      "initiativePrompt": "A thought:",
+      "ctaLeave": "Leave something here",
+      "ctaContinue": "Continue walking",
+      "ritualStopBodySuffix": "Take a moment, listen to the place, then choose if you really want to leave a cavapendolata here."
     },
     "galleryNav": {
       "loading": "Loading gallery bundle",

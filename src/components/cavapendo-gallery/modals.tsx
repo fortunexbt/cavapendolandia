@@ -213,27 +213,26 @@ export function RitualPrompt({
             {site.label}
           </p>
           <h3 className="mt-2 text-2xl font-light text-[#24180f]">
-            Sosta rituale
+            {t("gallery.depositModal.ritualStopTitle")}
           </h3>
           <p className="mt-3 text-sm leading-relaxed text-[#49382c]">
-            {site.subtitle}. Fermati un momento, ascolta il luogo, poi scegli
-            se lasciare davvero una cavapendolata qui.
+            {site.subtitle}. {t("gallery.depositModal.ritualStopBodySuffix")}
           </p>
           <div className="mt-4 rounded-2xl border border-[#cfb79d] bg-[#fff6eb] px-4 py-3 text-[0.72rem] uppercase tracking-[0.16em] text-[#513f32] shadow-[inset_0_1px_0_rgba(255,255,255,0.56)]">
-            Depositi raccolti qui: {count}
+            {t("gallery.depositModal.depositsCount")} {count}
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={onBeginOffering}
               className="rounded-full bg-[#241912] px-5 py-3 text-sm uppercase tracking-[0.15em] text-[#fff7ec] shadow-[0_10px_24px_rgba(0,0,0,0.18)]"
             >
-              Lascia qui qualcosa
+              {t("gallery.depositModal.ctaLeave")}
             </button>
             <button
               onClick={onClose}
               className="rounded-full border border-[#bca48d] bg-[#f7ede1] px-5 py-3 text-sm uppercase tracking-[0.15em] text-[#4b392c]"
             >
-              Continua a camminare
+              {t("gallery.depositModal.ctaContinue")}
             </button>
           </div>
         </motion.div>
@@ -281,23 +280,22 @@ export function DepositModal({
               {site.label}
             </p>
             <h2 className="mt-2 text-2xl font-light text-[#24180f]">
-              Lascia qui una cavapendolata
+              {t("gallery.depositModal.ctaLeave")}
             </h2>
             <p className="mt-2 text-sm italic text-[#5b493c]">
-              {site.subtitle}. La traccia resta in questo luogo: non esce mai
-              dalla scena che stai attraversando.
+              {t("gallery.depositModal.ritualStopBody")}
             </p>
             {initiative && (
               <p className="mt-3 text-xs italic text-[#7c6552]">
-                Un pensiero: {initiative.prompt}
+                {t("gallery.depositModal.initiativePrompt")} {initiative.prompt}
               </p>
             )}
             </div>
 
             <OfferingSubmissionWizard
-              title="Lascia una traccia"
-              subtitle="Una forma, un suono, un testo: qualcosa che questo luogo possa trattenere."
-              submitLabel="Lascia qui"
+              title={t("gallery.depositModal.wizardTitle")}
+              subtitle={t("gallery.depositModal.wizardSubtitle")}
+              submitLabel={t("gallery.depositModal.submitLabel")}
               onCancel={onClose}
               onSubmitted={() => {
                 onSubmitted(site.id);
