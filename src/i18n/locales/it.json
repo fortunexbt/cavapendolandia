@@ -262,7 +262,15 @@
     "stepDeposit": "Deposito",
     "stepName": "Nome",
     "stepSignature": "Firma",
-    "stepConsent": "Consenso"
+    "stepConsent": "Consenso",
+    "errorMissingMediaType": "Scegli cosa lasciare prima di inviare.",
+    "errorInvalidLink": "Inserisci un link completo.",
+    "errorTextTooLong": "Il testo supera la lunghezza massima consentita.",
+    "errorInvalidInstagram": "Firma Instagram non valida.",
+    "errorRateLimited": "Hai inviato molte offerte. Riprova tra qualche minuto.",
+    "errorFileTooLarge": "Il file supera il limite di 100 MB.",
+    "errorUploadFailed": "Upload non riuscito.",
+    "errorInsertFailed": "Qualcosa è andato storto. Riprova."
   },
   "admin": {
     "unauthorized": "Accesso non autorizzato.",

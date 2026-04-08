@@ -262,7 +262,15 @@
     "stepDeposit": "Deposit",
     "stepName": "Name",
     "stepSignature": "Signature",
-    "stepConsent": "Consent"
+    "stepConsent": "Consent",
+    "errorMissingMediaType": "Choose what to leave before submitting.",
+    "errorInvalidLink": "Enter a complete link.",
+    "errorTextTooLong": "Text exceeds maximum allowed length.",
+    "errorInvalidInstagram": "Invalid Instagram signature.",
+    "errorRateLimited": "You have submitted many offerings. Try again in a few minutes.",
+    "errorFileTooLarge": "File exceeds the 100 MB limit.",
+    "errorUploadFailed": "Upload failed.",
+    "errorInsertFailed": "Something went wrong. Try again."
   },
   "admin": {
     "unauthorized": "Unauthorized access.",

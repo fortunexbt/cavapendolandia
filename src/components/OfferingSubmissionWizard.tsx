@@ -73,6 +73,22 @@ const OfferingSubmissionWizard = ({
     setDraft(createInitialSubmissionDraft());
   };
 
+  const getErrorMessage = (result: { ok: false; reason?: string; message?: string }): string => {
+    if (result.message) return result.message;
+    if (result.reason === "honeypot") return "";
+    const map: Record<string, string> = {
+      missing_media_type: t("wizard.errorMissingMediaType"),
+      invalid_link: t("wizard.errorInvalidLink"),
+      text_too_long: t("wizard.errorTextTooLong"),
+      invalid_instagram: t("wizard.errorInvalidInstagram"),
+      rate_limited: t("wizard.errorRateLimited"),
+      file_too_large: t("wizard.errorFileTooLarge"),
+      upload_failed: t("wizard.errorUploadFailed"),
+      insert_failed: t("wizard.errorInsertFailed"),
+    };
+    return (result.reason && map[result.reason]) ? map[result.reason] : t("wizard.submittingError");
+  };
+
   const handleSubmit = async () => {
     if (submitting) return;
     setSubmitting(true);
@@ -80,8 +96,8 @@ const OfferingSubmissionWizard = ({
     setSubmitting(false);
 
     if (!result.ok) {
-      if ("reason" in result && result.reason !== "honeypot") {
-        toast.error("message" in result ? result.message : t("wizard.submittingError"));
+      if (!("reason" in result && result.reason === "honeypot")) {
+        toast.error(getErrorMessage(result));
       }
       return;
     }
