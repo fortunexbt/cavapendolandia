@@ -99,7 +99,7 @@ const MessagesContent = () => {
                       </Badge>
                     )}
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-foreground/80">{msg.body}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground/80">{msg.message}</p>
                   <p className="mt-2 font-mono-light text-[0.62rem] uppercase tracking-[0.1em] text-muted-foreground">
                     {new Date(msg.created_at).toLocaleString("it-IT")}
                   </p>
