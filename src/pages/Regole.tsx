@@ -4,16 +4,6 @@ import { useTranslation } from "react-i18next";
 import PageLayout from "@/components/shared/PageLayout";
 import { usePageBlocks } from "@/features/content/hooks/usePageBlocks";
 
-const FALLBACK_RULES = [
-  "Cavapendolandia è un luogo delicato.",
-  "Lascia solo ciò che ti appartiene o che hai diritto di condividere.",
-  "Niente odio, molestie o contenuti violenti espliciti.",
-  "Niente dati personali di terzi.",
-  "Non è un social: qui non si giudica.",
-  "Le cavapendolate entrano dopo una breve attesa.",
-  "Ci riserviamo di non pubblicare ciò che non può stare qui.",
-];
-
 const Regole = () => {
   const { t } = useTranslation();
   const { getBlock } = usePageBlocks("regole");
@@ -25,7 +15,7 @@ const Regole = () => {
   const rules: string[] = [];
   for (let i = 0; i < 7; i++) {
     const block = getBlock(`rule-${i}`);
-    rules.push(block?.body ?? FALLBACK_RULES[i]);
+    rules.push(block?.body ?? t(`regole.rule${i}`));
   }
 
   return (

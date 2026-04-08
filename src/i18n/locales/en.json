@@ -73,7 +73,14 @@
   "regole": {
     "title": "Rules",
     "linkOffer": "Leave a cavapendolata",
-    "linkRemoval": "Removal info"
+    "linkRemoval": "Removal info",
+    "rule0": "Cavapendolandia is a delicate place.",
+    "rule1": "Leave only what belongs to you or that you have the right to share.",
+    "rule2": "No hatred, harassment or explicit violent content.",
+    "rule3": "No third-party personal data.",
+    "rule4": "It is not a social: here we do not judge.",
+    "rule5": "Cavapendolate wait briefly before appearing.",
+    "rule6": "We reserve the right not to publish what does not belong here."
   },
   "gallery": {
     "shell": {
