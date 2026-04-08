@@ -113,7 +113,7 @@ describe("offeringSubmission", () => {
     expect(result).toEqual({
       ok: false,
       reason: "invalid_link",
-      message: "Inserisci un link completo.",
+      errorKey: "wizard.errorInvalidLink",
     });
     expect(insert).not.toHaveBeenCalled();
   });

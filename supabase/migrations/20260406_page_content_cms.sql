@@ -17,7 +17,7 @@ CREATE TABLE public.page_content (
   unique (page_slug, block_key, locale)
 );
 
-ALTER ENABLE ROW LEVEL SECURITY ON public.page_content;
+ALTER TABLE public.page_content ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public_read_page_content" ON public.page_content
   FOR SELECT USING (true);
 CREATE POLICY "admin_write_page_content" ON public.page_content

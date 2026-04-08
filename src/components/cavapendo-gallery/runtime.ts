@@ -75,6 +75,7 @@ export interface GuideDescriptor {
   body: string;
   hints: string[];
   compactLabel: string;
+  stepKey: GuideStep;
 }
 
 export const MOUSE_SENSITIVITY_STORAGE_KEY =
@@ -567,6 +568,7 @@ export const getGuideDescriptor = (
         ? ["Tieni il telefono in orizzontale", "Sinistra per muovere", "Destra per guardare"]
         : ["WASD per muovere", "Mouse per guardare", "F per allargare la scena"],
       compactLabel: "Cerca ESTERNO",
+      stepKey: "intro",
     };
   }
 
@@ -578,6 +580,7 @@ export const getGuideDescriptor = (
       body: "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
       hints: ["Muro opposto", "Nessun tasto necessario", "Lascia che il passaggio si apra"],
       compactLabel: "Raggiungi ESTERNO",
+      stepKey: "find-outdoor",
     };
   }
 
@@ -593,6 +596,7 @@ export const getGuideDescriptor = (
         "Est piu costruito",
       ],
       compactLabel: "Leggi il primo paesaggio",
+      stepKey: "arrive-globe",
     };
   }
 
@@ -604,6 +608,7 @@ export const getGuideDescriptor = (
       body: "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
       hints: ["Posatoi", "Passaggi ripetuti", "Presenze leggere"],
       compactLabel: "Segui un movimento",
+      stepKey: "meet-creatures",
     };
   }
 
@@ -615,6 +620,7 @@ export const getGuideDescriptor = (
       body: "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non e un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
       hints: ["Tre luoghi rituali", "Bagliori verticali", "Lascia qualcosa solo se ha senso"],
       compactLabel: "Riconosci un luogo rituale",
+      stepKey: "find-deposit",
     };
   }
 
@@ -629,5 +635,6 @@ export const getGuideDescriptor = (
       ? ["Apri la sosta", "Lascia qui se vuoi", "Il luogo trattiene la traccia"]
       : ["Lascia che si apra", "Poi scegli se lasciare", "Il luogo trattiene la traccia"],
     compactLabel: "Sosta rituale",
+    stepKey: "deposit-ready",
   };
 };

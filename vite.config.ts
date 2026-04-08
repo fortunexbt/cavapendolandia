@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
       "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
         env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
       ),
+      "import.meta.env.VITE_FEATURE_PRATO_EDITOR": JSON.stringify("true"),
+      "import.meta.env.VITE_FEATURE_PAGES_CMS": JSON.stringify("true"),
+      "import.meta.env.VITE_FEATURE_VISITOR_MESSAGES": JSON.stringify("true"),
     },
     server: {
       host: "::",

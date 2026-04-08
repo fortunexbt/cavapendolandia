@@ -12,6 +12,7 @@ import {
   VirtualJoystick,
 } from "@/components/cavapendo-gallery/gameplay";
 import { EYE_HEIGHT } from "@/components/cavapendo-gallery/config";
+import { useTranslation } from "react-i18next";
 
 class WebGLCrashBoundary extends React.Component<
   React.ComponentProps<"div"> & { t: ReturnType<typeof useTranslation>["t"] },
@@ -248,8 +249,8 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
       {isMobile && !sceneInterrupted && (
         <div className="pointer-events-none absolute inset-0 z-20">
           <VirtualJoystick
-            label="PASSI"
-            hint={mobileControlsLandscape ? "movimento" : "muovi"}
+            label={t("gallery.mobileControls.steps")}
+            hint={mobileControlsLandscape ? t("gallery.mobileControls.movement") : t("gallery.mobileControls.move")}
             deadZone={0.08}
             curveExponent={1.15}
             radius={controlProfile.moveJoystickRadius}
@@ -263,11 +264,11 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
             onInput={(x, y) => onJoystickInput("move", x, y)}
           />
           <VirtualJoystick
-            label="CAMERA"
+            label={t("gallery.mobileControls.camera")}
             hint={
               mobileControlsLandscape
-                ? `sguardo ${controlProfile.touchLookSensitivity.toFixed(2)}`
-                : "sguardo"
+                ? `${t("gallery.mobileControls.look")} ${controlProfile.touchLookSensitivity.toFixed(2)}`
+                : t("gallery.mobileControls.look")
             }
             deadZone={0.14}
             curveExponent={1.75}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -56,12 +56,12 @@ const PagesEditorContent = () => {
   });
 
   // Sync local state when block loads
-  useState(() => {
+  useEffect(() => {
     if (block) {
       setTitle(block.title ?? "");
-      setBody(block.body ?? "");
+      setBody(block.body_text ?? "");
     }
-  });
+  }, [block]);
 
   if (loading) return <div className="min-h-screen bg-background" />;
   if (!user) return <Navigate to="/admin" replace />;
@@ -79,7 +79,7 @@ const PagesEditorContent = () => {
   }
 
   const handleSave = () => {
-    save({ title, body });
+    save({ title, body_text: body });
   };
 
   return (

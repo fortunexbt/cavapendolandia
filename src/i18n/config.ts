@@ -9,12 +9,30 @@ export const languages = [
   { code: "en", name: "EN", nativeName: "English" },
 ] as const;
 
+const STORAGE_KEY = "i18nextLng";
+
+const getInitialLng = (): string => {
+  try {
+    return localStorage.getItem(STORAGE_KEY) ?? "it";
+  } catch {
+    return "it";
+  }
+};
+
+i18n.on("languageChanged", (lng) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, lng);
+  } catch {
+    // localStorage unavailable — non-fatal
+  }
+});
+
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
     it: { translation: it },
   },
-  lng: "it",
+  lng: getInitialLng(),
   fallbackLng: "en",
   interpolation: {
     escapeValue: false,
