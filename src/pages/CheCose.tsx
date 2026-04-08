@@ -4,13 +4,6 @@ import { useTranslation } from "react-i18next";
 import PageLayout from "@/components/shared/PageLayout";
 import { usePageBlocks } from "@/features/content/hooks/usePageBlocks";
 
-const FALLBACK_PARAGRAPHS = [
-  "Un luogo dove lasciare qualcosa.",
-  "Un'immagine, un suono, un testo, un frammento.",
-  "La domanda: cosa significa Cavapendoli per te?",
-  "Non ci sono risposte giuste. Solo tracce.",
-];
-
 const CheCose = () => {
   const { t } = useTranslation();
   const { getBlock } = usePageBlocks("che-cose");
@@ -23,10 +16,10 @@ const CheCose = () => {
 
   const title = titleBlock?.body ?? t("cheCose.title");
   const paragraphs = [
-    p1Block?.body ?? FALLBACK_PARAGRAPHS[0],
-    p2Block?.body ?? FALLBACK_PARAGRAPHS[1],
-    p3Block?.body ?? FALLBACK_PARAGRAPHS[2],
-    p4Block?.body ?? FALLBACK_PARAGRAPHS[3],
+    p1Block?.body ?? t("cheCose.p1"),
+    p2Block?.body ?? t("cheCose.p2"),
+    p3Block?.body ?? t("cheCose.p3"),
+    p4Block?.body ?? t("cheCose.p4"),
   ];
 
   return (

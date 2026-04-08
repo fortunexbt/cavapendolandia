@@ -59,6 +59,10 @@
   },
   "cheCose": {
     "title": "What is it",
+    "p1": "A place to leave something.",
+    "p2": "An image, a sound, a text, a fragment.",
+    "p3": "The question: what does Cavapendoli mean to you?",
+    "p4": "There are no right answers. Only traces.",
     "linkRules": "Read the rules",
     "linkRemoval": "Removal info"
   },
