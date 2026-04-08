@@ -228,6 +228,9 @@ const PratoEditorContent = () => {
 };
 
 const PratoEditor = () => {
+  const { user, loading } = useAdmin();
+  if (loading) return <div className="min-h-screen bg-background" />;
+  if (!user) return null;
   if (!pratoEditor) return <PratoEditorStub />;
   return <PratoEditorContent />;
 };

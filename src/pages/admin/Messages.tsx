@@ -130,6 +130,9 @@ const MessagesContent = () => {
 };
 
 const Messages = () => {
+  const { user, loading } = useAdmin();
+  if (loading) return <div className="min-h-screen bg-background" />;
+  if (!user) return null;
   if (!visitorMessages) return <MessagesStub />;
   return <MessagesContent />;
 };

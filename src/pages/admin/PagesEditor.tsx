@@ -162,6 +162,9 @@ const PagesEditorContent = () => {
 };
 
 const PagesEditor = () => {
+  const { user, loading } = useAdmin();
+  if (loading) return <div className="min-h-screen bg-background" />;
+  if (!user) return null;
   if (!pagesCms) return <PagesEditorStub />;
   return <PagesEditorContent />;
 };
