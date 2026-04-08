@@ -25,6 +25,10 @@ vi.mock("react-i18next", () => ({
         "offeringDetail.back": "Torna alla galleria",
         "offri.initiativeLabel": "Un pensiero",
         "gallery.guide.fieldNote": "Esplora il mondo",
+        "admin.adminLogin.title": "Admin",
+        "admin.adminLogin.emailPlaceholder": "Email admin",
+        "admin.adminLogin.passwordPlaceholder": "Password",
+        "admin.adminLogin.signIn": "Accedi",
       };
       return map[key] ?? key;
     },
@@ -168,8 +172,8 @@ describe("route smoke", () => {
     expect(
       await view.findByRole("heading", { name: /Admin/i }),
     ).toBeInTheDocument();
-    expect(view.getByPlaceholderText(/Email admin/i)).toBeInTheDocument();
-    expect(view.getByPlaceholderText(/Password/i)).toBeInTheDocument();
+    expect(view.getByPlaceholderText("Email admin")).toBeInTheDocument();
+    expect(view.getByPlaceholderText("Password")).toBeInTheDocument();
     expect(view.getByRole("button", { name: /^Accedi$/i })).toBeInTheDocument();
   });
 });
