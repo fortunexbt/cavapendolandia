@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { meadowElementsRepo } from "../api/meadowElements.repo";
 import { toast } from "sonner";
 
 export const useMeadowElements = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: elements = [], isLoading } = useQuery({
@@ -15,9 +17,9 @@ export const useMeadowElements = () => {
       meadowElementsRepo.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meadow-elements"] });
-      toast.success("Elemento creato");
+      toast.success(t("admin.meadowElementCreated"));
     },
-    onError: () => toast.error("Errore durante la creazione"),
+    onError: () => toast.error(t("admin.meadowElementCreateError")),
   });
 
   const updateMutation = useMutation({
@@ -25,18 +27,18 @@ export const useMeadowElements = () => {
       meadowElementsRepo.update(id, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meadow-elements"] });
-      toast.success("Elemento aggiornato");
+      toast.success(t("admin.meadowElementUpdated"));
     },
-    onError: () => toast.error("Errore durante l'aggiornamento"),
+    onError: () => toast.error(t("admin.meadowElementUpdateError")),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => meadowElementsRepo.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meadow-elements"] });
-      toast.success("Elemento eliminato");
+      toast.success(t("admin.meadowElementDeleted"));
     },
-    onError: () => toast.error("Errore durante l'eliminazione"),
+    onError: () => toast.error(t("admin.meadowElementDeleteError")),
   });
 
   return {

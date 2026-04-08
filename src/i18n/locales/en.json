@@ -572,7 +572,19 @@
     "rot": "rot",
     "add": "Add",
     "noElements": "No elements in the meadow.",
-    "navIniziative": "Iniziative"
+    "navIniziative": "Iniziative",
+    "meadowElementCreated": "Element created",
+    "meadowElementCreateError": "Error creating element",
+    "meadowElementUpdated": "Element updated",
+    "meadowElementUpdateError": "Error updating element",
+    "meadowElementDeleted": "Element deleted",
+    "meadowElementDeleteError": "Error deleting element",
+    "messageMarkedRead": "Message marked as read",
+    "messageMarkReadError": "Error marking message as read",
+    "allMessagesMarkedRead": "All messages marked as read",
+    "allMessagesMarkReadError": "Error",
+    "messageDeleted": "Message deleted",
+    "messageDeleteError": "Error deleting message"
   },
   "notFound": {
     "roomEmpty": "Empty room",

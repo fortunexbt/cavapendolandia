@@ -206,7 +206,7 @@ export function GalleryHud(props: GalleryHudProps) {
 
       {hudMode === "debug" && (
         <DebugHud
-          zoneLabel={zone === "gallery" ? "Interno" : "Esterno"}
+          zoneLabel={zone === "gallery" ? t("gallery.hudBanner.zoneIndoor") : t("gallery.hudBanner.zoneOutdoor")}
           sectorLabel={currentSectorDescriptor?.label || null}
           renderProfile={activeRenderProfile.label}
           ambienceLabel={ambienceLabel}
