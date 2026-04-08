@@ -228,14 +228,14 @@ export function GalleryHud(props: GalleryHudProps) {
             onClick={() => onSetSettingsOpen(!settingsOpen)}
             className="pointer-events-auto rounded-full border border-[#7d6857] bg-[#17110f] px-3 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#fff7ea] shadow-[0_18px_46px_rgba(0,0,0,0.34)] hover:bg-[#281c17]"
           >
-            Impostazioni
+            {t("gallery.actions.settings")}
           </button>
           {!isMobile && (
             <Link
               to="/offri"
               className="pointer-events-auto rounded-full border border-[#f2e4d3] bg-[#f7efe4] px-4 py-2 text-[0.68rem] uppercase tracking-[0.18em] text-[#221710] shadow-[0_18px_46px_rgba(0,0,0,0.24)]"
             >
-              + Offri
+              {t("gallery.actions.offer")}
             </Link>
           )}
         </motion.div>
