@@ -26,7 +26,7 @@ const MessagesStub = () => {
 };
 
 const MessagesContent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
   const { messages, unreadCount, isLoading, markAsRead, markAllAsRead, deleteMessage, isMarkingAll } =
@@ -101,7 +101,7 @@ const MessagesContent = () => {
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-foreground/80">{msg.body}</p>
                   <p className="mt-2 font-mono-light text-[0.62rem] uppercase tracking-[0.1em] text-muted-foreground">
-                    {new Date(msg.created_at).toLocaleString("it-IT")}
+                    {new Date(msg.created_at).toLocaleString(i18n.language)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

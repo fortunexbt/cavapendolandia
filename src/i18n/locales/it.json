@@ -11,7 +11,10 @@
   },
   "theme": {
     "light": "Passa al tema chiaro",
-    "dark": "Passa al tema scuro"
+    "dark": "Passa al tema scuro",
+    "auto": "Auto",
+    "lightLabel": "Luce",
+    "darkLabel": "Buio"
   },
   "contatti": {
     "title": "Contatti",

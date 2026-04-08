@@ -1,4 +1,5 @@
 import { Moon, Sun, Monitor } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import type { ThemeMode } from "@/hooks/useThemeMode";
 
@@ -7,13 +8,21 @@ type AdminThemeToggleProps = {
   onChange: (mode: ThemeMode) => void;
 };
 
-const OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
-  { value: "system", label: "Auto", icon: Monitor },
-  { value: "light", label: "Luce", icon: Sun },
-  { value: "dark", label: "Buio", icon: Moon },
-];
-
 const AdminThemeToggle = ({ mode, onChange }: AdminThemeToggleProps) => {
+  const { t } = useTranslation();
+
+  const OPTIONS: { value: ThemeMode; icon: typeof Sun }[] = [
+    { value: "system", icon: Monitor },
+    { value: "light", icon: Sun },
+    { value: "dark", icon: Moon },
+  ];
+
+  const labelFor = (value: ThemeMode) => {
+    if (value === "system") return t("theme.auto");
+    if (value === "light") return t("theme.lightLabel");
+    return t("theme.darkLabel");
+  };
+
   return (
     <div className="inline-flex items-center rounded-full border border-border bg-card/80 p-1 backdrop-blur">
       {OPTIONS.map((option) => {
@@ -33,7 +42,7 @@ const AdminThemeToggle = ({ mode, onChange }: AdminThemeToggleProps) => {
             )}
           >
             <Icon className="h-3 w-3" />
-            {option.label}
+            {labelFor(option.value)}
           </button>
         );
       })}
