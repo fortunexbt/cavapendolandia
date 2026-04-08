@@ -439,5 +439,11 @@
   "footer": {
     "removal": "Rimozione",
     "tagline": "Cavapendolandia · 2026"
+  },
+  "app": {
+    "errorBoundary": {
+      "title": "Qualcosa si è rotto",
+      "body": "Un errore imprevisto ha interrotto il cammino. Ricarica la pagina per ricostruire il mondo."
+    }
   }
 }

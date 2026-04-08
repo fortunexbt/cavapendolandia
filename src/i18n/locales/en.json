@@ -439,5 +439,11 @@
   "footer": {
     "removal": "Removal",
     "tagline": "Cavapendolandia · 2026"
+  },
+  "app": {
+    "errorBoundary": {
+      "title": "Something broke",
+      "body": "An unexpected error interrupted the path. Reload the page to rebuild the world."
+    }
   }
 }
