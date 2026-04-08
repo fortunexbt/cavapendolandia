@@ -292,6 +292,17 @@
     "websiteLabel": "Website"
   },
   "admin": {
+    "errorUploadFailed": "Upload failed.",
+    "errorInsertFailed": "Something went wrong. Try again.",
+    "websiteLabel": "Website",
+    "demoOffer1Title": "A photo of the sea",
+    "demoOffer1Note": "The sea at Ostia at dawn",
+    "demoOffer1Author": "Marco",
+    "demoOffer2Title": "Poetry for the cavapendoli",
+    "demoOffer2Note": "They hang and swing...",
+    "demoOffer2Author": "Giulia",
+    "demoInitiativePrompt": "Today the cavapendoli need new shoes",
+    "demoInitiativeDetails": "Has anyone seen their shoes?",
     "unauthorized": "Unauthorized access.",
     "noPermissions": "Your account is authenticated, but does not yet have admin permissions.",
     "loading": "Loading…",

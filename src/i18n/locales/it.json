@@ -420,7 +420,15 @@
     "add": "Aggiungi",
     "noElements": "Nessun elemento nel prato.",
     "blockKeyPlaceholder": "hero",
-    "initiatives": "Iniziative"
+    "initiatives": "Iniziative",
+    "demoOffer1Title": "Una foto del mare",
+    "demoOffer1Note": "Il mare di Ostia all'alba",
+    "demoOffer1Author": "Marco",
+    "demoOffer2Title": "Poesia per i cavapendoli",
+    "demoOffer2Note": "Pendono e oscillano...",
+    "demoOffer2Author": "Giulia",
+    "demoInitiativePrompt": "I cavapendoli oggi hanno bisogno di scarpe nuove",
+    "demoInitiativeDetails": "Qualcuno ha visto le loro scarpe?"
   },
   "adminLogin": {
     "title": "Admin",
