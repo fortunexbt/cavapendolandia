@@ -106,6 +106,7 @@ import {
   MEADOW_SKYLINE_LANDMARKS,
   MEADOW_SPAWN,
   type MeadowCreatureDefinition,
+  type MeadowSector,
 } from "@/lib/meadowWorld";
 import { withSignedFileUrls } from "@/lib/offeringMedia";
 import { useGalleryController } from "@/features/gallery/hooks/useGalleryController";
