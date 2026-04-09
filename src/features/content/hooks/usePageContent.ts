@@ -27,7 +27,7 @@ export const usePageContent = (
   });
 
   const saveMutation = useMutation({
-    mutationFn: (payload: { title?: string; body?: string }) =>
+    mutationFn: (payload: { title?: string; body_text?: string }) =>
       pageContentRepo.upsert(slug, blockKey, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["page-content", slug, blockKey] });
