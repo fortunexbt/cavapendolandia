@@ -516,7 +516,8 @@ export function WorldController({
         document.exitPointerLock();
       }
     };
-  ], [
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
     gl,
     modalOpen,
     onActivity,
