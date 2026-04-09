@@ -44,11 +44,75 @@ export type Database = {
         }
         Relationships: []
       }
+      meadow_elements: {
+        Row: {
+          canopy: number | null
+          config_json: Json
+          created_at: string
+          created_by: string | null
+          element_type: Database["public"]["Enums"]["meadow_element_type"]
+          height: number
+          id: string
+          image_path: string | null
+          is_hidden: boolean
+          label: string | null
+          position_x: number
+          position_z: number
+          rotation: number
+          scale: number
+          secondary_tone: string | null
+          tone: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          canopy?: number | null
+          config_json?: Json
+          created_at?: string
+          created_by?: string | null
+          element_type?: Database["public"]["Enums"]["meadow_element_type"]
+          height?: number
+          id?: string
+          image_path?: string | null
+          is_hidden?: boolean
+          label?: string | null
+          position_x?: number
+          position_z?: number
+          rotation?: number
+          scale?: number
+          secondary_tone?: string | null
+          tone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          canopy?: number | null
+          config_json?: Json
+          created_at?: string
+          created_by?: string | null
+          element_type?: Database["public"]["Enums"]["meadow_element_type"]
+          height?: number
+          id?: string
+          image_path?: string | null
+          is_hidden?: boolean
+          label?: string | null
+          position_x?: number
+          position_z?: number
+          rotation?: number
+          scale?: number
+          secondary_tone?: string | null
+          tone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       offerings: {
         Row: {
           approved_at: string | null
           author_name: string | null
           author_type: Database["public"]["Enums"]["author_type"]
+          category: Database["public"]["Enums"]["offering_category"] | null
           consent_archive: boolean
           consent_reshare: boolean
           consent_rights: boolean
@@ -69,6 +133,7 @@ export type Database = {
           approved_at?: string | null
           author_name?: string | null
           author_type?: Database["public"]["Enums"]["author_type"]
+          category?: Database["public"]["Enums"]["offering_category"] | null
           consent_archive?: boolean
           consent_reshare?: boolean
           consent_rights?: boolean
@@ -89,6 +154,7 @@ export type Database = {
           approved_at?: string | null
           author_name?: string | null
           author_type?: Database["public"]["Enums"]["author_type"]
+          category?: Database["public"]["Enums"]["offering_category"] | null
           consent_archive?: boolean
           consent_reshare?: boolean
           consent_rights?: boolean
@@ -104,6 +170,57 @@ export type Database = {
           status?: Database["public"]["Enums"]["offering_status"]
           text_content?: string | null
           title?: string | null
+        }
+        Relationships: []
+      }
+      page_content: {
+        Row: {
+          block_key: string
+          body_text: string | null
+          cta_href: string | null
+          cta_label: string | null
+          eyebrow: string | null
+          id: string
+          image_path: string | null
+          is_enabled: boolean
+          locale: string
+          page_slug: string
+          sort_order: number
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          block_key: string
+          body_text?: string | null
+          cta_href?: string | null
+          cta_label?: string | null
+          eyebrow?: string | null
+          id?: string
+          image_path?: string | null
+          is_enabled?: boolean
+          locale?: string
+          page_slug: string
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          block_key?: string
+          body_text?: string | null
+          cta_href?: string | null
+          cta_label?: string | null
+          eyebrow?: string | null
+          id?: string
+          image_path?: string | null
+          is_enabled?: boolean
+          locale?: string
+          page_slug?: string
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -127,100 +244,34 @@ export type Database = {
       }
       visitor_messages: {
         Row: {
+          category: Database["public"]["Enums"]["visitor_message_category"]
+          created_at: string
           id: string
-          visitor_name: string | null
-          visitor_email: string | null
-          message: string
-          category: Database["public"]["Enums"]["message_category"]
           is_read: boolean
-          locale: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          visitor_name?: string | null
-          visitor_email?: string | null
+          locale: string
           message: string
-          category: Database["public"]["Enums"]["message_category"]
-          is_read?: boolean
-          locale?: string | null
-          created_at?: string
+          visitor_email: string | null
+          visitor_name: string | null
         }
-        Update: {
+        Insert: {
+          category: Database["public"]["Enums"]["visitor_message_category"]
+          created_at?: string
           id?: string
-          visitor_name?: string | null
+          is_read?: boolean
+          locale?: string
+          message: string
           visitor_email?: string | null
-          message?: string
-          category?: Database["public"]["Enums"]["message_category"]
+          visitor_name?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["visitor_message_category"]
+          created_at?: string
+          id?: string
           is_read?: boolean
-          locale?: string | null
-          created_at?: string
-        }
-        Relationships: []
-      }
-      page_content: {
-        Row: {
-          id: string
-          page_slug: string
-          block_key: string
-          title: string | null
-          body: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          page_slug: string
-          block_key: string
-          title?: string | null
-          body?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          page_slug?: string
-          block_key?: string
-          title?: string | null
-          body?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      meadow_elements: {
-        Row: {
-          id: string
-          element_type: Database["public"]["Enums"]["meadow_element_type"]
-          label: string
-          position_x: number
-          position_z: number
-          scale: number
-          rotation: number
-          tone: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          element_type: Database["public"]["Enums"]["meadow_element_type"]
-          label: string
-          position_x: number
-          position_z: number
-          scale: number
-          rotation: number
-          tone: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          element_type?: Database["public"]["Enums"]["meadow_element_type"]
-          label?: string
-          position_x?: number
-          position_z?: number
-          scale?: number
-          rotation?: number
-          tone?: string
-          created_at?: string
+          locale?: string
+          message?: string
+          visitor_email?: string | null
+          visitor_name?: string | null
         }
         Relationships: []
       }
@@ -241,10 +292,11 @@ export type Database = {
     Enums: {
       app_role: "admin"
       author_type: "anonymous" | "name" | "instagram"
-      media_type: "image" | "video" | "audio" | "text" | "pdf" | "link"
-      offering_status: "pending" | "approved" | "rejected" | "hidden"
-      message_category: "domanda" | "richiesta" | "feedback"
       meadow_element_type: "tree" | "monolith" | "lantern" | "billboard"
+      media_type: "image" | "video" | "audio" | "text" | "pdf" | "link"
+      offering_category: "grafica" | "musicale" | "letteraria"
+      offering_status: "pending" | "approved" | "rejected" | "hidden"
+      visitor_message_category: "domanda" | "richiesta" | "feedback"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -374,8 +426,11 @@ export const Constants = {
     Enums: {
       app_role: ["admin"],
       author_type: ["anonymous", "name", "instagram"],
+      meadow_element_type: ["tree", "monolith", "lantern", "billboard"],
       media_type: ["image", "video", "audio", "text", "pdf", "link"],
+      offering_category: ["grafica", "musicale", "letteraria"],
       offering_status: ["pending", "approved", "rejected", "hidden"],
+      visitor_message_category: ["domanda", "richiesta", "feedback"],
     },
   },
 } as const
