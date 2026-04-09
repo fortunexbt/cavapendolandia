@@ -59,7 +59,7 @@ function CavapendoloOrb({
       <mesh ref={meshRef} position={position} scale={1.35}>
         <icosahedronGeometry args={[1, 5]} />
         <MeshDistortMaterial
-          ref={materialRef as React.Ref<DistortMaterialHandle>}
+          ref={materialRef as any}
           color="#87644b"
           emissive="#4d3527"
           emissiveIntensity={0.24}
@@ -352,7 +352,7 @@ class WebGLCrashBoundary extends React.Component<
     console.warn("[CavapendoWorld] WebGL render error:", error.message);
   }
 
-  render() {
+  render(): React.ReactNode {
     if (this.state.hasError) {
       const { t } = this.props;
       return (
@@ -368,7 +368,7 @@ class WebGLCrashBoundary extends React.Component<
         </div>
       );
     }
-    return this.props.children;
+    return this.props.children as React.ReactNode;
   }
 }
 

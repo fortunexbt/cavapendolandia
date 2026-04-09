@@ -14,12 +14,12 @@ const CheCose = () => {
   const p3Block = getBlock("p3");
   const p4Block = getBlock("p4");
 
-  const title = titleBlock?.body ?? t("cheCose.title");
+  const title = titleBlock?.body_text ?? t("cheCose.title");
   const paragraphs = [
-    p1Block?.body ?? t("cheCose.p1"),
-    p2Block?.body ?? t("cheCose.p2"),
-    p3Block?.body ?? t("cheCose.p3"),
-    p4Block?.body ?? t("cheCose.p4"),
+    p1Block?.body_text ?? t("cheCose.p1"),
+    p2Block?.body_text ?? t("cheCose.p2"),
+    p3Block?.body_text ?? t("cheCose.p3"),
+    p4Block?.body_text ?? t("cheCose.p4"),
   ];
 
   return (

@@ -250,6 +250,7 @@ export function DepositModal({
   onClose: () => void;
   onSubmitted: (siteId: string) => void;
 }) {
+  const { t } = useTranslation();
   const { data: initiative } = useActiveInitiative();
   return (
     <AnimatePresence>
