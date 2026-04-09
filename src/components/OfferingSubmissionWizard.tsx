@@ -97,8 +97,9 @@ const OfferingSubmissionWizard = ({
     setSubmitting(false);
 
     if (!result.ok) {
-      if (!("reason" in result && result.reason === "honeypot")) {
-        toast.error(getErrorMessage(result));
+      const failResult = result as { ok: false; reason?: string; message?: string };
+      if (!(failResult.reason === "honeypot")) {
+        toast.error(getErrorMessage(failResult));
       }
       return;
     }

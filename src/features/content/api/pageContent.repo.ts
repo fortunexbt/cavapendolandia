@@ -5,10 +5,17 @@ export type PageContentBlock = {
   id: string;
   page_slug: string;
   block_key: string;
+  locale: string;
+  eyebrow: string | null;
   title: string | null;
-  body: string | null;
-  created_at: string;
+  body_text: string | null;
+  image_path: string | null;
+  cta_label: string | null;
+  cta_href: string | null;
+  sort_order: number;
+  is_enabled: boolean;
   updated_at: string;
+  updated_by: string | null;
 };
 
 export const pageContentRepo = {
@@ -49,11 +56,11 @@ export const pageContentRepo = {
     }
   },
 
-  async upsert(slug: string, blockKey: string, payload: { title?: string; body?: string }): Promise<void> {
+  async upsert(slug: string, blockKey: string, payload: { title?: string; body_text?: string }): Promise<void> {
     const { error } = await supabase
       .from("page_content")
       .upsert(
-        { page_slug: slug, block_key: blockKey, title: payload.title || null, body: payload.body || null },
+        { page_slug: slug, block_key: blockKey, title: payload.title || null, body_text: payload.body_text || null },
         { onConflict: "page_slug,block_key" },
       );
     if (error) throw error;
