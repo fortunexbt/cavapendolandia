@@ -21,7 +21,7 @@ const LOADING_STAGE_KEYS = [
   "gallery.shell.loadingStage3",
 ] as const;
 
-const LOAD_TIMEOUT_MS = 15_000;
+const LOAD_TIMEOUT_MS = 30_000;
 
 const waitForAnimationFrames = async (count: number) => {
   for (let index = 0; index < count; index += 1) {
@@ -44,11 +44,16 @@ const CavapendoGalleryShell = ({
 
   useEffect(() => {
     let cancelled = false;
+    let loadResolved = false;
 
-    // Timeout: if loading takes longer than LOAD_TIMEOUT_MS, show error
     const timeoutId = window.setTimeout(() => {
-      if (!cancelled && !SurfaceComponent) {
-        setLoadError(t("gallery.shell.loadTimeout", "Il caricamento sta impiegando troppo. Ricarica la pagina."));
+      if (!cancelled && !loadResolved) {
+        setLoadError(
+          t(
+            "gallery.shell.loadTimeout",
+            "Il caricamento sta impiegando troppo. Ricarica la pagina.",
+          ),
+        );
       }
     }, LOAD_TIMEOUT_MS);
 
@@ -72,9 +77,12 @@ const CavapendoGalleryShell = ({
         if (cancelled) return;
 
         setLoadingStage(3);
+        loadResolved = true;
+        window.clearTimeout(timeoutId);
         setSurfaceComponent(() => module.default);
         await Promise.race([preloadPromise, waitForAnimationFrames(1)]);
       } catch (error) {
+        window.clearTimeout(timeoutId);
         if (cancelled) return;
         setLoadError(
           error instanceof Error ? error.message : t("gallery.shell.loadError"),
