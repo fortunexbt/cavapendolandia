@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useTranslation } from "react-i18next";
 import type { ResolvedRenderProfile, ViewportMetrics } from "@/components/cavapendo-gallery/runtime";
@@ -12,6 +12,10 @@ import {
   VirtualJoystick,
 } from "@/components/cavapendo-gallery/gameplay";
 import { EYE_HEIGHT } from "@/components/cavapendo-gallery/config";
+
+/* ------------------------------------------------------------------ */
+/*  WebGL crash boundary — catches JS-level React render errors       */
+/* ------------------------------------------------------------------ */
 
 class WebGLCrashBoundary extends React.Component<
   React.ComponentProps<"div"> & { t: ReturnType<typeof useTranslation>["t"] },
@@ -49,6 +53,36 @@ class WebGLCrashBoundary extends React.Component<
     return this.props.children;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Context-loss fallback overlay                                      */
+/* ------------------------------------------------------------------ */
+
+function ContextLostOverlay() {
+  const { t } = useTranslation();
+  return (
+    <div className="absolute inset-0 z-40 flex items-center justify-center bg-[#110d0c]/95 backdrop-blur-sm">
+      <div className="max-w-sm rounded-[2rem] border border-[#4f4036] bg-[#150f0d]/94 px-8 py-10 text-center text-[#f7eee4] shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl">
+        <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#cdb69d]">
+          {t("gallery.shell.webglUnavailable")}
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-[#eadccc]">
+          {t("gallery.shell.webglUnavailableHint")}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-6 rounded-full border border-[#6b5544] bg-[#2a1f18] px-8 py-3 text-xs uppercase tracking-[0.2em] text-[#f0dfc7] transition-colors hover:bg-[#3a2e24]"
+        >
+          {t("gallery.shell.reload", "Ricarica")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main GalleryCanvas                                                 */
+/* ------------------------------------------------------------------ */
 
 export interface GalleryCanvasProps {
   zone: "gallery" | "meadow";
@@ -107,6 +141,9 @@ export interface GalleryCanvasProps {
 
 export function GalleryCanvas(props: GalleryCanvasProps) {
   const { t } = useTranslation();
+  const canvasWrapperRef = useRef<HTMLDivElement>(null);
+  const [contextLost, setContextLost] = useState(false);
+
   const {
     zone,
     isMobile,
@@ -155,8 +192,52 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
     profileShiftLocked,
   } = props;
 
+  // Listen for WebGL context loss/restore on the actual <canvas> DOM element
+  useEffect(() => {
+    const wrapper = canvasWrapperRef.current;
+    if (!wrapper) return;
+
+    // R3F creates the <canvas> as a direct child
+    const findCanvas = () => wrapper.querySelector("canvas");
+
+    let canvas = findCanvas();
+    // Canvas may not exist yet on first render — poll briefly
+    if (!canvas) {
+      const interval = setInterval(() => {
+        canvas = findCanvas();
+        if (canvas) {
+          clearInterval(interval);
+          attachListeners(canvas);
+        }
+      }, 100);
+      const timeout = setTimeout(() => clearInterval(interval), 5000);
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+
+    function attachListeners(el: HTMLCanvasElement) {
+      const handleLost = (e: Event) => {
+        e.preventDefault();
+        console.warn("[GalleryCanvas] WebGL context lost");
+        setContextLost(true);
+      };
+      const handleRestored = () => {
+        console.info("[GalleryCanvas] WebGL context restored");
+        setContextLost(false);
+      };
+      el.addEventListener("webglcontextlost", handleLost);
+      el.addEventListener("webglcontextrestored", handleRestored);
+    }
+
+    attachListeners(canvas);
+  }, []);
+
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0" ref={canvasWrapperRef}>
+      {contextLost && <ContextLostOverlay />}
+
       <WebGLCrashBoundary t={t}>
         <Canvas
           camera={{ position: [0, EYE_HEIGHT, 8], fov: isMobile ? 62 : 56 }}
@@ -164,7 +245,7 @@ export function GalleryCanvas(props: GalleryCanvasProps) {
           gl={{
             antialias: renderProfile.antialias,
             alpha: false,
-            powerPreference: renderProfile.powerPreference,
+            powerPreference: "default",
             failIfMajorPerformanceCaveat: false,
           }}
           style={{

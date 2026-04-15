@@ -119,15 +119,13 @@ const queryClient = new QueryClient();
 const AnimatedRoutes = () => {
   const location = useLocation();
   useThemeMode(); // apply dark/light class globally on mount
-  const showPrelude = !location.pathname.startsWith("/admin");
-
-  const handlePreludeComplete = () => {
-    // Prelude component handles its own visibility
-  };
+  const isAdmin = location.pathname.startsWith("/admin");
+  const preludeAlreadySeen = sessionStorage.getItem("cavapendolandia-prelude-seen") === "1";
+  const showPrelude = !isAdmin && !preludeAlreadySeen;
 
   return (
     <>
-      {showPrelude && <CavapendoliPrelude onComplete={handlePreludeComplete} />}
+      {showPrelude && <CavapendoliPrelude />}
           <Routes location={location}>
             <Route
               path="/"
