@@ -1,68 +1,75 @@
+<final-text>I checked the repo against the live backend snapshot. This is no longer just an env-var issue. The app is now suffering from repo/backend drift plus a couple of concrete runtime bugs.
 
+What I found
+- Live data is reaching the app again: offerings + signed media requests succeed, and the latest session replay shows `/galleria` mounting its shell/HUD. So the remaining failures are not “no backend connection”.
+- The CMS is wired to the wrong pages: public pages read slugs like `index`, `che-cose`, and `regole`, but `PagesEditor` writes `home`, `about`, `rules`, `removal`, `gallery`. Even when saves succeed, they won’t change the live site.
+- `page_content` is also handled incorrectly for multilingual data: reads/writes ignore `locale`, and upsert uses `onConflict: "page_slug,block_key"` while the table is unique on `(page_slug, block_key, locale)`.
+- Admin auth/query gating is broken: `useAdmin()` currently treats a null user as admin, which can fire protected admin queries in a logged-out state and make admin pages behave unpredictably.
+- The gallery still has a real runtime bug: `CavapendoGallery` renders modal components in a way that triggers Framer/React ref warnings (`DepositModal` / `AnimatePresence`). That matches the console errors you’re seeing.
+- The backend likely does need repair work: the live schema snapshot reports no triggers even though the repo expects triggers for offering category and initiative timestamps. That is classic migration drift.
+- There is existing data drift too: at least one approved offering has `approved_at = null`, which means older data was not normalized.
 
-## Root Cause (Confirmed)
+Plan
+1. Repair backend drift first
+- Create one additive migration to restore the missing triggers/functions the repo expects:
+  - offering category trigger
+  - initiatives `updated_at` trigger
+  - `updated_at` triggers for `page_content` and `meadow_elements`
+- Run a data fix (not schema migration) to:
+  - backfill `approved_at` on approved offerings where it is null
+  - copy/normalize legacy CMS slugs (`home/about/rules/removal`) to the live slugs the site actually reads (`index/che-cose/regole/rimozione`)
+  - preserve locale/block keys while doing so
 
-The entire site is broken because **every Supabase request hits `placeholder.supabase.co`**. Console proves it:
-```
-[Cavapendolandia] Missing Supabase env vars
-GET https://placeholder.supabase.co/rest/v1/initiatives → Failed to fetch
-GET https://placeholder.supabase.co/rest/v1/page_content → Failed to fetch
-GET https://placeholder.supabase.co/rest/v1/offerings → Failed to fetch
-```
+2. Make admin stable before anything else
+- Fix `src/hooks/useAdmin.ts` so logged-out users are never treated as admins
+- Gate all admin-only queries/mutations behind `user && isAdmin`
+- Update admin hooks to expose `enabled` + proper `onError` behavior so failures are visible, not silent
 
-This kills: homepage offerings, initiatives, page content (CheCose/Regole), gallery (no offerings to render → black/empty scene), admin, everything.
+3. Make the CMS actually control the site
+- Replace the current freeform PagesEditor mapping with the real public-page schema
+- Align its page/block options to the actual frontend:
+  - `index`: `subtitle`, `description`
+  - `che-cose`: `title`, `p1..p4`
+  - `regole`: `title`, `rule-0..rule-6`
+  - add other real pages only if the frontend reads them
+- Fix `pageContentRepo` to read/write by `locale`, use `maybeSingle`, and upsert on `(page_slug, block_key, locale)`
+- Invalidate both single-block and page-block queries after save
 
-### Why
+4. Fix the gallery runtime properly
+- Remove the modal/ref misuse causing the current React warnings in `CavapendoGallery` / `modals.tsx`
+- Replace optional `.single()` calls with `.maybeSingle()` for empty-state initiative reads so the app stops producing 406 noise
+- Re-test the actual gallery flow end-to-end: enter, open modal, submit, exit
 
-`vite.config.ts` uses `loadEnv()` + `define:` to hardcode env vars at build time:
-```ts
-const env = loadEnv(mode, process.cwd(), "");
-define: {
-  "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(env.VITE_SUPABASE_URL || ""),
-  ...
-}
-```
+5. Finish the editors so they match the database
+- Align `PratoEditor` / `meadowElementsRepo` with the full live table shape instead of the current partial model
+- Fix approved archive filtering to use the real DB categories (`grafica`, `musicale`, `letteraria`) instead of the current keyword hack
 
-Two bugs here:
-1. **No `.env` file exists** in the Lovable build environment. The platform exposes env vars via `process.env`, not `.env` files. `loadEnv()` returns `{}`, so the bundle gets `""`, which falls back to `placeholder.supabase.co`.
-2. **Wrong key name**: platform provides `VITE_SUPABASE_ANON_KEY`, but the code reads `VITE_SUPABASE_PUBLISHABLE_KEY`.
+6. Validate the whole website end-to-end
+- Re-run full public/admin/gallery E2E
+- Fix any stale tests/routes that still reflect the older structure
+- Only stop when these flows all work together:
+  - homepage + public pages
+  - gallery enter/interact/exit
+  - submission
+  - moderation
+  - initiatives
+  - Pages CMS persistence
+  - Prato editor CRUD
+  - messages inbox
 
-The previous "feature flags" edit to `vite.config.ts` introduced/perpetuated this `define:` block, which clobbers Lovable's automatic env injection.
+Files I already know need changes
+- `src/hooks/useAdmin.ts`
+- `src/features/content/api/pageContent.repo.ts`
+- `src/features/content/hooks/usePageContent.ts`
+- `src/features/content/hooks/usePageBlocks.ts`
+- `src/pages/admin/PagesEditor.tsx`
+- `src/hooks/useActiveInitiative.ts`
+- `src/features/initiatives/api/initiatives.repo.ts`
+- `src/components/CavapendoGallery.tsx`
+- `src/components/cavapendo-gallery/modals.tsx`
+- `src/features/meadow/api/meadowElements.repo.ts`
+- `src/pages/admin/PratoEditor.tsx`
+- `supabase/migrations/*` for the trigger-restoration migration
 
-## Fix
-
-### Step 1: Remove the `define:` block from `vite.config.ts`
-
-Delete the Supabase entries from `define:` entirely. Lovable's build pipeline injects `VITE_*` vars into `import.meta.env` automatically — `define:` is overriding that injection with empty strings. Keep only the three feature flags (`VITE_FEATURE_*`) since those are the legitimate use of `define:`.
-
-Also remove the unused `loadEnv` import.
-
-### Step 2: Update `src/integrations/supabase/client.ts` to read both possible key names
-
-The platform provides `VITE_SUPABASE_ANON_KEY`; existing code expects `VITE_SUPABASE_PUBLISHABLE_KEY`. Read both as fallback so it works regardless of which one is set:
-
-```ts
-const SUPABASE_PUBLISHABLE_KEY =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  "placeholder-anon-key";
-```
-
-(Note: per project rules `client.ts` is auto-generated, but it currently contains a custom warning block already — same line will be regenerated. If regeneration overwrites this, the env injection alone in Step 1 will suffice because the platform writes the canonical `VITE_SUPABASE_PUBLISHABLE_KEY` into the generated file.)
-
-### Step 3: Verify
-
-After the edit, the rebuild will pick up the platform-injected `VITE_SUPABASE_URL` = `https://sasjrpdecjwmdxoyepas.supabase.co` and the real anon key. Then:
-- Homepage offerings load
-- Gallery shows real frames (no longer black/empty)
-- CheCose/Regole content renders
-- Admin works
-- Initiatives load
-
-No other code changes are needed — the codebase itself is fine; it's the build config that's poisoning the bundle.
-
-## Files Changed
-
-- `vite.config.ts` — remove Supabase entries + `loadEnv` from `define:` block
-- `src/integrations/supabase/client.ts` — accept both `VITE_SUPABASE_ANON_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY` as fallback
-
+Bottom line
+Yes — something is up on both sides. It is not just the frontend, and yes, backend/migration drift is part of it. The next pass should be a combined code + database + data-normalization fix, then a full E2E verification pass.</final-text>
