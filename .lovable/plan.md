@@ -1,80 +1,68 @@
 
 
-## Diagnosis
+## Root Cause (Confirmed)
 
-After thorough investigation with browser tools and code review, here is what's happening:
-
-**Root cause: WebGL context exhaustion and missing fallback handling**
-
-1. **Homepage uses WebGL** (`CavapendoWorld.tsx` renders a Three.js Canvas on `/`). When the user navigates to `/galleria`, the gallery creates a **second** Three.js Canvas. The browser has limited WebGL contexts (typically 8-16) and the Lovable preview iframe has even fewer. The old context isn't always cleaned up before the new one is created, causing `THREE.WebGLRenderer: Context Lost`.
-
-2. **No recovery from context loss**: The `WebGLCrashBoundary` in `GalleryCanvas.tsx` only catches React JS errors (via `getDerivedStateFromError`), NOT the WebGL `webglcontextlost` DOM event. When the GPU context is lost, the canvas goes permanently black with no user feedback.
-
-3. **Prelude overlay on every route change**: `CavapendoliPrelude` renders on every non-admin route, causing brief visual flickers during navigation even after it was "completed."
-
-**Other pages work fine**: Homepage, Che cos'è, Contatti, Regole all render correctly. The gallery is the sole broken experience.
-
----
-
-## Plan
-
-### Step 1: Add WebGL context loss detection and recovery to GalleryCanvas
-
-In `src/features/gallery/components/GalleryCanvas.tsx`:
-- Add a `webglcontextlost` event listener on the canvas DOM element
-- When detected, show a visible fallback UI with a "Reload" button instead of a black screen
-- Also listen for `webglcontextrestored` to attempt automatic recovery
-
-### Step 2: Prevent WebGL context competition from homepage
-
-In `src/pages/Index.tsx`:
-- Make the `CavapendoWorld` 3D background **conditional** — only render it when the page is actually visible
-- Add cleanup: when the user navigates away from `/`, ensure the homepage Canvas is fully unmounted before the gallery Canvas initializes
-- Alternative simpler approach: replace the homepage 3D background with a CSS-only gradient (the 3D orbs/sparkles are decorative and non-essential) to free up WebGL context for the gallery
-
-### Step 3: Reduce WebGL resource usage in gallery initialization
-
-In `src/features/gallery/components/GalleryCanvas.tsx`:
-- Change `powerPreference` from the render profile value to `"default"` (avoid `"high-performance"` which aggressively claims GPU resources)
-- Set `failIfMajorPerformanceCaveat: true` initially, and on failure retry with `false` plus reduced settings
-
-### Step 4: Fix prelude re-rendering on navigation
-
-In `src/App.tsx` / `src/components/CavapendoliPrelude.tsx`:
-- Check `sessionStorage` for prelude completion state — if already shown this session, skip entirely (don't render the component at all)
-- This prevents the flash/flicker between page transitions
-
-### Step 5: Add visible fallback for gallery load failure
-
-In `src/components/CavapendoGalleryShell.tsx`:
-- Add a timeout (e.g., 15 seconds) — if the gallery canvas never produces a rendered frame, show a static fallback with offering thumbnails and a message explaining WebGL is unavailable
-- This ensures the gallery page is never permanently stuck on a black screen
-
----
-
-## Technical Details
-
-**WebGL context loss listener** (Step 1):
-```tsx
-// Inside GalleryCanvas, wrap Canvas in a div with ref
-const canvasWrapperRef = useRef<HTMLDivElement>(null);
-const [contextLost, setContextLost] = useState(false);
-
-useEffect(() => {
-  const canvas = canvasWrapperRef.current?.querySelector('canvas');
-  if (!canvas) return;
-  const handleLost = (e: Event) => { e.preventDefault(); setContextLost(true); };
-  const handleRestored = () => setContextLost(false);
-  canvas.addEventListener('webglcontextlost', handleLost);
-  canvas.addEventListener('webglcontextrestored', handleRestored);
-  return () => {
-    canvas.removeEventListener('webglcontextlost', handleLost);
-    canvas.removeEventListener('webglcontextrestored', handleRestored);
-  };
-}, []);
+The entire site is broken because **every Supabase request hits `placeholder.supabase.co`**. Console proves it:
+```
+[Cavapendolandia] Missing Supabase env vars
+GET https://placeholder.supabase.co/rest/v1/initiatives → Failed to fetch
+GET https://placeholder.supabase.co/rest/v1/page_content → Failed to fetch
+GET https://placeholder.supabase.co/rest/v1/offerings → Failed to fetch
 ```
 
-**Homepage 3D removal** (Step 2): Replace `<CavapendoWorld />` with a pure CSS background. The existing gradient divs in `CavapendoWorld` already provide a beautiful fallback — just remove the Canvas part.
+This kills: homepage offerings, initiatives, page content (CheCose/Regole), gallery (no offerings to render → black/empty scene), admin, everything.
 
-**Prelude session guard** (Step 4): Add `sessionStorage.setItem('prelude_shown', '1')` on completion, and check it in `AnimatedRoutes` before rendering `<CavapendoliPrelude />`.
+### Why
+
+`vite.config.ts` uses `loadEnv()` + `define:` to hardcode env vars at build time:
+```ts
+const env = loadEnv(mode, process.cwd(), "");
+define: {
+  "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(env.VITE_SUPABASE_URL || ""),
+  ...
+}
+```
+
+Two bugs here:
+1. **No `.env` file exists** in the Lovable build environment. The platform exposes env vars via `process.env`, not `.env` files. `loadEnv()` returns `{}`, so the bundle gets `""`, which falls back to `placeholder.supabase.co`.
+2. **Wrong key name**: platform provides `VITE_SUPABASE_ANON_KEY`, but the code reads `VITE_SUPABASE_PUBLISHABLE_KEY`.
+
+The previous "feature flags" edit to `vite.config.ts` introduced/perpetuated this `define:` block, which clobbers Lovable's automatic env injection.
+
+## Fix
+
+### Step 1: Remove the `define:` block from `vite.config.ts`
+
+Delete the Supabase entries from `define:` entirely. Lovable's build pipeline injects `VITE_*` vars into `import.meta.env` automatically — `define:` is overriding that injection with empty strings. Keep only the three feature flags (`VITE_FEATURE_*`) since those are the legitimate use of `define:`.
+
+Also remove the unused `loadEnv` import.
+
+### Step 2: Update `src/integrations/supabase/client.ts` to read both possible key names
+
+The platform provides `VITE_SUPABASE_ANON_KEY`; existing code expects `VITE_SUPABASE_PUBLISHABLE_KEY`. Read both as fallback so it works regardless of which one is set:
+
+```ts
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  "placeholder-anon-key";
+```
+
+(Note: per project rules `client.ts` is auto-generated, but it currently contains a custom warning block already — same line will be regenerated. If regeneration overwrites this, the env injection alone in Step 1 will suffice because the platform writes the canonical `VITE_SUPABASE_PUBLISHABLE_KEY` into the generated file.)
+
+### Step 3: Verify
+
+After the edit, the rebuild will pick up the platform-injected `VITE_SUPABASE_URL` = `https://sasjrpdecjwmdxoyepas.supabase.co` and the real anon key. Then:
+- Homepage offerings load
+- Gallery shows real frames (no longer black/empty)
+- CheCose/Regole content renders
+- Admin works
+- Initiatives load
+
+No other code changes are needed — the codebase itself is fine; it's the build config that's poisoning the bundle.
+
+## Files Changed
+
+- `vite.config.ts` — remove Supabase entries + `loadEnv` from `define:` block
+- `src/integrations/supabase/client.ts` — accept both `VITE_SUPABASE_ANON_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY` as fallback
 
