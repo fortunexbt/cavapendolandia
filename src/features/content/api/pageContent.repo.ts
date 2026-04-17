@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
 
 export type PageContentBlock = {
   id: string;
@@ -18,15 +17,18 @@ export type PageContentBlock = {
   updated_by: string | null;
 };
 
+const DEFAULT_LOCALE = "it";
+
 export const pageContentRepo = {
-  async listBySlug(slug: string): Promise<PageContentBlock[]> {
+  async listBySlug(slug: string, locale: string = DEFAULT_LOCALE): Promise<PageContentBlock[]> {
     try {
       const { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", slug)
+        .eq("locale", locale)
         .order("block_key");
-      if (error && error.code !== "PGRST116") {
+      if (error) {
         console.warn("[pageContentRepo] listBySlug error:", error.message);
         return [];
       }
@@ -37,15 +39,20 @@ export const pageContentRepo = {
     }
   },
 
-  async get(slug: string, blockKey: string): Promise<PageContentBlock | null> {
+  async get(
+    slug: string,
+    blockKey: string,
+    locale: string = DEFAULT_LOCALE,
+  ): Promise<PageContentBlock | null> {
     try {
       const { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", slug)
         .eq("block_key", blockKey)
-        .single();
-      if (error && error.code !== "PGRST116") {
+        .eq("locale", locale)
+        .maybeSingle();
+      if (error) {
         console.warn("[pageContentRepo] get error:", error.message);
         return null;
       }
@@ -56,12 +63,23 @@ export const pageContentRepo = {
     }
   },
 
-  async upsert(slug: string, blockKey: string, payload: { title?: string; body_text?: string }): Promise<void> {
+  async upsert(
+    slug: string,
+    blockKey: string,
+    payload: { title?: string; body_text?: string; locale?: string },
+  ): Promise<void> {
+    const locale = payload.locale || DEFAULT_LOCALE;
     const { error } = await supabase
       .from("page_content")
       .upsert(
-        { page_slug: slug, block_key: blockKey, title: payload.title || null, body_text: payload.body_text || null },
-        { onConflict: "page_slug,block_key" },
+        {
+          page_slug: slug,
+          block_key: blockKey,
+          locale,
+          title: payload.title || null,
+          body_text: payload.body_text || null,
+        },
+        { onConflict: "page_slug,block_key,locale" },
       );
     if (error) throw error;
   },

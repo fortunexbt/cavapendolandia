@@ -20,14 +20,14 @@ export const useActiveInitiative = () => {
           .eq("is_active", true)
           .order("created_at", { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== "PGRST116") {
+        if (error) {
           console.warn("[useActiveInitiative]", error.message);
           return null;
         }
 
-        return data as Initiative | null;
+        return (data as Initiative | null) ?? null;
       } catch (e) {
         console.warn("[useActiveInitiative] exception:", e);
         return null;
