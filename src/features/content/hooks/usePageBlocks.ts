@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { pageContentRepo, type PageContentBlock } from "../api/pageContent.repo";
 
-export const usePageBlocks = (slug: string) => {
+const DEFAULT_LOCALE = "it";
+
+export const usePageBlocks = (slug: string, locale: string = DEFAULT_LOCALE) => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["page-blocks", slug],
-    queryFn: () => pageContentRepo.listBySlug(slug),
+    queryKey: ["page-blocks", slug, locale],
+    queryFn: () => pageContentRepo.listBySlug(slug, locale),
     enabled: !!slug,
   });
 

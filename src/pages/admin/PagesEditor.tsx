@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -8,7 +8,19 @@ import AdminThemeToggle from "@/components/admin/AdminThemeToggle";
 import { usePageContent } from "@/features/content/hooks/usePageContent";
 import { pagesCms } from "@/lib/featureFlags";
 
-const PAGES_SLUGS = ["home", "about", "rules", "removal", "gallery"];
+type PageDef = { slug: string; label: string; blocks: string[] };
+
+const PAGES: PageDef[] = [
+  { slug: "index", label: "Home", blocks: ["subtitle", "description"] },
+  { slug: "che-cose", label: "Che cos'è", blocks: ["title", "p1", "p2", "p3", "p4"] },
+  { slug: "regole", label: "Regole", blocks: ["title", "rule-0", "rule-1", "rule-2", "rule-3", "rule-4", "rule-5", "rule-6"] },
+  { slug: "rimozione", label: "Rimozione", blocks: ["title", "line1", "line2"] },
+];
+
+const LOCALES = [
+  { code: "it", label: "Italiano" },
+  { code: "en", label: "English" },
+];
 
 const BlockPreview = ({ title, body }: { title?: string | null; body?: string | null }) => {
   const { t } = useTranslation();
@@ -45,23 +57,31 @@ const PagesEditorContent = () => {
   const { t } = useTranslation();
   const { user, isAdmin, loading } = useAdmin();
   const { mode, setThemeMode } = useThemeMode();
-  const [slug, setSlug] = useState<string>(PAGES_SLUGS[0]);
-  const [blockKey, setBlockKey] = useState<string>("hero");
+  const [slug, setSlug] = useState<string>(PAGES[0].slug);
+  const currentPage = useMemo(() => PAGES.find((p) => p.slug === slug) ?? PAGES[0], [slug]);
+  const [blockKey, setBlockKey] = useState<string>(currentPage.blocks[0]);
+  const [locale, setLocale] = useState<string>("it");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
-  const { block, isLoading, save, isSaving } = usePageContent(slug, blockKey, {
-    saveSuccess: t("admin.pageContentSaved"),
-    saveError: t("admin.pageContentSaveError"),
-  });
-
-  // Sync local state when block loads
   useEffect(() => {
-    if (block) {
-      setTitle(block.title ?? "");
-      setBody(block.body_text ?? "");
-    }
-  }, [block]);
+    setBlockKey(currentPage.blocks[0]);
+  }, [currentPage]);
+
+  const { block, isLoading, save, isSaving } = usePageContent(
+    slug,
+    blockKey,
+    {
+      saveSuccess: t("admin.pageContentSaved"),
+      saveError: t("admin.pageContentSaveError"),
+    },
+    locale,
+  );
+
+  useEffect(() => {
+    setTitle(block?.title ?? "");
+    setBody(block?.body_text ?? "");
+  }, [block, slug, blockKey, locale]);
 
   if (loading) return <div className="min-h-screen bg-background" />;
   if (!user) return <Navigate to="/admin" replace />;
@@ -93,7 +113,7 @@ const PagesEditorContent = () => {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-4 rounded-2xl border border-border bg-card/70 p-5 shadow-sm">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block font-mono-light text-[0.62rem] uppercase tracking-[0.12em] text-muted-foreground mb-1">
                 {t("admin.page")}
@@ -103,8 +123,8 @@ const PagesEditorContent = () => {
                 onChange={(e) => setSlug(e.target.value)}
                 className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               >
-                {PAGES_SLUGS.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                {PAGES.map((p) => (
+                  <option key={p.slug} value={p.slug}>{p.label} ({p.slug})</option>
                 ))}
               </select>
             </div>
@@ -112,12 +132,29 @@ const PagesEditorContent = () => {
               <label className="block font-mono-light text-[0.62rem] uppercase tracking-[0.12em] text-muted-foreground mb-1">
                 {t("admin.block")}
               </label>
-              <input
+              <select
                 value={blockKey}
                 onChange={(e) => setBlockKey(e.target.value)}
                 className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                placeholder={t("admin.blockKeyPlaceholder")}
-              />
+              >
+                {currentPage.blocks.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block font-mono-light text-[0.62rem] uppercase tracking-[0.12em] text-muted-foreground mb-1">
+                Locale
+              </label>
+              <select
+                value={locale}
+                onChange={(e) => setLocale(e.target.value)}
+                className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                {LOCALES.map((l) => (
+                  <option key={l.code} value={l.code}>{l.label}</option>
+                ))}
+              </select>
             </div>
           </div>
 

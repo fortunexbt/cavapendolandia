@@ -8,7 +8,8 @@ const DEMO_USER_ID = "00000000-0000-0000-0000-000000000000";
 const ADMIN_ROLE = "admin" as const;
 
 const resolveAdminStatus = async (currentUser: User | null) => {
-  if (DEMO_MODE || !currentUser) return true;
+  if (DEMO_MODE) return true;
+  if (!currentUser) return false;
 
   const { data: hasAdminRole } = await supabase.rpc("has_role", {
     _user_id: currentUser.id,
