@@ -215,7 +215,86 @@
       "note": "Nota",
       "open": "Apri",
       "close": "Chiudi",
-      "hide": "Nascondi"
+      "hide": "Nascondi",
+      "steps": {
+        "intro": {
+          "title": "Sei dentro la galleria",
+          "body": "Sei in una stanza calda, raccolta. Muoviti piano: presto un arco si aprira sul muro opposto.",
+          "compactLabel": "Cerca ESTERNO",
+          "hint1Mobile": "Tieni il telefono in orizzontale",
+          "hint2Mobile": "Sinistra per muovere",
+          "hint3Mobile": "Destra per guardare",
+          "hint1Desktop": "WASD per muovere",
+          "hint2Desktop": "Mouse per guardare",
+          "hint3Desktop": "F per allargare la scena"
+        },
+        "find-outdoor": {
+          "title": "Raggiungi ESTERNO",
+          "body": "L'interno resta caldo e raccolto. Sul muro opposto l'arco ESTERNO si apre da solo quando ci entri abbastanza vicino.",
+          "compactLabel": "Raggiungi ESTERNO",
+          "hint1Mobile": "Muro opposto",
+          "hint2Mobile": "Nessun tasto necessario",
+          "hint3Mobile": "Lascia che il passaggio si apra",
+          "hint1Desktop": "Muro opposto",
+          "hint2Desktop": "Nessun tasto necessario",
+          "hint3Desktop": "Lascia che il passaggio si apra"
+        },
+        "arrive-globe": {
+          "title": "Sei sul globo",
+          "body": "Sei uscito sul prato curvo. Ascolta la luce, lascia che il paesaggio si componga: ogni direzione racconta qualcosa di diverso.",
+          "compactLabel": "Leggi il primo paesaggio",
+          "hint1Mobile": "Nord aperto",
+          "hint2Mobile": "Sud raccolto",
+          "hint3Mobile": "Est piu costruito",
+          "hint1Desktop": "Nord aperto",
+          "hint2Desktop": "Sud raccolto",
+          "hint3Desktop": "Est piu costruito"
+        },
+        "meet-creatures": {
+          "title": "Le creature si avvicinano",
+          "body": "Le creature non danno obiettivi. Restano, tornano, deviano lo sguardo: quando un movimento insiste nello stesso punto, di solito il luogo vuole essere ascoltato.",
+          "compactLabel": "Segui un movimento",
+          "hint1Mobile": "Posatoi",
+          "hint2Mobile": "Passaggi ripetuti",
+          "hint3Mobile": "Presenze leggere",
+          "hint1Desktop": "Posatoi",
+          "hint2Desktop": "Passaggi ripetuti",
+          "hint3Desktop": "Presenze leggere"
+        },
+        "find-deposit": {
+          "title": "Cerca un luogo rituale",
+          "body": "Anelli sospesi, bagliori verticali e creature che ritornano indicano un luogo rituale. Non e un obbligo: se il posto tiene, puoi scegliere di lasciare qualcosa.",
+          "compactLabel": "Riconosci un luogo rituale",
+          "hint1Mobile": "Tre luoghi rituali",
+          "hint2Mobile": "Bagliori verticali",
+          "hint3Mobile": "Lascia qualcosa solo se ha senso",
+          "hint1Desktop": "Tre luoghi rituali",
+          "hint2Desktop": "Bagliori verticali",
+          "hint3Desktop": "Lascia qualcosa solo se ha senso"
+        },
+        "deposit-ready": {
+          "title": "Sosta rituale",
+          "body": "Sei davanti a un luogo che trattiene tracce. Apri la sosta solo se ti pare giusto: il deposito e un gesto, non un compito.",
+          "compactLabel": "Sosta rituale",
+          "hint1Mobile": "Apri la sosta",
+          "hint2Mobile": "Lascia qui se vuoi",
+          "hint3Mobile": "Il luogo trattiene la traccia",
+          "hint1Desktop": "Lascia che si apra",
+          "hint2Desktop": "Poi scegli se lasciare",
+          "hint3Desktop": "Il luogo trattiene la traccia"
+        },
+        "complete": {
+          "title": "Hai lasciato una traccia",
+          "body": "La cavapendolata resta in questo luogo. Continua a esplorare quanto vuoi: la galleria non finisce.",
+          "compactLabel": "Continua a esplorare",
+          "hint1Mobile": "Cammina ancora",
+          "hint2Mobile": "Cambia stanza",
+          "hint3Mobile": "Torna quando vuoi",
+          "hint1Desktop": "Cammina ancora",
+          "hint2Desktop": "Cambia stanza",
+          "hint3Desktop": "Torna quando vuoi"
+        }
+      }
     },
     "zoneInterior": "Interno",
     "zoneExterior": "Esterno"

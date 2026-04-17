@@ -26,9 +26,12 @@ export const initiativesRepo = {
       .eq("is_active", true)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== "PGRST116") throw error;
+    if (error) {
+      console.warn("[initiativesRepo.getActive]", error.message);
+      return null;
+    }
     return (data as Initiative) || null;
   },
 
